@@ -61,6 +61,7 @@ struct _MeerOutput
 #ifdef HAVE_LIBMYSQLCLIENT_R
 
     bool mysql_enabled;
+    bool mysql_debug;
     char mysql_server[128];
     int mysql_port;
     char mysql_username[64];

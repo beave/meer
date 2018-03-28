@@ -94,6 +94,8 @@ void Load_YAML_Config( char *yaml_file )
 
 #ifdef HAVE_LIBMYSQLCLIENT_R
 
+    MeerOutput->mysql_enabled = false; 
+    MeerOutput->mysql_debug = false;
     MeerOutput->mysql_server[0] = '\0';
     MeerOutput->mysql_port = 0;
     MeerOutput->mysql_username[0] = '\0';
@@ -303,6 +305,11 @@ void Load_YAML_Config( char *yaml_file )
                                         }
 
                                 }
+
+			    else if ( !strcmp(last_pass, "debug" ) && MeerOutput->mysql_enabled == true )
+				{
+				    MeerOutput->mysql_debug = true;
+			        }
 
                             else if ( !strcmp(last_pass, "server" ) && MeerOutput->mysql_enabled == true )
                                 {

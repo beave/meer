@@ -31,6 +31,7 @@ output-plugins:
   mysql:
 
     enabled: yes
+    debug: no
     server: 127.0.0.1
     port: 3306
     username: "myusername"
