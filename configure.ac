@@ -177,6 +177,14 @@ if test "$LIBYAML" = "no"; then
     exit 1
 fi
 
+if test "$MYSQL" = "yes"; then
+        AC_MSG_RESULT([------- MySQL Support is enabled -------])
+        AC_CHECK_HEADER([mysql/mysql.h])
+        AC_CHECK_LIB(mysqlclient_r, main,,AC_MSG_ERROR(The MySQL library libmysqlclient_r is missing!
+        If you're not interested in MySQL support use the --disable-mysql flag.))
+        fi
+
+
 test "x$prefix" = x. || test "x$prefix" = xNONE && prefix=/usr/local
 AC_DEFINE_UNQUOTED(CONFIG_FILE_PATH, "`eval echo "${sysconfdir}/meer.yaml"`", [Meer configuration file]) 
 

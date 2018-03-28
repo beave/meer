@@ -1,0 +1,39 @@
+%YAML 1.1
+---
+
+#  Meer configuration file [http://github.com/beave/meer]
+#  Champ Clark III & The Quadrant Information Security Team: https://quadrantsec.com
+#  Copyright (C) 2018 Quadrant Information Security., et al.
+
+meer-core:
+
+  # Core Settings
+
+  core:
+
+    interface: "eth0"   # Can be anything.  Sagan "syslog", suricata "eth0".
+    hostname: "Office"  # Unique name for this sensor (no spaces)
+
+    uid: "suricata"
+    gid: "suricata"
+
+    classification: "/etc/suricata/classification.config"
+    reference: "/etc/suricata/reference.config"
+    gen-msg-map: "etc/suricata/gen-msg.map"
+
+    waldo-file: "/var/log/meer/my.waldo"
+
+    follow-eve: "/var/log/something.eve"
+
+
+output-plugins:
+
+  mysql:
+
+    enabled: yes
+    server: 127.0.0.1
+    port: 3306
+    username: "myusername"
+    password: "mypassword"
+    database: "snort_meer"
+

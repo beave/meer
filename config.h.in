@@ -51,6 +51,9 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the `mysqlclient_r' library (-lmysqlclient_r). */
+#undef HAVE_LIBMYSQLCLIENT_R
+
 /* Define to 1 if you have the `yaml' library (-lyaml). */
 #undef HAVE_LIBYAML
 

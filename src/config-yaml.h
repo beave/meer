@@ -1,6 +1,6 @@
 /*
-** Copyright (C) 2018 Quadrant Information Security <quadrantsec.com>
-** Copyright (C) 2018 Champ Clark III <cclark@quadrantsec.com>
+** Copyright (C) 2009-2018 Quadrant Information Security <quadrantsec.com>
+** Copyright (C) 2009-2018 Champ Clark III <cclark@quadrantsec.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License Version 2 as
@@ -18,26 +18,36 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-/* Main Meer function */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"             /* From autoconf */
 #endif
 
-#include <stdio.h>
+/* Prototypes */
 
-#include "meer.h"
+void Load_YAML_Config ( char *yaml_file );
 
-struct _MeerConfig *MeerConfig;
-struct _MeerOutput *MeerOutput;
 
-int main()
-{
+#ifdef HAVE_LIBYAML
 
-    char *yaml_file = "../etc/meer.yaml";
+/************************/
+/* Minimum YAML version */
+/************************/
 
-    Load_YAML_Config(yaml_file);
+#define YAML_VERSION_MAJOR 1
+#define YAML_VERSION_MINOR 1
 
-    printf("Do nothing yet: %s\n", MeerConfig->hostname);
+/*****************/
+/* Primary types */
+/*****************/
 
-}
+#define         YAML_TYPE_MEER           1
+#define         YAML_TYPE_OUTPUT	 2
+
+/*******************/
+/* Secondary types */
+/*******************/
+
+#define         YAML_MEER_CORE_CORE     1
+#define         YAML_MEER_MYSQL	        2
+
+#endif
