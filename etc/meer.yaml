@@ -14,15 +14,14 @@ meer-core:
     interface: "eth0"   # Can be anything.  Sagan "syslog", suricata "eth0".
     hostname: "Office"  # Unique name for this sensor (no spaces)
 
-    uid: "suricata"
-    gid: "suricata"
+    runas: "suricata"
 
     classification: "/etc/suricata/classification.config"
     reference: "/etc/suricata/reference.config"
     gen-msg-map: "etc/suricata/gen-msg.map"
 
     waldo-file: "/var/log/meer/my.waldo"
-
+    lock-file: "/tmp/meer.lck"
     follow-eve: "/var/log/something.eve"
 
 

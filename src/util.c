@@ -18,3 +18,49 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"             /* From autoconf */
+#endif
+
+#include <stdio.h>
+#include <pwd.h>
+#include <grp.h>
+#include <errno.h>
+#include <stdlib.h>
+
+#include "meer.h"
+
+struct _MeerConfig *MeerConfig;
+
+void Drop_Priv(void)
+{
+
+    struct passwd *pw = NULL;
+    int ret;
+
+    pw = getpwnam(MeerConfig->runas);
+
+    if (!pw)
+        {
+            fprintf(stderr, "Couldn't locate user '%s'. Aborting...\n", MeerConfig->runas);
+            exit(-1);
+        }
+
+    if ( getuid() == 0 )
+        {
+            printf("[*] Dropping privileges! [UID: %lu GID: %lu]\n", (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid);
+
+            if (initgroups(pw->pw_name, pw->pw_gid) != 0 ||
+                    setgid(pw->pw_gid) != 0 || setuid(pw->pw_uid) != 0)
+                {
+                    fprintf(stderr, "[%s, line %d] Could not drop privileges to uid: %lu gid: %lu - %s!", __FILE__, __LINE__, (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid, strerror(errno));
+                    exit(-1);
+                }
+
+        }
+    else
+        {
+            printf("Not dropping privileges.  Already running as a non-privileged user");
+        }
+}
+

@@ -64,7 +64,7 @@ void Load_YAML_Config( char *yaml_file )
 
     if ( MeerConfig == NULL )
         {
-            fprintf(stderr, "[%s, line %d] Failed to allocate memory for config. Abort!", __FILE__, __LINE__);
+            fprintf(stderr, "[%s, line %d] Failed to allocate memory for config. Abort!\n", __FILE__, __LINE__);
             exit(-1);
         }
 
@@ -74,19 +74,19 @@ void Load_YAML_Config( char *yaml_file )
 
     MeerConfig->interface[0] = '\0';
     MeerConfig->hostname[0] = '\0';
-    MeerConfig->uid[0] = '\0';
-    MeerConfig->gid[0] = '\0';
+    MeerConfig->runas[0] = '\0';
     MeerConfig->classification_file[0] = '\0';
     MeerConfig->reference_file[0] = '\0';
     MeerConfig->genmsgmap_file[0] = '\0';
     MeerConfig->waldo_file[0] = '\0';
     MeerConfig->follow_file[0] = '\0';
+    MeerConfig->lock_file[0] = '\0';
 
     MeerOutput = malloc(sizeof(_MeerOutput));
 
     if ( MeerOutput == NULL )
         {
-            fprintf(stderr, "[%s, line %d] Failed to allocate memory for output. Abort!", __FILE__, __LINE__);
+            fprintf(stderr, "[%s, line %d] Failed to allocate memory for output. Abort!\n", __FILE__, __LINE__);
             exit(-1);
         }
 
@@ -94,7 +94,7 @@ void Load_YAML_Config( char *yaml_file )
 
 #ifdef HAVE_LIBMYSQLCLIENT_R
 
-    MeerOutput->mysql_enabled = false; 
+    MeerOutput->mysql_enabled = false;
     MeerOutput->mysql_debug = false;
     MeerOutput->mysql_server[0] = '\0';
     MeerOutput->mysql_port = 0;
@@ -104,10 +104,9 @@ void Load_YAML_Config( char *yaml_file )
 
 #endif
 
-
     if (stat(yaml_file, &filecheck) != false )
         {
-            fprintf(stderr, "[%s, line %d] Cannot open configuration file '%s'! %s\n", __FILE__, __LINE__, strerror(errno) );
+            fprintf(stderr, "[%s, line %d] Cannot open configuration file '%s'! %s\n", __FILE__, __LINE__, yaml_file, strerror(errno) );
             exit(-1);
         }
 
@@ -115,12 +114,12 @@ void Load_YAML_Config( char *yaml_file )
 
     if (!yaml_parser_initialize(&parser))
         {
-            fprintf(stderr, "[%s, line %d] Failed to initialize the libyaml parser. Abort!", __FILE__, __LINE__);
+            fprintf(stderr, "[%s, line %d] Failed to initialize the libyaml parser. Abort!\n", __FILE__, __LINE__);
         }
 
     if (fh == NULL)
         {
-            fprintf(stderr, "[%s, line %d] Failed to open the configuration file '%s' Abort!", __FILE__, __LINE__, yaml_file);
+            fprintf(stderr, "[%s, line %d] Failed to open the configuration file '%s' Abort!\n", __FILE__, __LINE__, yaml_file);
         }
 
     /* Set input file */
@@ -136,7 +135,7 @@ void Load_YAML_Config( char *yaml_file )
                     /* Useful YAML vars: parser.context_mark.line+1, parser.context_mark.column+1, parser.problem, parser.problem_mark.line+1,
                        parser.problem_mark.column+1 */
 
-                    fprintf(stderr, "[%s, line %d] libyam parse error at line %d in '%s'", __FILE__, __LINE__, parser.problem_mark.line+1, yaml_file);
+                    fprintf(stderr, "[%s, line %d] libyam parse error at line %d in '%s'\n", __FILE__, __LINE__, parser.problem_mark.line+1, yaml_file);
                     exit(-1);
                 }
 
@@ -147,7 +146,7 @@ void Load_YAML_Config( char *yaml_file )
 
                     if ( ver == NULL )
                         {
-                            fprintf(stderr, "[%s, line %d] Invalid configuration file. Configuration must start with \"%%YAML 1.1\"", __FILE__, __LINE__);
+                            fprintf(stderr, "[%s, line %d] Invalid configuration file. Configuration must start with \"%%YAML 1.1\"\n", __FILE__, __LINE__);
                             exit(-1);
                         }
 
@@ -156,7 +155,7 @@ void Load_YAML_Config( char *yaml_file )
 
                     if (! (major == YAML_VERSION_MAJOR && minor == YAML_VERSION_MINOR) )
                         {
-                            fprintf(stderr, "[%s, line %d] Configuration has a invalid YAML version.  Must be 1.1 or above", __FILE__, __LINE__);
+                            fprintf(stderr, "[%s, line %d] Configuration has a invalid YAML version.  Must be 1.1 or above\n", __FILE__, __LINE__);
                             exit(-1);
                         }
 
@@ -233,14 +232,9 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerConfig->hostname, value, sizeof(MeerConfig->hostname));
                                 }
 
-                            else if ( !strcmp(last_pass, "uid" ))
+                            else if ( !strcmp(last_pass, "runas" ))
                                 {
-                                    strlcpy(MeerConfig->uid, value, sizeof(MeerConfig->uid));
-                                }
-
-                            else if ( !strcmp(last_pass, "gid" ))
-                                {
-                                    strlcpy(MeerConfig->gid, value, sizeof(MeerConfig->gid));
+                                    strlcpy(MeerConfig->runas, value, sizeof(MeerConfig->runas));
                                 }
 
                             else if ( !strcmp(last_pass, "classification" ))
@@ -261,6 +255,11 @@ void Load_YAML_Config( char *yaml_file )
                             else if ( !strcmp(last_pass, "waldo-file" ))
                                 {
                                     strlcpy(MeerConfig->waldo_file, value, sizeof(MeerConfig->waldo_file));
+                                }
+
+                            else if ( !strcmp(last_pass, "lock-file" ))
+                                {
+                                    strlcpy(MeerConfig->lock_file, value, sizeof(MeerConfig->lock_file));
                                 }
 
                             else if ( !strcmp(last_pass, "follow-eve" ))
@@ -306,10 +305,10 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-			    else if ( !strcmp(last_pass, "debug" ) && MeerOutput->mysql_enabled == true )
-				{
-				    MeerOutput->mysql_debug = true;
-			        }
+                            else if ( !strcmp(last_pass, "debug" ) && MeerOutput->mysql_enabled == true )
+                                {
+                                    MeerOutput->mysql_debug = true;
+                                }
 
                             else if ( !strcmp(last_pass, "server" ) && MeerOutput->mysql_enabled == true )
                                 {
@@ -362,15 +361,9 @@ void Load_YAML_Config( char *yaml_file )
             exit(-1);
         }
 
-    if ( MeerConfig->uid[0] == '\0' )
+    if ( MeerConfig->runas[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'uid' specified!\n");
-            exit(-1);
-        }
-
-    if ( MeerConfig->gid[0] == '\0' )
-        {
-            fprintf(stderr, "Configuration incomplete.  No 'gid' specified!\n");
+            fprintf(stderr, "Configuration incomplete.  No 'runas' specified!\n");
             exit(-1);
         }
 
@@ -401,6 +394,12 @@ void Load_YAML_Config( char *yaml_file )
     if ( MeerConfig->follow_file[0] == '\0' )
         {
             fprintf(stderr, "Configuration incomplete.  No 'follow-exe' file specified!\n");
+            exit(-1);
+        }
+
+    if ( MeerConfig->lock_file[0] == '\0' )
+        {
+            fprintf(stderr, "Configuration incomplete.  No 'lock-file' file specified!\n");
             exit(-1);
         }
 

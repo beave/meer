@@ -40,15 +40,14 @@ struct _MeerConfig
 
     char interface[64];
     char hostname[64];
-    char uid[32];
-    char gid[32];
+    char runas[32];
 
     char classification_file[256];
     char reference_file[256];
     char genmsgmap_file[256];
 
+    char lock_file[256];
     char waldo_file[256];
-
     char follow_file[256];
 
 };

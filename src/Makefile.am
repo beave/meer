@@ -10,7 +10,10 @@ AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
 							      config-yaml.c \
 							      util.c \
 							      util-strlcpy.c \
-							      util-strlcat.c 
+							      util-strlcat.c \
+							      lockfile.c \
+							      signal.c \
+							      waldo.c 
 
                                                        install-data-local:
 

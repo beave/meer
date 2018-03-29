@@ -25,19 +25,45 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "meer.h"
+#include "meer-def.h"
+
+#include "lockfile.h"
+#include "util.h"
+
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
 
-int main()
+// signal
+// open waldo / write waldo
+
+int main (int argc, char *argv[])
 {
 
-    char *yaml_file = "../etc/meer.yaml";
+    char *yaml_file = DEFAULT_CONFIG;
+
+    /* The only command line option is to specify a non-default configuration
+       file */
+
+    if ( argc > 2 )
+        {
+            fprintf(stderr, "Too many arguments.  Only one YAML file can be specified.\n");
+            exit(-1);
+        }
+
+    if ( argc == 2 )
+        {
+            yaml_file = argv[1];
+        }
 
     Load_YAML_Config(yaml_file);
 
-    printf("Do nothing yet: %s\n", MeerConfig->hostname);
+    Drop_Priv();
+
+    CheckLockFile();
+
 
 }
