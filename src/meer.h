@@ -22,7 +22,12 @@
 #include "config.h"             /* From autoconf */
 #endif
 
+#ifdef HAVE_LIBMYSQLCLIENT_R
+#include <mysql/mysql.h>
+#endif
+
 #include <stdbool.h>
+#include <inttypes.h>
 
 #ifndef HAVE_STRLCAT
 size_t strlcat(char *, const char *, size_t );
@@ -31,6 +36,8 @@ size_t strlcat(char *, const char *, size_t );
 #ifndef HAVE_STRLCPY
 size_t strlcpy(char *, const char *, size_t );
 #endif
+
+void Meer_Log (int type, const char *format,... );
 
 /* Global Meer Configs */
 
@@ -50,6 +57,8 @@ struct _MeerConfig
     char waldo_file[256];
     char follow_file[256];
 
+    int waldo_fd;
+
 };
 
 
@@ -62,14 +71,21 @@ struct _MeerOutput
     bool mysql_enabled;
     bool mysql_debug;
     char mysql_server[128];
-    int mysql_port;
+    uint32_t mysql_port;
     char mysql_username[64];
     char mysql_password[64];
     char mysql_database[64];
+    uint32_t mysql_sensor_id;
+    MYSQL *mysql_dbh;
 
 #endif
 
 };
 
+typedef struct _MeerWaldo _MeerWaldo;
+struct _MeerWaldo
+{
+    uint64_t position;
+};
 
 

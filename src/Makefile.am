@@ -11,9 +11,14 @@ AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
 							      util.c \
 							      util-strlcpy.c \
 							      util-strlcat.c \
+							      util-signal.c \
 							      lockfile.c \
-							      signal.c \
-							      waldo.c 
+							      waldo.c \
+							      output.c \
+							      decode-json.c \
+							      decode-json-alert.c \
+							      output-plugins/mysql.c
+
 
                                                        install-data-local:
 

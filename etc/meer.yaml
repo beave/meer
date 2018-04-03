@@ -20,7 +20,7 @@ meer-core:
     reference: "/etc/suricata/reference.config"
     gen-msg-map: "etc/suricata/gen-msg.map"
 
-    waldo-file: "/var/log/meer/my.waldo"
+    waldo-file: "./my.waldo"
     lock-file: "/tmp/meer.lck"
     follow-eve: "/var/log/something.eve"
 

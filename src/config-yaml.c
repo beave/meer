@@ -37,6 +37,8 @@
 #include <stdbool.h>
 
 #include "meer.h"
+#include "meer-def.h"
+#include "util.h"
 #include "config-yaml.h"
 
 
@@ -64,8 +66,7 @@ void Load_YAML_Config( char *yaml_file )
 
     if ( MeerConfig == NULL )
         {
-            fprintf(stderr, "[%s, line %d] Failed to allocate memory for config. Abort!\n", __FILE__, __LINE__);
-            exit(-1);
+            Meer_Log(M_ERROR, "[%s, line %d] Failed to allocate memory for config. Abort!", __FILE__, __LINE__);
         }
 
     memset(MeerConfig, 0, sizeof(_MeerConfig));
@@ -86,8 +87,7 @@ void Load_YAML_Config( char *yaml_file )
 
     if ( MeerOutput == NULL )
         {
-            fprintf(stderr, "[%s, line %d] Failed to allocate memory for output. Abort!\n", __FILE__, __LINE__);
-            exit(-1);
+            Meer_Log(M_ERROR, "[%s, line %d] Failed to allocate memory for output. Abort!", __FILE__, __LINE__);
         }
 
     memset(MeerOutput, 0, sizeof(_MeerOutput));
@@ -106,20 +106,19 @@ void Load_YAML_Config( char *yaml_file )
 
     if (stat(yaml_file, &filecheck) != false )
         {
-            fprintf(stderr, "[%s, line %d] Cannot open configuration file '%s'! %s\n", __FILE__, __LINE__, yaml_file, strerror(errno) );
-            exit(-1);
+            Meer_Log(M_ERROR, "[%s, line %d] Cannot open configuration file '%s'! %s", __FILE__, __LINE__, yaml_file, strerror(errno) );
         }
 
     FILE *fh = fopen(yaml_file, "r");
 
     if (!yaml_parser_initialize(&parser))
         {
-            fprintf(stderr, "[%s, line %d] Failed to initialize the libyaml parser. Abort!\n", __FILE__, __LINE__);
+            Meer_Log(M_ERROR, "[%s, line %d] Failed to initialize the libyaml parser. Abort!", __FILE__, __LINE__);
         }
 
     if (fh == NULL)
         {
-            fprintf(stderr, "[%s, line %d] Failed to open the configuration file '%s' Abort!\n", __FILE__, __LINE__, yaml_file);
+            Meer_Log(M_ERROR, "[%s, line %d] Failed to open the configuration file '%s' Abort!", __FILE__, __LINE__, yaml_file);
         }
 
     /* Set input file */
@@ -135,8 +134,7 @@ void Load_YAML_Config( char *yaml_file )
                     /* Useful YAML vars: parser.context_mark.line+1, parser.context_mark.column+1, parser.problem, parser.problem_mark.line+1,
                        parser.problem_mark.column+1 */
 
-                    fprintf(stderr, "[%s, line %d] libyam parse error at line %d in '%s'\n", __FILE__, __LINE__, parser.problem_mark.line+1, yaml_file);
-                    exit(-1);
+                    Meer_Log(M_ERROR, "[%s, line %d] libyam parse error at line %d in '%s'", __FILE__, __LINE__, parser.problem_mark.line+1, yaml_file);
                 }
 
             if ( event.type == YAML_DOCUMENT_START_EVENT )
@@ -146,8 +144,7 @@ void Load_YAML_Config( char *yaml_file )
 
                     if ( ver == NULL )
                         {
-                            fprintf(stderr, "[%s, line %d] Invalid configuration file. Configuration must start with \"%%YAML 1.1\"\n", __FILE__, __LINE__);
-                            exit(-1);
+                            Meer_Log(M_ERROR, "[%s, line %d] Invalid configuration file. Configuration must start with \"%%YAML 1.1\"", __FILE__, __LINE__);
                         }
 
                     int major = ver->major;
@@ -155,8 +152,7 @@ void Load_YAML_Config( char *yaml_file )
 
                     if (! (major == YAML_VERSION_MAJOR && minor == YAML_VERSION_MINOR) )
                         {
-                            fprintf(stderr, "[%s, line %d] Configuration has a invalid YAML version.  Must be 1.1 or above\n", __FILE__, __LINE__);
-                            exit(-1);
+                            Meer_Log(M_ERROR, "[%s, line %d] Configuration has a invalid YAML version.  Must be 1.1 or above", __FILE__, __LINE__);
                         }
 
                 }
@@ -280,8 +276,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ))
                                         {
-                                            fprintf(stderr, "Error.  Meer wasn't compiled with MySQL support.  Abort!\n");
-                                            exit(-1);
+                                            Meer_Log(M_ERROR, "Error.  Meer wasn't compiled with MySQL support.  Abort!");
                                         }
 
                                 }
@@ -351,56 +346,47 @@ void Load_YAML_Config( char *yaml_file )
 
     if ( MeerConfig->interface[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'interface' specified!\n");
-            exit(-1);
+            Meer_Log(M_ERROR, "Configuration incomplete.  No 'interface' specified!");
         }
 
     if ( MeerConfig->hostname[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'hostname' specified!\n");
-            exit(-1);
+            Meer_Log(M_ERROR, "Configuration incomplete.  No 'hostname' specified!");
         }
 
     if ( MeerConfig->runas[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'runas' specified!\n");
-            exit(-1);
+            Meer_Log(M_ERROR, "Configuration incomplete.  No 'runas' specified!");
         }
 
     if ( MeerConfig->classification_file[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'classification' file specified!\n");
-            exit(-1);
+            Meer_Log(M_ERROR, "Configuration incomplete.  No 'classification' file specified!");
         }
 
     if ( MeerConfig->reference_file[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'reference' file specified!\n");
-            exit(-1);
+            Meer_Log(M_ERROR, "Configuration incomplete.  No 'reference' file specified!");
         }
 
     if ( MeerConfig->genmsgmap_file[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'gen-msg-map' file specified!\n");
-            exit(-1);
+            Meer_Log(M_ERROR, "Configuration incomplete.  No 'gen-msg-map' file specified!");
         }
 
     if ( MeerConfig->waldo_file[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'waldo-file' specified!\n");
-            exit(-1);
+            Meer_Log(M_ERROR, "Configuration incomplete.  No 'waldo-file' specified!");
         }
 
     if ( MeerConfig->follow_file[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'follow-exe' file specified!\n");
-            exit(-1);
+            Meer_Log(M_ERROR, "Configuration incomplete.  No 'follow-exe' file specified!");
         }
 
     if ( MeerConfig->lock_file[0] == '\0' )
         {
-            fprintf(stderr, "Configuration incomplete.  No 'lock-file' file specified!\n");
-            exit(-1);
+            Meer_Log(M_ERROR, "Configuration incomplete.  No 'lock-file' file specified!");
         }
 
 #ifdef HAVE_LIBMYSQLCLIENT_R
@@ -410,38 +396,33 @@ void Load_YAML_Config( char *yaml_file )
 
             if ( MeerOutput->mysql_server[0] == '\0' )
                 {
-                    fprintf(stderr, "MySQL output configuration incomplete.  No 'server' specified!\n");
-                    exit(-1);
+                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'server' specified!");
                 }
 
             if ( MeerOutput->mysql_username[0] == '\0' )
                 {
-                    fprintf(stderr, "MySQL output configuration incomplete.  No 'username' specified!\n");
-                    exit(-1);
+                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'username' specified!");
                 }
 
 
             if ( MeerOutput->mysql_password[0] == '\0' )
                 {
-                    fprintf(stderr, "MySQL output configuration incomplete.  No 'password' specified!\n");
-                    exit(-1);
+                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'password' specified!");
                 }
 
             if ( MeerOutput->mysql_database[0] == '\0' )
                 {
-                    fprintf(stderr, "MySQL output configuration incomplete.  No 'database' specified!\n");
-                    exit(-1);
+                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'database' specified!");
                 }
 
             if ( MeerOutput->mysql_port == 0 )
                 {
-                    fprintf(stderr, "MySQL output configuration incomplete.  No 'port' specified!\n");
-                    exit(-1);
+                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'port' specified!");
                 }
         }
 
 #endif
 
-    printf("[*] Configuration '%s' for host '%s' successfully loaded.\n", yaml_file, MeerConfig->hostname);
+    Meer_Log(M_NORMAL, "Configuration '%s' for host '%s' successfully loaded.", yaml_file, MeerConfig->hostname);
 
 }

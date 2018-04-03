@@ -137,7 +137,7 @@ AM_PROG_AS
 
 AC_CHECK_FUNCS([select strstr strchr strcmp strlen sizeof write snprintf strncat strlcat strlcpy getopt_long gethostbyname socket htons connect send recv dup2 strspn strdup memset access ftruncate strerror mmap shm_open gettimeofday])
 
-#AC_CHECK_LIB(m, main,,AC_MSG_ERROR(Meer needs libm!))
+AC_CHECK_LIB(json-c, main,,AC_MSG_ERROR(Meer needs libjson-c!))
 
 # OSX doesn't have librt - this needs to be fixed!
 

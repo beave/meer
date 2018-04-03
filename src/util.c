@@ -27,8 +27,12 @@
 #include <grp.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <time.h>
+#include <stdarg.h>
+
 
 #include "meer.h"
+#include "meer-def.h"
 
 struct _MeerConfig *MeerConfig;
 
@@ -42,25 +46,72 @@ void Drop_Priv(void)
 
     if (!pw)
         {
-            fprintf(stderr, "Couldn't locate user '%s'. Aborting...\n", MeerConfig->runas);
-            exit(-1);
+            Meer_Log(M_ERROR, "Couldn't locate user '%s'. Aborting...\n", MeerConfig->runas);
         }
 
     if ( getuid() == 0 )
         {
-            printf("[*] Dropping privileges! [UID: %lu GID: %lu]\n", (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid);
+            Meer_Log(M_NORMAL, "[*] Dropping privileges! [UID: %lu GID: %lu]\n", (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid);
 
             if (initgroups(pw->pw_name, pw->pw_gid) != 0 ||
                     setgid(pw->pw_gid) != 0 || setuid(pw->pw_uid) != 0)
                 {
-                    fprintf(stderr, "[%s, line %d] Could not drop privileges to uid: %lu gid: %lu - %s!", __FILE__, __LINE__, (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid, strerror(errno));
-                    exit(-1);
+                    Meer_Log(M_ERROR, "[%s, line %d] Could not drop privileges to uid: %lu gid: %lu - %s!", __FILE__, __LINE__, (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid, strerror(errno));
                 }
 
         }
     else
         {
-            printf("Not dropping privileges.  Already running as a non-privileged user");
+            Meer_Log(M_NORMAL,"Not dropping privileges.  Already running as a non-privileged user");
         }
 }
+
+
+void Meer_Log (int type, const char *format,... )
+{
+
+    char buf[5128] = { 0 };
+    va_list ap;
+
+    va_start(ap, format);
+
+    char *chr="*";
+    char curtime[64];
+    time_t t;
+    struct tm *now;
+    t = time(NULL);
+    now=localtime(&t);
+    strftime(curtime, sizeof(curtime), "%m/%d/%Y %H:%M:%S",  now);
+
+    if ( type == M_ERROR )
+        {
+            chr="E";
+        }
+
+    if ( type == M_WARN )
+        {
+            chr="W";
+        }
+
+    if ( type == M_DEBUG )
+        {
+            chr="D";
+        }
+
+    vsnprintf(buf, sizeof(buf), format, ap);
+//    fprintf(config->sagan_log_stream, "[%s] [%s] - %s\n", chr, curtime, buf);
+//    fflush(config->sagan_log_stream);
+
+//    if ( config->daemonize == 0 && config->quiet == 0 )
+//        {
+    printf("[%s] [%s] %s\n", chr, curtime, buf);
+//        }
+
+    if ( type == 1 )
+        {
+            exit(-11);
+        }
+
+}
+
 
