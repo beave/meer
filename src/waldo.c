@@ -20,7 +20,7 @@ struct _MeerConfig *MeerConfig;
 void Init_Waldo( void )
 {
 
-    bool new_waldo;
+    bool new_waldo = false;
 
 
     if (( MeerConfig->waldo_fd = open(MeerConfig->waldo_file, (O_CREAT | O_EXCL | O_RDWR), (S_IREAD | S_IWRITE))) > 0 )
@@ -34,10 +34,6 @@ void Init_Waldo( void )
         {
             Meer_Log(ERROR, "[%s, line %d] Cannot open() for waldo '%s' [%s]", __FILE__, __LINE__, MeerConfig->waldo_file, strerror(errno));
         }
-    else
-        {
-            Meer_Log(NORMAL, "Waldo reloaded.");
-        }
 
     if ( ftruncate(MeerConfig->waldo_fd, sizeof(_MeerWaldo)) != 0 )
         {
@@ -49,9 +45,9 @@ void Init_Waldo( void )
             Meer_Log(ERROR,"[%s, line %d] Error allocating memory for counters object! [%s]", __FILE__, __LINE__, strerror(errno));
         }
 
-    if ( new_waldo )
+    if ( new_waldo == false )
         {
-            Meer_Log(NORMAL, "Current Waldo Position: %" PRIu64 "", MeerWaldo->position);
+            Meer_Log(NORMAL, "Waldo loaded. Current position: %" PRIu64 "", MeerWaldo->position);
         }
 
 }

@@ -13,6 +13,7 @@
 
 struct _MeerCounters *MeerCounters;
 struct _MeerConfig *MeerConfig;
+struct _Classifications *MeerClass;
 
 struct _Classifications *Load_Classifications( void )
 {
@@ -96,7 +97,7 @@ struct _Classifications *Load_Classifications( void )
 
 /* Lookup the long description and return the classtype */
 
-int Class_Lookup( struct _Classifications *MeerClass, const char *class, char *str, size_t size )
+int Class_Lookup( const char *class, char *str, size_t size )
 {
 
     int i;

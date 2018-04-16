@@ -24,7 +24,7 @@
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
-
+struct _Classifications *MeerClass;
 
 
 void MySQL_Connect( void )
@@ -164,7 +164,7 @@ void MySQL_Record_Last_CID ( void )
 
 }
 
-int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, struct _Classifications *MeerClass)
+int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert )
 {
 
     char tmp[MAX_MYSQL_QUERY];
@@ -176,7 +176,7 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, struct _Classific
 
     /* Lookup classtype based off the description */
 
-    Class_Lookup( MeerClass, DecodeAlert->alert_category, class, sizeof(class) );
+    Class_Lookup( DecodeAlert->alert_category, class, sizeof(class) );
 
     snprintf(tmp, sizeof(tmp), "SELECT sig_class_id from sig_class where sig_class_name='%s'", class);
     results = MySQL_DB_Query(tmp);

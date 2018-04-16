@@ -21,8 +21,9 @@
 /* Main Meer function */
 
 /* DEBUG:  Needs:
-	   DNS cache
 	   signature cache!
+	   reference data?
+	   add perl reference routine
 */
 
 #ifdef HAVE_CONFIG_H
@@ -36,6 +37,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <signal.h>
+#include <errno.h>
 
 #include "meer.h"
 #include "meer-def.h"
@@ -119,8 +121,6 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, "  :      :   : :: ::  : :: ::   :   : :");
     Meer_Log(NORMAL, "");
 
-
-
     Load_YAML_Config(yaml_file);
 
     Drop_Priv();
@@ -183,7 +183,6 @@ int main (int argc, char *argv[])
         }
 
     old_size = (uint64_t) st.st_size;
-//    printf("Size: %llu\n", old_size);
 
     Meer_Log(NORMAL, "Waiting for new data......");
 
@@ -197,7 +196,6 @@ int main (int argc, char *argv[])
 
             if ( (uint64_t) st.st_size > old_size )
                 {
-                    printf("File grew. Reading!");
 
                     while(fgets(buf, sizeof(buf), fd_file) != NULL)
                         {
@@ -209,9 +207,7 @@ int main (int argc, char *argv[])
                                     Decode_JSON( (char*)buf, MeerClass);
                                 }
 
-                            //linecount++;
                             MeerWaldo->position++;
-                            //printf("FOLLOW: [%d] buf: %s\n", linecount, buf);
                         }
 
                     old_size = (uint64_t) st.st_size;
@@ -221,22 +217,21 @@ int main (int argc, char *argv[])
 
             else if ( (uint64_t) st.st_size < old_size )
                 {
-                    printf("File Truncated! Re-Opening!\n");
+                    Meer_Log(WARN, "File Truncated! Re-opening %s!", MeerConfig->follow_file );
 
                     fclose(fd_file);
 
                     if (( fd_file = fopen(MeerConfig->follow_file, "r" )) == NULL )
                         {
-                            printf("error!\n");
-                            exit(-1);
+                            Meer_Log(ERROR, "Cannot re-open %s. [%s]", MeerConfig->follow_file, strerror(errno) );
                         }
+
                     fd_int = fileno(fd_file);
                     old_size = 0;
                     linecount = 0;
                     MeerWaldo->position = 0;
                 }
 
-//            printf("loop\n");
             sleep(1);
         }
 

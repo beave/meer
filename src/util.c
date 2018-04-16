@@ -59,7 +59,7 @@ void Drop_Priv(void)
 
     if ( getuid() == 0 )
         {
-            Meer_Log(NORMAL, "[*] Dropping privileges! [UID: %lu GID: %lu]\n", (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid);
+            Meer_Log(NORMAL, "[*] Dropping privileges! [UID: %lu GID: %lu]", (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid);
 
             if (initgroups(pw->pw_name, pw->pw_gid) != 0 ||
                     setgid(pw->pw_gid) != 0 || setuid(pw->pw_uid) != 0)
