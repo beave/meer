@@ -18,8 +18,6 @@ struct _Classifications *MeerClass;
 struct _Classifications *Load_Classifications( void )
 {
 
-    struct _Classifications *MeerClass = NULL;
-
     int linecount = 0;
 
     char buf[1024];
