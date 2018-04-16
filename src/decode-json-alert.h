@@ -21,22 +21,31 @@ char *timestamp;
 char *flowid;
 char *in_iface;
 char *event_type;
+
 char *src_ip;
 char *src_port;
-char *dest_ip;
-char *dest_port;
-char *proto;
-char *app_proto;
-char *payload;
-char *stream;
-char *packet;
+char src_dns[256];
 
-char alert_action[16];
+    char *dest_ip;
+    char *dest_port;
+    char dest_dns[256];
+
+
+    char *proto;
+    char *app_proto;
+    char payload[131072];
+    char *stream;
+    char *packet;
+
+    char *icmp_type;
+    char *icmp_code;
+
+    char alert_action[16];
     char alert_gid[5];
-    char alert_signature_id[16];
+    uint64_t alert_signature_id;
     char alert_rev[5];
     char alert_signature[512];
-    char alert_catagory[16];
+    char alert_category[128];
     char alert_severity[5];
 
     char packet_info_link[32];
@@ -44,5 +53,5 @@ char alert_action[16];
 };
 
 
-struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj );
+struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json_string );
 

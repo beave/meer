@@ -12,9 +12,13 @@ AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
 							      util-strlcpy.c \
 							      util-strlcat.c \
 							      util-signal.c \
+							      util-base64.c \
 							      lockfile.c \
 							      waldo.c \
 							      output.c \
+							      classifications.c \
+							      references.c \
+							      sid-msg.c \
 							      decode-json.c \
 							      decode-json-alert.c \
 							      output-plugins/mysql.c

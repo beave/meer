@@ -23,7 +23,7 @@ libjson-c is required for Meer to function!
 #include "decode-json-alert.h"
 
 
-bool Decode_JSON( char *json_string )
+bool Decode_JSON( char *json_string, struct _Classifications *MeerClass )
     {
 
         struct json_object *json_obj;
@@ -42,9 +42,14 @@ bool Decode_JSON( char *json_string )
                 if ( !strcmp(json_object_get_string(tmp), "alert") )
                     {
 
+                        //printf("json_string: |%s|\n", json_string);
+
                         struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
 
-                        DecodeAlert = Decode_JSON_Alert( json_obj );
+                        DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
+
+                        Output_Alert( DecodeAlert, MeerClass );
+
 
                         //printf("%s|\n", DecodeAlert->alert_signature);
 

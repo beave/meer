@@ -44,7 +44,8 @@
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
-
+struct _MeerHealth *MeerHealth = NULL;
+struct _MeerCounters *MeerCounters;
 
 void Load_YAML_Config( char *yaml_file )
 {
@@ -60,16 +61,29 @@ void Load_YAML_Config( char *yaml_file )
     unsigned char sub_type = 0;
     unsigned char toggle = 0;
 
+    char *ptr1 = NULL;
+    char *ptr2 = NULL;
+
     char last_pass[128] = { 0 };
+    char tmp[256] = { 0 };
 
     MeerConfig = malloc(sizeof(_MeerConfig));
 
     if ( MeerConfig == NULL )
         {
-            Meer_Log(M_ERROR, "[%s, line %d] Failed to allocate memory for config. Abort!", __FILE__, __LINE__);
+            Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _MeerConfig. Abort!", __FILE__, __LINE__);
         }
 
     memset(MeerConfig, 0, sizeof(_MeerConfig));
+
+    MeerHealth = malloc(sizeof(_MeerHealth));
+
+    if ( MeerHealth == NULL )
+        {
+            Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _MeerHealth. Abort!", __FILE__, __LINE__);
+        }
+
+    memset(MeerHealth, 0, sizeof(_MeerHealth));
 
     /* Init MeerConfig values */
 
@@ -82,17 +96,18 @@ void Load_YAML_Config( char *yaml_file )
     MeerConfig->waldo_file[0] = '\0';
     MeerConfig->follow_file[0] = '\0';
     MeerConfig->lock_file[0] = '\0';
+//    MeerConfig->payload_buffer_size = PACKET_BUFFER_SIZE_DEFAULT;
 
     MeerOutput = malloc(sizeof(_MeerOutput));
 
     if ( MeerOutput == NULL )
         {
-            Meer_Log(M_ERROR, "[%s, line %d] Failed to allocate memory for output. Abort!", __FILE__, __LINE__);
+            Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _MeerOutput. Abort!", __FILE__, __LINE__);
         }
 
     memset(MeerOutput, 0, sizeof(_MeerOutput));
 
-#ifdef HAVE_LIBMYSQLCLIENT_R
+#ifdef HAVE_LIBMYSQLCLIENT
 
     MeerOutput->mysql_enabled = false;
     MeerOutput->mysql_debug = false;
@@ -106,19 +121,19 @@ void Load_YAML_Config( char *yaml_file )
 
     if (stat(yaml_file, &filecheck) != false )
         {
-            Meer_Log(M_ERROR, "[%s, line %d] Cannot open configuration file '%s'! %s", __FILE__, __LINE__, yaml_file, strerror(errno) );
+            Meer_Log(ERROR, "[%s, line %d] Cannot open configuration file '%s'! %s", __FILE__, __LINE__, yaml_file, strerror(errno) );
         }
 
     FILE *fh = fopen(yaml_file, "r");
 
     if (!yaml_parser_initialize(&parser))
         {
-            Meer_Log(M_ERROR, "[%s, line %d] Failed to initialize the libyaml parser. Abort!", __FILE__, __LINE__);
+            Meer_Log(ERROR, "[%s, line %d] Failed to initialize the libyaml parser. Abort!", __FILE__, __LINE__);
         }
 
     if (fh == NULL)
         {
-            Meer_Log(M_ERROR, "[%s, line %d] Failed to open the configuration file '%s' Abort!", __FILE__, __LINE__, yaml_file);
+            Meer_Log(ERROR, "[%s, line %d] Failed to open the configuration file '%s' Abort!", __FILE__, __LINE__, yaml_file);
         }
 
     /* Set input file */
@@ -134,7 +149,7 @@ void Load_YAML_Config( char *yaml_file )
                     /* Useful YAML vars: parser.context_mark.line+1, parser.context_mark.column+1, parser.problem, parser.problem_mark.line+1,
                        parser.problem_mark.column+1 */
 
-                    Meer_Log(M_ERROR, "[%s, line %d] libyam parse error at line %d in '%s'", __FILE__, __LINE__, parser.problem_mark.line+1, yaml_file);
+                    Meer_Log(ERROR, "[%s, line %d] libyam parse error at line %d in '%s'", __FILE__, __LINE__, parser.problem_mark.line+1, yaml_file);
                 }
 
             if ( event.type == YAML_DOCUMENT_START_EVENT )
@@ -144,7 +159,7 @@ void Load_YAML_Config( char *yaml_file )
 
                     if ( ver == NULL )
                         {
-                            Meer_Log(M_ERROR, "[%s, line %d] Invalid configuration file. Configuration must start with \"%%YAML 1.1\"", __FILE__, __LINE__);
+                            Meer_Log(ERROR, "[%s, line %d] Invalid configuration file. Configuration must start with \"%%YAML 1.1\"", __FILE__, __LINE__);
                         }
 
                     int major = ver->major;
@@ -152,7 +167,7 @@ void Load_YAML_Config( char *yaml_file )
 
                     if (! (major == YAML_VERSION_MAJOR && minor == YAML_VERSION_MINOR) )
                         {
-                            Meer_Log(M_ERROR, "[%s, line %d] Configuration has a invalid YAML version.  Must be 1.1 or above", __FILE__, __LINE__);
+                            Meer_Log(ERROR, "[%s, line %d] Configuration has a invalid YAML version.  Must be 1.1 or above", __FILE__, __LINE__);
                         }
 
                 }
@@ -243,10 +258,12 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerConfig->reference_file, value, sizeof(MeerConfig->reference_file));
                                 }
 
-                            else if ( !strcmp(last_pass, "gen-msg-map" ))
-                                {
-                                    strlcpy(MeerConfig->genmsgmap_file, value, sizeof(MeerConfig->genmsgmap_file));
-                                }
+                            /*
+                                                        else if ( !strcmp(last_pass, "gen-msg-map" ))
+                                                            {
+                                                                strlcpy(MeerConfig->genmsgmap_file, value, sizeof(MeerConfig->genmsgmap_file));
+                                                            }
+                            */
 
                             else if ( !strcmp(last_pass, "waldo-file" ))
                                 {
@@ -263,10 +280,71 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerConfig->follow_file, value, sizeof(MeerConfig->follow_file));
                                 }
 
+                            else if ( !strcmp(last_pass, "dns" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->dns = true;
+                                            MeerConfig->dns_cache = DNS_CACHE_DEFAULT;
+                                        }
+
+                                }
+
+                            else if ( !strcmp(last_pass, "dns_cache" ))
+                                {
+
+                                    MeerConfig->dns_cache = atoi(value);
+
+                                }
+
+
+                            else if ( !strcmp(last_pass, "health" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->health = true;
+                                        }
+
+                                }
+
+
+                            // health_signatures
+
+                            else if ( !strcmp(last_pass, "health_signatures" ) && MeerConfig->health == true )
+                                {
+
+
+                                    strlcpy(tmp, value, sizeof(tmp));
+
+                                    ptr2 = strtok_r(tmp, ",", &ptr1);
+
+                                    while (ptr2 != NULL )
+                                        {
+
+                                            MeerHealth = (_MeerHealth *) realloc(MeerHealth, (MeerCounters->HealthCount+1) * sizeof(_MeerHealth));
+
+                                            MeerHealth[MeerCounters->HealthCount].health_signature = atol(ptr2);
+
+                                            if ( MeerHealth[MeerCounters->HealthCount].health_signature == 0 )
+                                                {
+                                                    Meer_Log(ERROR, "Invalid 'health_signature' in configuration. Abort");
+                                                }
+
+                                            MeerCounters->HealthCount++;
+
+                                            ptr2 = strtok_r(NULL, ",", &ptr1);
+
+
+                                        }
+
+                                }
+
                         }
 
 
-#ifndef HAVE_LIBMYSQLCLIENT_R
+#ifndef HAVE_LIBMYSQLCLIENT
 
                     if ( type == YAML_TYPE_OUTPUT &&  sub_type == YAML_MEER_MYSQL )
                         {
@@ -276,7 +354,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ))
                                         {
-                                            Meer_Log(M_ERROR, "Error.  Meer wasn't compiled with MySQL support.  Abort!");
+                                            Meer_Log(ERROR, "Error.  Meer wasn't compiled with MySQL support.  Abort!");
                                         }
 
                                 }
@@ -285,7 +363,7 @@ void Load_YAML_Config( char *yaml_file )
 #endif
 
 
-#ifdef HAVE_LIBMYSQLCLIENT_R
+#ifdef HAVE_LIBMYSQLCLIENT
 
                     if ( type == YAML_TYPE_OUTPUT &&  sub_type == YAML_MEER_MYSQL )
                         {
@@ -302,7 +380,11 @@ void Load_YAML_Config( char *yaml_file )
 
                             else if ( !strcmp(last_pass, "debug" ) && MeerOutput->mysql_enabled == true )
                                 {
-                                    MeerOutput->mysql_debug = true;
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ))
+                                        {
+                                            MeerOutput->mysql_debug = true;
+                                        }
                                 }
 
                             else if ( !strcmp(last_pass, "server" ) && MeerOutput->mysql_enabled == true )
@@ -346,83 +428,85 @@ void Load_YAML_Config( char *yaml_file )
 
     if ( MeerConfig->interface[0] == '\0' )
         {
-            Meer_Log(M_ERROR, "Configuration incomplete.  No 'interface' specified!");
+            Meer_Log(ERROR, "Configuration incomplete.  No 'interface' specified!");
         }
 
     if ( MeerConfig->hostname[0] == '\0' )
         {
-            Meer_Log(M_ERROR, "Configuration incomplete.  No 'hostname' specified!");
+            Meer_Log(ERROR, "Configuration incomplete.  No 'hostname' specified!");
         }
 
     if ( MeerConfig->runas[0] == '\0' )
         {
-            Meer_Log(M_ERROR, "Configuration incomplete.  No 'runas' specified!");
+            Meer_Log(ERROR, "Configuration incomplete.  No 'runas' specified!");
         }
 
     if ( MeerConfig->classification_file[0] == '\0' )
         {
-            Meer_Log(M_ERROR, "Configuration incomplete.  No 'classification' file specified!");
+            Meer_Log(ERROR, "Configuration incomplete.  No 'classification' file specified!");
         }
 
     if ( MeerConfig->reference_file[0] == '\0' )
         {
-            Meer_Log(M_ERROR, "Configuration incomplete.  No 'reference' file specified!");
+            Meer_Log(ERROR, "Configuration incomplete.  No 'reference' file specified!");
         }
 
-    if ( MeerConfig->genmsgmap_file[0] == '\0' )
-        {
-            Meer_Log(M_ERROR, "Configuration incomplete.  No 'gen-msg-map' file specified!");
-        }
+    /*
+        if ( MeerConfig->genmsgmap_file[0] == '\0' )
+            {
+                Meer_Log(ERROR, "Configuration incomplete.  No 'gen-msg-map' file specified!");
+            }
+    */
 
     if ( MeerConfig->waldo_file[0] == '\0' )
         {
-            Meer_Log(M_ERROR, "Configuration incomplete.  No 'waldo-file' specified!");
+            Meer_Log(ERROR, "Configuration incomplete.  No 'waldo-file' specified!");
         }
 
     if ( MeerConfig->follow_file[0] == '\0' )
         {
-            Meer_Log(M_ERROR, "Configuration incomplete.  No 'follow-exe' file specified!");
+            Meer_Log(ERROR, "Configuration incomplete.  No 'follow-exe' file specified!");
         }
 
     if ( MeerConfig->lock_file[0] == '\0' )
         {
-            Meer_Log(M_ERROR, "Configuration incomplete.  No 'lock-file' file specified!");
+            Meer_Log(ERROR, "Configuration incomplete.  No 'lock-file' file specified!");
         }
 
-#ifdef HAVE_LIBMYSQLCLIENT_R
+#ifdef HAVE_LIBMYSQLCLIENT
 
     if ( MeerOutput->mysql_enabled == true )
         {
 
             if ( MeerOutput->mysql_server[0] == '\0' )
                 {
-                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'server' specified!");
+                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'server' specified!");
                 }
 
             if ( MeerOutput->mysql_username[0] == '\0' )
                 {
-                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'username' specified!");
+                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'username' specified!");
                 }
 
 
             if ( MeerOutput->mysql_password[0] == '\0' )
                 {
-                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'password' specified!");
+                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'password' specified!");
                 }
 
             if ( MeerOutput->mysql_database[0] == '\0' )
                 {
-                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'database' specified!");
+                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'database' specified!");
                 }
 
             if ( MeerOutput->mysql_port == 0 )
                 {
-                    Meer_Log(M_ERROR, "MySQL output configuration incomplete.  No 'port' specified!");
+                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'port' specified!");
                 }
         }
 
 #endif
 
-    Meer_Log(M_NORMAL, "Configuration '%s' for host '%s' successfully loaded.", yaml_file, MeerConfig->hostname);
+    Meer_Log(NORMAL, "Configuration '%s' for host '%s' successfully loaded.", yaml_file, MeerConfig->hostname);
 
 }

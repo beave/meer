@@ -22,7 +22,7 @@
 #include "config.h"             /* From autoconf */
 #endif
 
-#ifdef HAVE_LIBMYSQLCLIENT_R
+#ifdef HAVE_LIBMYSQLCLIENT
 #include <mysql/mysql.h>
 #endif
 
@@ -59,14 +59,26 @@ struct _MeerConfig
 
     int waldo_fd;
 
+    bool endian;
+
+    bool dns;
+    uint32_t dns_cache;
+
+    bool health;
+
 };
 
+typedef struct _MeerHealth _MeerHealth;
+struct _MeerHealth
+{
+    uint64_t health_signature;
+};
 
 typedef struct _MeerOutput _MeerOutput;
 struct _MeerOutput
 {
 
-#ifdef HAVE_LIBMYSQLCLIENT_R
+#ifdef HAVE_LIBMYSQLCLIENT
 
     bool mysql_enabled;
     bool mysql_debug;
@@ -77,6 +89,7 @@ struct _MeerOutput
     char mysql_database[64];
     uint32_t mysql_sensor_id;
     MYSQL *mysql_dbh;
+    uint64_t mysql_last_cid;
 
 #endif
 
@@ -88,4 +101,14 @@ struct _MeerWaldo
     uint64_t position;
 };
 
+/* Counters */
 
+typedef struct _MeerCounters _MeerCounters;
+struct _MeerCounters
+{
+
+    int ClassCount;
+    int HealthCount;
+    int ReferenceCount;			// DEBUG
+
+};

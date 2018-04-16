@@ -180,7 +180,7 @@ fi
 if test "$MYSQL" = "yes"; then
         AC_MSG_RESULT([------- MySQL Support is enabled -------])
         AC_CHECK_HEADER([mysql/mysql.h])
-        AC_CHECK_LIB(mysqlclient_r, main,,AC_MSG_ERROR(The MySQL library libmysqlclient_r is missing!
+        AC_CHECK_LIB(mysqlclient, main,,AC_MSG_ERROR(The MySQL library libmysqlclient is missing!
         If you're not interested in MySQL support use the --disable-mysql flag.))
         fi
 

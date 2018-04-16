@@ -20,6 +20,11 @@
 
 /* Main Meer function */
 
+/* DEBUG:  Needs:
+	   DNS cache
+	   signature cache!
+*/
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"             /* From autoconf */
 #endif
@@ -32,28 +37,20 @@
 #include <unistd.h>
 #include <signal.h>
 
-/*
-#ifdef HAVE_LIBJSON_C
-#include <json-c/json.h>
-#endif
-
-
-#ifndef HAVE_LIBJSON_C
-libjson-c is required for Meer to function!
-#endif
-*/
-
 #include "meer.h"
 #include "meer-def.h"
 
 #include "util-signal.h"
 #include "lockfile.h"
 #include "util.h"
+#include "references.h"
+#include "classifications.h"
 
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
 struct _MeerWaldo *MeerWaldo;
+struct _MeerCounters *MeerCounters;
 
 // signal
 // open waldo / write waldo
@@ -63,13 +60,16 @@ int main (int argc, char *argv[])
 
     signal(SIGINT,  &Signal_Handler);
     /*
-        signal(SIGHUP,  &Signal_Handler);
-        signal(SIGINT,  &Signal_Handler);
-        signal(SIGQUIT, &Signal_Handler);
-        signal(SIGTERM, &Signal_Handler);
-        signal(SIGABRT, &Signal_Handler);
-        signal(SIGSEGV, &Signal_Handler );
+            signal(SIGHUP,  &Signal_Handler);
+            signal(SIGINT,  &Signal_Handler);
+            signal(SIGQUIT, &Signal_Handler);
+            signal(SIGTERM, &Signal_Handler);
+            signal(SIGABRT, &Signal_Handler);
+            signal(SIGSEGV, &Signal_Handler );
     */
+
+    struct _Classifications *MeerClass;
+//    struct _References *MeerReferences;
 
     char *yaml_file = DEFAULT_CONFIG;
 
@@ -78,7 +78,9 @@ int main (int argc, char *argv[])
 
     struct stat st;
 
-    char buf[BUFFER_SIZE];
+    bool skip_flag = 0;
+
+    char buf[BUFFER_SIZE + PACKET_BUFFER_SIZE_DEFAULT];
 
     uint64_t linecount = 0;
     uint64_t old_size = 0;
@@ -87,12 +89,21 @@ int main (int argc, char *argv[])
     struct json_object *json_obj;
     struct json_object *tmp;
 
+    MeerCounters = malloc(sizeof(_MeerCounters));
+
+    if ( MeerCounters == NULL )
+        {
+            Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _MeerCounters. Abort!", __FILE__, __LINE__);
+        }
+
+    memset(MeerCounters, 0, sizeof(_MeerCounters));
+
     /* The only command line option is to specify a non-default configuration
        file */
 
     if ( argc > 2 )
         {
-            Meer_Log(M_ERROR, "Too many arguments.  Only one YAML file can be specified.\n");
+            Meer_Log(ERROR, "Too many arguments.  Only one YAML file can be specified.\n");
         }
 
     if ( argc == 2 )
@@ -100,11 +111,24 @@ int main (int argc, char *argv[])
             yaml_file = argv[1];
         }
 
-    Meer_Log(M_NORMAL, "Firing up Meer version %s", VERSION);
+    Meer_Log(NORMAL, "");
+    Meer_Log(NORMAL, " @@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    Meer version %s", VERSION);
+    Meer_Log(NORMAL, " @@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security");
+    Meer_Log(NORMAL, " @!! !!@ @!@ @!!!:!   @!!!:!   @!@!!@a    https://quadrantsec.com");
+    Meer_Log(NORMAL, " !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018");
+    Meer_Log(NORMAL, "  :      :   : :: ::  : :: ::   :   : :");
+    Meer_Log(NORMAL, "");
+
+
 
     Load_YAML_Config(yaml_file);
 
     Drop_Priv();
+
+    MeerConfig->endian = Check_Endian();
+
+    MeerClass = Load_Classifications();
+//    MeerReferences = Load_References();
 
     CheckLockFile();
 
@@ -114,7 +138,7 @@ int main (int argc, char *argv[])
 
     if (( fd_file = fopen(MeerConfig->follow_file, "r" )) == NULL )
         {
-            Meer_Log(M_ERROR, "Cannot open file %s! Abort.", MeerConfig->follow_file);
+            Meer_Log(ERROR, "Cannot open file %s! Abort.", MeerConfig->follow_file);
         }
 
     fd_int = fileno(fd_file);
@@ -123,54 +147,52 @@ int main (int argc, char *argv[])
     if ( MeerWaldo->position != 0 )
         {
 
-            Meer_Log(M_NORMAL, "Skipping to record %" PRIu64 " in %s" , MeerWaldo->position, MeerConfig->follow_file);
+            Meer_Log(NORMAL, "Skipping to record %" PRIu64 " in %s" , MeerWaldo->position, MeerConfig->follow_file);
 
             while( (fgets(buf, sizeof(buf), fd_file) != NULL ) && linecount < MeerWaldo->position )
                 {
 
                     linecount++;
                 }
+
+            Meer_Log(NORMAL, "Reached target record of %" PRIu64 ".  Processing new records.", MeerWaldo->position);
+
         }
 
     while(fgets(buf, sizeof(buf), fd_file) != NULL)
         {
 
-            Decode_JSON( (char*)buf);
 
-//	    json_obj = json_tokener_parse(buf);
+            skip_flag = Validate_JSON_String( (char*)buf );
 
-            /*
-            	    if (json_object_object_get_ex(json_obj, "event_type", &tmp))
-            			{
-            			printf("Type: |%s|\n", json_object_get_string(tmp));
-            			}
-            */
-
-
-            /* Do something with json/buf */
+            if ( skip_flag == true )
+                {
+                    Decode_JSON( (char*)buf, MeerClass);
+                }
 
             MeerWaldo->position++;
+
         }
 
-    Meer_Log(M_NORMAL, "Read in %" PRIu64 " lines",MeerWaldo->position);
+    Meer_Log(NORMAL, "Read in %" PRIu64 " lines",MeerWaldo->position);
 
 
     if (fstat(fd_int, &st))
         {
-            Meer_Log(M_ERROR, "Cannot state follow file %s.  Abort", MeerConfig->follow_file);
+            Meer_Log(ERROR, "Cannot state follow file %s.  Abort", MeerConfig->follow_file);
         }
 
     old_size = (uint64_t) st.st_size;
 //    printf("Size: %llu\n", old_size);
 
-    Meer_Log(M_NORMAL, "Waiting for new data......");
+    Meer_Log(NORMAL, "Waiting for new data......");
 
     while(1)
         {
 
             if (fstat(fd_int, &st))
                 {
-                    Meer_Log(M_ERROR, "Cannot state follow file %s.  Abort", MeerConfig->follow_file);
+                    Meer_Log(ERROR, "Cannot state follow file %s.  Abort", MeerConfig->follow_file);
                 }
 
             if ( (uint64_t) st.st_size > old_size )
@@ -180,7 +202,13 @@ int main (int argc, char *argv[])
                     while(fgets(buf, sizeof(buf), fd_file) != NULL)
                         {
 
-                            /* Do something */
+                            skip_flag = Validate_JSON_String( (char*)buf );
+
+                            if ( skip_flag == true )
+                                {
+                                    Decode_JSON( (char*)buf, MeerClass);
+                                }
+
                             //linecount++;
                             MeerWaldo->position++;
                             //printf("FOLLOW: [%d] buf: %s\n", linecount, buf);

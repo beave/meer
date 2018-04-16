@@ -12,15 +12,30 @@
 
 struct _MeerWaldo *MeerWaldo;
 struct _MeerConfig *MeerConfig;
+struct _MeerOutput *MeerOutput;
 
 
 void Signal_Handler(int sig_num)
 {
 
     close(MeerConfig->waldo_fd);
+
+    MeerOutput->mysql_last_cid++;
+
+    MySQL_DB_Query("ROLLBACK");
+
+    MeerOutput->mysql_last_cid++;
+
+    MySQL_Record_Last_CID();
+
+    sleep(1);
+    mysql_close(MeerOutput->mysql_dbh);
+
+
     Remove_Lock_File();
 
-    Meer_Log(M_NORMAL, "Shutdown Complete!");
+    Meer_Log(NORMAL, "Shutdown Complete!");
+
     exit(0);
 
 }

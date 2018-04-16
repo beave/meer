@@ -29,12 +29,20 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdarg.h>
-
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/socket.h>
 
 #include "meer.h"
 #include "meer-def.h"
+#include "util.h"
 
 struct _MeerConfig *MeerConfig;
+struct _DnsCache *DnsCache;
+
+uint32_t DnsCacheCount = 0;
 
 void Drop_Priv(void)
 {
@@ -46,23 +54,23 @@ void Drop_Priv(void)
 
     if (!pw)
         {
-            Meer_Log(M_ERROR, "Couldn't locate user '%s'. Aborting...\n", MeerConfig->runas);
+            Meer_Log(ERROR, "Couldn't locate user '%s'. Aborting...\n", MeerConfig->runas);
         }
 
     if ( getuid() == 0 )
         {
-            Meer_Log(M_NORMAL, "[*] Dropping privileges! [UID: %lu GID: %lu]\n", (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid);
+            Meer_Log(NORMAL, "[*] Dropping privileges! [UID: %lu GID: %lu]\n", (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid);
 
             if (initgroups(pw->pw_name, pw->pw_gid) != 0 ||
                     setgid(pw->pw_gid) != 0 || setuid(pw->pw_uid) != 0)
                 {
-                    Meer_Log(M_ERROR, "[%s, line %d] Could not drop privileges to uid: %lu gid: %lu - %s!", __FILE__, __LINE__, (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid, strerror(errno));
+                    Meer_Log(ERROR, "[%s, line %d] Could not drop privileges to uid: %lu gid: %lu - %s!", __FILE__, __LINE__, (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid, strerror(errno));
                 }
 
         }
     else
         {
-            Meer_Log(M_NORMAL,"Not dropping privileges.  Already running as a non-privileged user");
+            Meer_Log(NORMAL,"Not dropping privileges.  Already running as a non-privileged user");
         }
 }
 
@@ -83,17 +91,17 @@ void Meer_Log (int type, const char *format,... )
     now=localtime(&t);
     strftime(curtime, sizeof(curtime), "%m/%d/%Y %H:%M:%S",  now);
 
-    if ( type == M_ERROR )
+    if ( type == ERROR )
         {
             chr="E";
         }
 
-    if ( type == M_WARN )
+    if ( type == WARN )
         {
             chr="W";
         }
 
-    if ( type == M_DEBUG )
+    if ( type == DEBUG )
         {
             chr="D";
         }
@@ -112,6 +120,252 @@ void Meer_Log (int type, const char *format,... )
             exit(-11);
         }
 
+}
+
+
+
+void Remove_Return(char *s)
+{
+    char *s1, *s2;
+    for(s1 = s2 = s; *s1; *s1++ = *s2++ )
+        while( *s2 == '\n' )s2++;
+}
+
+void Remove_Spaces(char *s)
+{
+    char *s1, *s2;
+    for(s1 = s2 = s; *s1; *s1++ = *s2++ )
+        while( *s2 == ' ')s2++;
+}
+
+
+bool IP2Bit(char *ipaddr, unsigned char *out)
+{
+
+    bool ret = false;
+    struct addrinfo hints = {0};
+    struct addrinfo *result = NULL;
+
+    /* Use getaddrinfo so we can get ipv4 or 6 */
+
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = AI_PASSIVE|AI_NUMERICHOST;
+
+    if ( ipaddr == NULL || ipaddr[0] == '\0' )
+        {
+            return false;
+        }
+
+    ret = getaddrinfo(ipaddr, NULL, &hints, &result) == 0;
+
+    /*
+    if (!ret)
+        {
+            Sagan_Log(S_WARN, "Warning: Got a getaddrinfo() error for \"%s\" but continuing...", ipaddr);
+        }
+    else
+        {
+    */
+    switch (((struct sockaddr_storage *)result->ai_addr)->ss_family)
+        {
+        case AF_INET:
+
+            ret = true;
+            if (out != NULL)
+                {
+                    memcpy(out, &((struct sockaddr_in *)result->ai_addr)->sin_addr, sizeof(((struct sockaddr_in *)0)->sin_addr));
+                }
+            break;
+
+        case AF_INET6:
+
+            ret = true;
+            if (out != NULL)
+                {
+                    memcpy(out, &((struct sockaddr_in6 *)result->ai_addr)->sin6_addr, sizeof(((struct sockaddr_in6 *)0)->sin6_addr));
+                }
+            break;
+
+//                default:
+//                    Sagan_Log(S_WARN, "Warning: Got a getaddrinfo() received a non IPv4/IPv6 address for \"%s\" but continuing...", ipaddr);
+        }
+//        }
+    if (result != NULL)
+        {
+            freeaddrinfo(result);
+        }
+
+    return ret;
+}
+
+bool Check_Endian()
+{
+    int i = 1;
+
+    char *p = (char *) &i;
+
+    if (p[0] == 1)  /* Lowest address contains the least significant byte */
+        return 0;   /* Little endian */
+    else
+        return 1;   /* Big endian */
+}
+
+
+char *Hexify(char *xdata, int length)
+{
+    char conv[] = "0123456789ABCDEF";
+    char *retbuf = NULL;
+    char *index;
+    char *end;
+    char *ridx;
+
+    index = xdata;
+    end = xdata + length;
+    retbuf = (char *) calloc((length*2)+1, sizeof(char));
+    ridx = retbuf;
+
+    while(index < end)
+        {
+            *ridx++ = conv[((*index & 0xFF)>>4)];
+            *ridx++ = conv[((*index & 0xFF)&0x0F)];
+            index++;
+        }
+
+    return(retbuf);
+}
+
+/* Reverse lookup */
+/* DEBUG: Needs a cacher */
+
+
+uint64_t Epoch_Lookup( void )
+{
+
+    time_t t;
+    struct tm *run;
+    char utime_string[20] = { 0 };
+
+    t = time(NULL);
+    run=localtime(&t);
+    strftime(utime_string, sizeof(utime_string), "%s",  run);
+    uint64_t utime = atol(utime_string);
+
+    return(utime);
+
+}
+
+void DNS_Lookup( char *host, char *str, size_t size )
+{
+
+
+    struct sockaddr_in ipaddr;
+    char *ret = NULL;
+    time_t t;
+    struct tm *run;
+    char utime_string[20] = { 0 };
+    int i = 0;
+
+    t = time(NULL);
+    run=localtime(&t);
+    strftime(utime_string, sizeof(utime_string), "%s",  run);
+    uint64_t utime = atol(utime_string);
+
+    int s = 0;
+
+    char host_r[NI_MAXHOST] = { 0 };
+
+    /*
+            memset(&ipaddr, 0, sizeof(struct sockaddr_in));
+
+            ipaddr.sin_family = AF_INET;
+            ipaddr.sin_port = htons(0);
+
+            inet_pton(AF_INET, host, &ipaddr.sin_addr);
+    */
+
+    for (i=0; i<DnsCacheCount; i++)
+        {
+
+            /* If we have a fresh copy,  return whats in memory */
+
+            if ( !strcmp(host, DnsCache[i].ipaddress ) )
+
+                if ( ( utime - DnsCache[i].lookup_time ) < 300 )
+                    {
+
+                        snprintf(str, size, "%s", DnsCache[i].reverse);
+                        return;
+
+                    }
+                else
+                    {
+
+                        /* Re-look it up and return it if cache is stale */
+
+                        memset(&ipaddr, 0, sizeof(struct sockaddr_in));
+
+                        ipaddr.sin_family = AF_INET;
+                        ipaddr.sin_port = htons(0);
+
+                        inet_pton(AF_INET, host, &ipaddr.sin_addr);
+
+                        s = getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
+
+                        strlcpy(DnsCache[i].reverse, host_r, sizeof(DnsCache[i].reverse));
+                        DnsCache[i].lookup_time = utime;
+
+                        snprintf(str, size, "%s", DnsCache[i].reverse);
+                        return;
+                    }
+
+        }
+
+    memset(&ipaddr, 0, sizeof(struct sockaddr_in));
+
+    ipaddr.sin_family = AF_INET;
+    ipaddr.sin_port = htons(0);
+
+    inet_pton(AF_INET, host, &ipaddr.sin_addr);
+
+    s = getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
+
+    /* Insert DNS into cache */
+
+    DnsCache = (_DnsCache *) realloc(DnsCache, (DnsCacheCount+1) * sizeof(_DnsCache));
+
+    strlcpy(DnsCache[DnsCacheCount].ipaddress, host, sizeof(DnsCache[DnsCacheCount].ipaddress));
+    strlcpy(DnsCache[DnsCacheCount].reverse, host_r, sizeof(DnsCache[DnsCacheCount].reverse));
+    DnsCache[DnsCacheCount].lookup_time = utime;
+
+    DnsCacheCount++;
+
+    snprintf(str, size, "%s", host_r);
+
+}
+
+bool Validate_JSON_String( char *validate_in_string )
+{
+
+    char validate_string[BUFFER_SIZE + PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
+
+    strlcpy(validate_string, validate_in_string, sizeof(validate_string));
+
+
+    if ( validate_string[0] != '{' )
+        {
+            Meer_Log(WARN, "JSON: \"%s\".  Doesn't appear to start as a valid JSON/EVE string. Skipping line.", validate_in_string);
+            return false;
+        }
+
+    if ( validate_string[ strlen(validate_string) - 2] != '}' )
+        {
+            Meer_Log(WARN, "JSON: \"%s\". JSON might be truncated.  Consider increasing 'payload-buffer-size' in Suricata or Sagan. Skipping line.", validate_in_string);
+            return false;
+        }
+
+
+    return true;
 }
 
 

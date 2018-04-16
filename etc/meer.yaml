@@ -11,18 +11,25 @@ meer-core:
 
   core:
 
-    interface: "eth0"   # Can be anything.  Sagan "syslog", suricata "eth0".
-    hostname: "Office"  # Unique name for this sensor (no spaces)
+    interface: "syslog"   # Can be anything.  Sagan "syslog", suricata "eth0".
+    hostname: "XXXXX"  # Unique name for this sensor (no spaces)
 
     runas: "suricata"
 
-    classification: "/etc/suricata/classification.config"
-    reference: "/etc/suricata/reference.config"
-    gen-msg-map: "etc/suricata/gen-msg.map"
+    classification: "/tmp/classification.config"
+    reference: "/tmp/reference.config"
+    sid_file: "/tmp/sid-msg.map"
+    #gen-msg-map: "/tmp/gen-msg.map"
 
-    waldo-file: "./my.waldo"
+    dns: enabled
+    dns_cache: 900
+
+    health: enabled
+    health_signatures: 20000001,20000002,20000003,20000004
+
+    waldo-file: "/tmp/my.waldo"
     lock-file: "/tmp/meer.lck"
-    follow-eve: "/var/log/something.eve"
+    follow-eve: "/tmp/alert-ids.json"
 
 
 output-plugins:
@@ -33,7 +40,7 @@ output-plugins:
     debug: no
     server: 127.0.0.1
     port: 3306
-    username: "myusername"
-    password: "mypassword"
-    database: "snort_meer"
+    username: "XXXX"
+    password: "XXXXXX"
+    database: "snort_test"
 
