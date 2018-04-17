@@ -30,12 +30,14 @@ char src_dns[256];
     char *dest_port;
     char dest_dns[256];
 
-
     char *proto;
     char *app_proto;
     char payload[131072];
     char *stream;
     char *packet;
+
+    bool has_extra_data; 
+    char *xff; 	
 
     char *icmp_type;
     char *icmp_code;

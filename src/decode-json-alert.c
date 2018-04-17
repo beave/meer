@@ -48,13 +48,17 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     memset(Alert_Return_Struct, 0, sizeof(_DecodeAlert));
 
     Alert_Return_Struct->event_type = "alert";
+    Alert_Return_Struct->has_extra_data = 0;
 
     Alert_Return_Struct->timestamp = NULL;
     Alert_Return_Struct->src_ip = NULL;
     Alert_Return_Struct->dest_ip = NULL;
     Alert_Return_Struct->flowid = NULL;
     Alert_Return_Struct->proto = NULL;
-//	Alert_Return_Struct->payload = NULL;
+
+    /* Extra data */
+
+    Alert_Return_Struct->xff = NULL;
 
 
     Alert_Return_Struct->payload[0] = '\0';
@@ -129,6 +133,14 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Alert_Return_Struct->icmp_code = (char *)json_object_get_string(tmp);
         }
 
+    /* Extra Data */
+
+    if (json_object_object_get_ex(json_obj, "xff", &tmp))
+        {   
+	    Alert_Return_Struct->has_extra_data = 1; 
+            Alert_Return_Struct->xff = (char *)json_object_get_string(tmp);
+        }
+
     /* Extract "alert" information */
 
     if (json_object_object_get_ex(json_obj, "alert", &tmp))
@@ -188,7 +200,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     if ( Alert_Return_Struct->flowid == NULL )
         {
-//                Meer_Log(WARN, "No flowid found! Setting to 0.");
             Alert_Return_Struct->flowid = "0";
         }
 
@@ -210,12 +221,10 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Alert_Return_Struct->proto = "Unknown";
         }
 
-//	if ( Alert_Return_Struct->payload == NULL )
     if ( Alert_Return_Struct->payload[0] == '\0' )
         {
-            Meer_Log(WARN, "JSON: \"%s\" : No payload found in flowid %s.  Setting to NONE.", json_string, Alert_Return_Struct->flowid);
-            //Alert_Return_Struct->payload = "None";
-            strlcpy(Alert_Return_Struct->payload, "None", sizeof(Alert_Return_Struct->payload));
+//            Meer_Log(WARN, "JSON: \"%s\" : No payload found in flowid %s.  Setting to NONE.", json_string, Alert_Return_Struct->flowid);
+            strlcpy(Alert_Return_Struct->payload, "No payload recorded by Meer", sizeof(Alert_Return_Struct->payload));
         }
 
 

@@ -351,6 +351,26 @@ void MySQL_Insert_DNS ( struct _DecodeAlert *DecodeAlert )
 
 }
 
+void MySQL_Insert_Extra_Data ( struct _DecodeAlert *DecodeAlert )
+{
+
+char tmp[MAX_MYSQL_QUERY] = { 0 };
+
+	if ( DecodeAlert->xff != NULL ) 
+		{
+
+		snprintf(tmp, sizeof(tmp), 
+		"INSERT INTO extra (sid,cid,type,datatype,len,data) values (%d, %" PRIu64 ", %d, 1, %d, '%s')", 
+		MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_ORIGNAL_CLIENT_IPV4,
+		strlen( DecodeAlert->xff ), DecodeAlert->xff);
+
+		(void)MySQL_DB_Query(tmp);
+
+		}
+
+
+
+}
 /*
 MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert,
 			  struct _References *MeerReferences )

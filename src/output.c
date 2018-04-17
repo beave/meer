@@ -24,6 +24,7 @@ struct _MeerOutput *MeerOutput;
 struct _MeerConfig *MeerConfig;
 struct _MeerCounters *MeerCounters;
 struct _MeerHealth *MeerHealth;
+struct _Classifications *MeerClass;
 
 
 void Init_Output( void )
@@ -51,8 +52,7 @@ void Init_Output( void )
 
 }
 
-bool Output_Alert ( struct _DecodeAlert *DecodeAlert,
-                    struct _Classifications *MeerClass )
+bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 {
 
     char tmp[MAX_MYSQL_QUERY] = { 0 };
@@ -104,6 +104,11 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert,
                         {
                             MySQL_Insert_DNS ( DecodeAlert );
                         }
+
+		    if ( DecodeAlert->has_extra_data == 1 ) 
+			{
+			    MySQL_Insert_Extra_Data ( DecodeAlert );
+			}
 
 
                     MySQL_DB_Query("COMMIT");

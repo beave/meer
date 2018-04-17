@@ -22,8 +22,9 @@ libjson-c is required for Meer to function!
 
 #include "decode-json-alert.h"
 
+struct _Classifications *MeerClass; 
 
-bool Decode_JSON( char *json_string, struct _Classifications *MeerClass )
+bool Decode_JSON( char *json_string )
     {
 
         struct json_object *json_obj;
