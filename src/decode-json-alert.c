@@ -67,7 +67,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     Alert_Return_Struct->alert_action[0] = '\0';
     Alert_Return_Struct->alert_gid[0] = '\0';
-    Alert_Return_Struct->alert_rev[0] = '\0';
+    Alert_Return_Struct->alert_rev = 0;
     Alert_Return_Struct->alert_signature[0] = '\0';
     Alert_Return_Struct->alert_category[0] = '\0';
     Alert_Return_Struct->alert_severity[0] = '\0';
@@ -167,7 +167,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
             if (json_object_object_get_ex(json_obj_alert, "rev", &tmp_alert))
                 {
-                    strlcpy(Alert_Return_Struct->alert_rev, (char *)json_object_get_string(tmp_alert), sizeof(Alert_Return_Struct->alert_rev));
+		    Alert_Return_Struct->alert_rev = atol((char *)json_object_get_string(tmp_alert));
                 }
 
             if (json_object_object_get_ex(json_obj_alert, "signature", &tmp_alert))
@@ -253,10 +253,10 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Meer_Log(ERROR, "JSON: \"%s\" : No alert -> signature_id found in flowid %s. Abort.", json_string, Alert_Return_Struct->flowid);
         }
 
-    if ( Alert_Return_Struct->alert_rev[0] == '\0' )
+    if ( Alert_Return_Struct->alert_rev == 0 )
         {
             Meer_Log(WARN, "JSON: \"%s\" : No alert -> rev found in flowid %s.  Setting to 0.", json_string, Alert_Return_Struct->flowid);
-            strlcpy(Alert_Return_Struct->alert_rev, "0", sizeof(Alert_Return_Struct->alert_rev));
+	    Alert_Return_Struct->alert_rev = 0; 
         }
 
     if ( Alert_Return_Struct->alert_signature[0] == '\0' )

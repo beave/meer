@@ -26,6 +26,12 @@ struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
 struct _Classifications *MeerClass;
 
+struct _SignatureCache *SignatureCache;
+uint32_t SignatureCacheCount = 0;
+
+struct _ClassificationCache *ClassificationCache;
+uint32_t ClassificationCacheCount = 0;
+
 
 void MySQL_Connect( void )
 {
@@ -164,16 +170,30 @@ void MySQL_Record_Last_CID ( void )
 
 }
 
-int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert )
+int MySQL_Get_Class_ID ( struct _DecodeAlert *DecodeAlert )
 {
 
-    char tmp[MAX_MYSQL_QUERY];
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
     char *results;
-    char class[64];
+    char class[64] = { 0 };
 
     int class_id = 0;
     int signature_id = 0;
 
+    int i = 0; 
+
+    /* Check cache */
+
+    for (i = 0; i<ClassificationCacheCount; i++)
+	{
+
+	if ( !strcmp(DecodeAlert->alert_category, ClassificationCache[i].class_name))
+	{
+		return(ClassificationCache[i].sig_class_id);
+	}
+
+	}
+    
     /* Lookup classtype based off the description */
 
     Class_Lookup( DecodeAlert->alert_category, class, sizeof(class) );
@@ -187,7 +207,6 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert )
         {
 
             snprintf(tmp, sizeof(tmp),  "INSERT INTO sig_class(sig_class_id, sig_class_name) VALUES (DEFAULT, '%s')", class);
-
             (void)MySQL_DB_Query(tmp);
 
             results = MySQL_DB_Query("SELECT LAST_INSERT_ID()");
@@ -196,7 +215,47 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert )
 
     class_id = atoi(results);
 
-    snprintf(tmp, sizeof(tmp), "SELECT sig_id FROM signature WHERE sig_name='%s' AND sig_rev=%s AND sig_sid=%" PRIu64 "",
+    /* Insert into cache */
+
+    ClassificationCache = (_ClassificationCache *) realloc(ClassificationCache, (ClassificationCacheCount+1) * sizeof(_ClassificationCache));
+
+    ClassificationCache[ClassificationCacheCount].sig_class_id = class_id;
+    strlcpy(ClassificationCache[ClassificationCacheCount].class_name, DecodeAlert->alert_category, sizeof(ClassificationCache[ClassificationCacheCount].class_name));
+
+    ClassificationCacheCount++;
+
+    return(class_id);
+}
+
+
+int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id )
+{
+
+    char tmp[MAX_MYSQL_QUERY];
+    char *results;
+    char class[64];
+    int i = 0;
+    unsigned sig_priority = 0;
+
+    int signature_id = 0;
+
+    /* Search cache */
+
+    for (i = 0; i<SignatureCacheCount; i++)
+	{
+
+	if (!strcmp(SignatureCache[i].sig_name, DecodeAlert->alert_signature) &&
+	            SignatureCache[i].sig_rev == DecodeAlert->alert_rev && 
+		    SignatureCache[i].sig_sid == DecodeAlert->alert_signature_id ) 
+		{
+			return(SignatureCache[i].sig_id);
+		}
+
+	}
+
+    sig_priority = Class_Lookup_Priority( DecodeAlert->alert_category);
+
+    snprintf(tmp, sizeof(tmp), "SELECT sig_id FROM signature WHERE sig_name='%s' AND sig_rev=%d AND sig_sid=%" PRIu64 "",
              DecodeAlert->alert_signature, DecodeAlert->alert_rev, DecodeAlert->alert_signature_id);
 
     results = MySQL_DB_Query(tmp);
@@ -205,7 +264,7 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert )
         {
 
             snprintf(tmp, sizeof(tmp), "INSERT INTO signature(sig_name, sig_class_id, sig_priority, sig_rev, sig_sid) "
-                     "VALUES ('%s', '%d', '%d', '%s', '%" PRIu64 "' )", DecodeAlert->alert_signature, class_id, DecodeAlert->alert_severity,
+                     "VALUES ('%s', '%d', '%d', '%d', '%" PRIu64 "' )", DecodeAlert->alert_signature, class_id, sig_priority,
                      DecodeAlert->alert_rev, DecodeAlert->alert_signature_id);
 
             (void)MySQL_DB_Query(tmp);
@@ -215,6 +274,18 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert )
         }
 
     signature_id = atoi(results);
+
+    /* Add signature to cache */
+
+    SignatureCache = (_SignatureCache *) realloc(SignatureCache, (SignatureCacheCount+1) * sizeof(_SignatureCache));
+    
+    SignatureCache[SignatureCacheCount].sig_id = signature_id;
+    SignatureCache[SignatureCacheCount].sig_rev = DecodeAlert->alert_rev;
+    SignatureCache[SignatureCacheCount].sig_sid = DecodeAlert->alert_signature_id;
+    
+    strlcpy(SignatureCache[SignatureCacheCount].sig_name, DecodeAlert->alert_signature, sizeof(SignatureCache[SignatureCacheCount].sig_name));
+    
+    SignatureCacheCount++;
 
     return(signature_id);
 

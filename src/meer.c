@@ -61,14 +61,14 @@ int main (int argc, char *argv[])
 {
 
     signal(SIGINT,  &Signal_Handler);
-    /*
-            signal(SIGHUP,  &Signal_Handler);
-            signal(SIGINT,  &Signal_Handler);
-            signal(SIGQUIT, &Signal_Handler);
-            signal(SIGTERM, &Signal_Handler);
-            signal(SIGABRT, &Signal_Handler);
-            signal(SIGSEGV, &Signal_Handler );
-    */
+/*
+    signal(SIGHUP,  &Signal_Handler);
+    signal(SIGINT,  &Signal_Handler);
+    signal(SIGQUIT, &Signal_Handler);
+    signal(SIGTERM, &Signal_Handler);
+    signal(SIGABRT, &Signal_Handler);
+    signal(SIGSEGV, &Signal_Handler );
+*/
 
     struct _Classifications *MeerClass;
 //    struct _References *MeerReferences;

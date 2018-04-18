@@ -108,7 +108,12 @@ struct _MeerCounters
 {
 
     int ClassCount;
-    int HealthCount;
     int ReferenceCount;			// DEBUG
+
+#ifdef HAVE_LIBMYSQLCLIENT
+  
+    int HealthCount;
+
+#endif
 
 };

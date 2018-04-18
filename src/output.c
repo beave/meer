@@ -66,8 +66,10 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
         {
 
             int signature_id = 0;
+            int class_id = 0; 
 
-            signature_id = MySQL_Get_Signature_ID( DecodeAlert, MeerClass );
+	    class_id = MySQL_Get_Class_ID( DecodeAlert);
+            signature_id = MySQL_Get_Signature_ID( DecodeAlert, class_id );
 
             if ( MeerConfig->health == true )
                 {

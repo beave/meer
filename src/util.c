@@ -275,15 +275,6 @@ void DNS_Lookup( char *host, char *str, size_t size )
 
     char host_r[NI_MAXHOST] = { 0 };
 
-    /*
-            memset(&ipaddr, 0, sizeof(struct sockaddr_in));
-
-            ipaddr.sin_family = AF_INET;
-            ipaddr.sin_port = htons(0);
-
-            inet_pton(AF_INET, host, &ipaddr.sin_addr);
-    */
-
     for (i=0; i<DnsCacheCount; i++)
         {
 

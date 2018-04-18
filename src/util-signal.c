@@ -34,7 +34,7 @@ void Signal_Handler(int sig_num)
 
     Remove_Lock_File();
 
-    Meer_Log(NORMAL, "Shutdown Complete!");
+    Meer_Log(NORMAL, "Last CID is : %" PRIu64 ". Shutdown Complete!", MeerOutput->mysql_last_cid);
 
     exit(0);
 

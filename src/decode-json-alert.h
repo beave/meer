@@ -45,7 +45,7 @@ char src_dns[256];
     char alert_action[16];
     char alert_gid[5];
     uint64_t alert_signature_id;
-    char alert_rev[5];
+    uint32_t alert_rev;
     char alert_signature[512];
     char alert_category[128];
     char alert_severity[5];
