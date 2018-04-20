@@ -117,16 +117,16 @@ int Class_Lookup( const char *class, char *str, size_t size )
 }
 
 unsigned char Class_Lookup_Priority( const char *class )
-{   
+{
 
     int i;
 
     for (i = 0; i < MeerCounters->ClassCount; i++)
-        {   
+        {
 
             if (!strcmp(class, MeerClass[i].description))
-                {   
-		    return(MeerClass[i].priority);
+                {
+                    return(MeerClass[i].priority);
                 }
         }
 

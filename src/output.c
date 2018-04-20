@@ -41,6 +41,10 @@ void Init_Output( void )
             MeerOutput->mysql_sensor_id = MySQL_Get_Sensor_ID();
             MeerOutput->mysql_last_cid = MySQL_Get_Last_CID();
 
+            Meer_Log(NORMAL, "Record 'flow': %s", MeerOutput->mysql_flow ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'http': %s", MeerOutput->mysql_http ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'tls' : %s", MeerOutput->mysql_tls ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'ssh' : %s", MeerOutput->mysql_ssh ? "enabled" : "disabled" );
 
             Meer_Log(NORMAL, "---------------------------------------------------------------------------");
 
@@ -66,9 +70,9 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
         {
 
             int signature_id = 0;
-            int class_id = 0; 
+            int class_id = 0;
 
-	    class_id = MySQL_Get_Class_ID( DecodeAlert);
+            class_id = MySQL_Get_Class_ID( DecodeAlert);
             signature_id = MySQL_Get_Signature_ID( DecodeAlert, class_id );
 
             if ( MeerConfig->health == true )
@@ -107,10 +111,35 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
                             MySQL_Insert_DNS ( DecodeAlert );
                         }
 
-		    if ( DecodeAlert->has_extra_data == 1 ) 
-			{
-			    MySQL_Insert_Extra_Data ( DecodeAlert );
-			}
+                    if ( DecodeAlert->has_extra_data == 1 )
+                        {
+                            MySQL_Insert_Extra_Data ( DecodeAlert );
+                        }
+
+                    if ( DecodeAlert->has_flow == true && MeerOutput->mysql_flow == true )
+                        {
+                            MySQL_Insert_Flow ( DecodeAlert );
+                        }
+
+                    if ( DecodeAlert->has_http == true && MeerOutput->mysql_http == true )
+                        {
+                            MySQL_Insert_HTTP ( DecodeAlert );
+                        }
+
+                    if ( DecodeAlert->has_tls == true && MeerOutput->mysql_tls == true )
+                        {
+                            MySQL_Insert_TLS ( DecodeAlert );
+                        }
+
+                    if ( DecodeAlert->has_ssh_server == true && MeerOutput->mysql_ssh == true )
+                        {
+                            MySQL_Insert_SSH ( DecodeAlert, SSH_SERVER );
+                        }
+
+                    if ( DecodeAlert->has_ssh_client == true && MeerOutput->mysql_ssh == true )
+                        {
+                            MySQL_Insert_SSH ( DecodeAlert, SSH_CLIENT );
+                        }
 
 
                     MySQL_DB_Query("COMMIT");

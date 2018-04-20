@@ -66,6 +66,15 @@ struct _MeerConfig
 
     bool health;
 
+    /* What ever to record */
+
+    bool flow;
+    bool http;
+    bool tls;
+    bool ssh;		/* NOT DONE */;
+    bool smtp; 		/* NOT DONE */
+    bool dns_meta;
+
 };
 
 typedef struct _MeerHealth _MeerHealth;
@@ -91,6 +100,13 @@ struct _MeerOutput
     MYSQL *mysql_dbh;
     uint64_t mysql_last_cid;
 
+    bool mysql_flow;
+    bool mysql_http;
+    bool mysql_tls;
+    bool mysql_ssh;
+    bool mysql_smtp;
+
+
 #endif
 
 };
@@ -111,7 +127,7 @@ struct _MeerCounters
     int ReferenceCount;			// DEBUG
 
 #ifdef HAVE_LIBMYSQLCLIENT
-  
+
     int HealthCount;
 
 #endif

@@ -59,7 +59,7 @@ void Drop_Priv(void)
 
     if ( getuid() == 0 )
         {
-            Meer_Log(NORMAL, "[*] Dropping privileges! [UID: %lu GID: %lu]", (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid);
+            Meer_Log(NORMAL, "Dropping privileges! [UID: %lu GID: %lu]", (unsigned long)pw->pw_uid, (unsigned long)pw->pw_gid);
 
             if (initgroups(pw->pw_name, pw->pw_gid) != 0 ||
                     setgid(pw->pw_gid) != 0 || setuid(pw->pw_uid) != 0)
@@ -349,11 +349,15 @@ bool Validate_JSON_String( char *validate_in_string )
             return false;
         }
 
-    if ( validate_string[ strlen(validate_string) - 2] != '}' )
+
+    /* 1 == flows, http, non \n terminated.   2 == entire line with \n. */
+
+    if ( ( validate_string[ strlen(validate_string) - 1] != '}' ) && ( validate_string[ strlen(validate_string) - 2] != '}' ) )
         {
-            Meer_Log(WARN, "JSON: \"%s\". JSON might be truncated.  Consider increasing 'payload-buffer-size' in Suricata or Sagan. Skipping line.", validate_in_string);
+            Meer_Log(WARN, "JSON: \"%s\". JSON might be truncated.  Consider increasing 'payload-buffer-size' in Suricata or Sagan. Skipping line.", validate_string);
             return false;
         }
+
 
 
     return true;

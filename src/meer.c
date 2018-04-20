@@ -21,9 +21,10 @@
 /* Main Meer function */
 
 /* DEBUG:  Needs:
-	   signature cache!
 	   reference data?
 	   add perl reference routine
+
+	   Stats on flows, http, etc.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -61,14 +62,14 @@ int main (int argc, char *argv[])
 {
 
     signal(SIGINT,  &Signal_Handler);
-/*
-    signal(SIGHUP,  &Signal_Handler);
-    signal(SIGINT,  &Signal_Handler);
-    signal(SIGQUIT, &Signal_Handler);
-    signal(SIGTERM, &Signal_Handler);
-    signal(SIGABRT, &Signal_Handler);
-    signal(SIGSEGV, &Signal_Handler );
-*/
+    /*
+        signal(SIGHUP,  &Signal_Handler);
+        signal(SIGINT,  &Signal_Handler);
+        signal(SIGQUIT, &Signal_Handler);
+        signal(SIGTERM, &Signal_Handler);
+        signal(SIGABRT, &Signal_Handler);
+        signal(SIGSEGV, &Signal_Handler );
+    */
 
     struct _Classifications *MeerClass;
 //    struct _References *MeerReferences;
@@ -129,6 +130,12 @@ int main (int argc, char *argv[])
 
     MeerClass = Load_Classifications();
 //    MeerReferences = Load_References();
+
+    Meer_Log(NORMAL, "Decode 'flow': %s", MeerConfig->flow ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'http': %s", MeerConfig->http ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'tls' : %s", MeerConfig->http ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'ssh' : %s", MeerConfig->ssh ? "enabled" : "disabled" );
+
 
     CheckLockFile();
 

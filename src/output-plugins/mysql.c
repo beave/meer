@@ -297,7 +297,7 @@ void MySQL_Insert_Event ( struct _DecodeAlert *DecodeAlert, int signature_id )
 
     char tmp[MAX_MYSQL_QUERY];
 
-    snprintf(tmp, sizeof(tmp), "INSERT INTO event(sid, cid, signature, timestamp) VALUES ('%d', '%" PRIu64 "', '%d', '%s')", MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
+    snprintf(tmp, sizeof(tmp), "INSERT INTO event(sid,cid,signature,timestamp,app_proto,flow_id) VALUES ('%d', '%" PRIu64 "', '%d', '%s', '%s', %s)", MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp, DecodeAlert->app_proto, DecodeAlert->flowid );
 
     (void)MySQL_DB_Query(tmp);
 
@@ -431,7 +431,7 @@ char tmp[MAX_MYSQL_QUERY] = { 0 };
 		{
 
 		snprintf(tmp, sizeof(tmp), 
-		"INSERT INTO extra (sid,cid,type,datatype,len,data) values (%d, %" PRIu64 ", %d, 1, %d, '%s')", 
+		"INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d, %" PRIu64 ", %d, 1, %d, '%s')", 
 		MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_ORIGNAL_CLIENT_IPV4,
 		strlen( DecodeAlert->xff ), DecodeAlert->xff);
 
@@ -439,9 +439,96 @@ char tmp[MAX_MYSQL_QUERY] = { 0 };
 
 		}
 
+}
 
+void MySQL_Insert_Flow ( struct _DecodeAlert *DecodeAlert )
+{
+
+char tmp[MAX_MYSQL_QUERY] = { 0 };
+
+	snprintf(tmp, sizeof(tmp), 
+	"INSERT INTO flow (sid,cid,pkts_toserver,pkts_toclient,bytes_toserver,bytes_toclient,start_timestamp) "
+	"VALUES ( %d, %" PRIu64 ", %" PRIu64 ", %" PRIu64 ", %" PRIu64 ", %" PRIu64 ", '%s')", 
+	MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, DecodeAlert->flow_pkts_toserver, 
+	DecodeAlert->flow_pkts_toclient, DecodeAlert->flow_bytes_toserver, DecodeAlert->flow_bytes_toclient, 
+	DecodeAlert->flow_start_timestamp ); 
+
+	(void)MySQL_DB_Query(tmp);
+}
+
+void MySQL_Insert_HTTP ( struct _DecodeAlert *DecodeAlert )
+{
+
+char tmp[MAX_MYSQL_QUERY] = { 0 };
+
+
+
+        snprintf(tmp, sizeof(tmp),
+        "INSERT INTO http (sid,cid,hostname,url,xff,http_content_type,http_method,http_user_agent,http_refer,protocol,status,length) "
+        "VALUES ( %d, %" PRIu64 ", '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %" PRIu64 ")", 
+	MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, 
+	Hexify(DecodeAlert->http_hostname, strlen(DecodeAlert->http_hostname)), 
+	Hexify(DecodeAlert->http_url,strlen(DecodeAlert->http_url)), 
+	DecodeAlert->http_xff,
+	DecodeAlert->http_content_type, 
+	DecodeAlert->http_method, 
+	Hexify(DecodeAlert->http_user_agent, strlen(DecodeAlert->http_user_agent)),
+	Hexify(DecodeAlert->http_refer, strlen(DecodeAlert->http_refer)), 
+	DecodeAlert->http_protocol, DecodeAlert->http_status, DecodeAlert->http_length);
+
+        (void)MySQL_DB_Query(tmp);
 
 }
+
+void MySQL_Insert_TLS ( struct _DecodeAlert *DecodeAlert )
+{
+
+char tmp[MAX_MYSQL_QUERY] = { 0 };
+
+	snprintf(tmp, sizeof(tmp), 
+	"INSERT INTO tls (sid,cid,session_resumed,sni,version) "
+	"VALUES ( %d, %" PRIu64 ", '%s', '%s', '%s' )", 
+	MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+	DecodeAlert->tls_session_resumed, DecodeAlert->tls_sni, DecodeAlert->tls_version);
+
+	(void)MySQL_DB_Query(tmp);
+	
+}
+
+
+void MySQL_Insert_SSH ( struct _DecodeAlert *DecodeAlert, unsigned char type )
+{
+
+	char tmp[MAX_MYSQL_QUERY] = { 0 };
+
+	char *table = NULL;
+	char *proto = NULL;
+	char *software = NULL;
+
+	if ( type == SSH_CLIENT ) 
+		{
+		table = "ssh_client"; 
+		proto = DecodeAlert->ssh_client_proto_version;
+	        software = DecodeAlert->ssh_client_software_version;
+		} else { 
+                table = "ssh_server";
+                proto = DecodeAlert->ssh_server_proto_version;
+                software = DecodeAlert->ssh_server_software_version;
+		}
+
+	snprintf(tmp, sizeof(tmp), 
+	"INSERT INTO %s (sid,cid,proto_version,sofware_version) "
+	"VALUES ( %d, %" PRIu64 ", '%s', '%s' )", 
+	table,MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+	proto, Hexify(software, strlen(software)) ); 
+
+	(void)MySQL_DB_Query(tmp);
+
+}
+
+
+
+
 /*
 MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert,
 			  struct _References *MeerReferences )

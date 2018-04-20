@@ -30,8 +30,31 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     struct _DecodeAlert *Alert_Return_Struct = NULL;
     struct json_object *tmp = NULL;
+
     struct json_object *tmp_alert = NULL;
+    struct json_object *tmp_flow = NULL;
+    struct json_object *tmp_http = NULL;
+    struct json_object *tmp_tls = NULL;
+
+    struct json_object *tmp_ssh = NULL;
+
+    struct json_object *tmp_ssh_server = NULL;
+    struct json_object *tmp_ssh_server_2 = NULL;
+    struct json_object *tmp_ssh_server_3 = NULL;
+
+    struct json_object *tmp_ssh_client = NULL;
+    struct json_object *tmp_ssh_client_2 = NULL;
+    struct json_object *tmp_ssh_client_3 = NULL;
+
+
     struct json_object *json_obj_alert = NULL;
+    struct json_object *json_obj_flow = NULL;
+    struct json_object *json_obj_http = NULL;
+    struct json_object *json_obj_tls = NULL;
+
+    struct json_object *json_obj_ssh = NULL;
+    struct json_object *json_obj_ssh_server = NULL;
+    struct json_object *json_obj_ssh_client = NULL;
 
     char src_dns[256] = { 0 };
     char dest_dns[256] = { 0 };
@@ -55,11 +78,11 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     Alert_Return_Struct->dest_ip = NULL;
     Alert_Return_Struct->flowid = NULL;
     Alert_Return_Struct->proto = NULL;
+    Alert_Return_Struct->app_proto[0] = '\0';
 
     /* Extra data */
 
     Alert_Return_Struct->xff = NULL;
-
 
     Alert_Return_Struct->payload[0] = '\0';
     Alert_Return_Struct->src_dns[0] = '\0';
@@ -73,6 +96,48 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     Alert_Return_Struct->alert_severity[0] = '\0';
 
     Alert_Return_Struct->alert_signature_id = 0;
+
+    /* Flow */
+
+    Alert_Return_Struct->has_flow = false;
+
+    Alert_Return_Struct->flow_pkts_toserver = 0 ;
+    Alert_Return_Struct->flow_pkts_toclient = 0;
+    Alert_Return_Struct->flow_bytes_toserver = 0;
+    Alert_Return_Struct->flow_bytes_toclient = 0;
+    Alert_Return_Struct->flow_start_timestamp[0] = '\0';
+
+    /* HTTP */
+
+    Alert_Return_Struct->has_http = false;
+
+    Alert_Return_Struct->http_hostname[0] = '\0';
+    Alert_Return_Struct->http_url[0] = '\0';
+    Alert_Return_Struct->http_content_type[0] = '\0';
+    Alert_Return_Struct->http_method[0] = '\0';
+    Alert_Return_Struct->http_user_agent[0] = '\0';
+    Alert_Return_Struct->http_refer[0] = '\0';
+    Alert_Return_Struct->http_protocol[0] = '\0';
+    Alert_Return_Struct->http_xff[0] = '\0';
+    Alert_Return_Struct->http_length = 0;
+
+    /* TLS */
+
+    Alert_Return_Struct->has_tls = false;
+
+    Alert_Return_Struct->tls_session_resumed[0] = '\0';
+    Alert_Return_Struct->tls_sni[0] = '\0';
+    Alert_Return_Struct->tls_version[0] = '\0';
+
+    /* SSH */
+
+    Alert_Return_Struct->has_ssh_server = false;
+    Alert_Return_Struct->has_ssh_client = false;
+
+    Alert_Return_Struct->ssh_client_proto_version[0] = '\0';
+    Alert_Return_Struct->ssh_client_software_version[0] = '\0';
+    Alert_Return_Struct->ssh_server_proto_version[0] = '\0';
+    Alert_Return_Struct->ssh_server_software_version[0] = '\0';
 
 
     /* Base information from JSON */
@@ -119,7 +184,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     if (json_object_object_get_ex(json_obj, "payload", &tmp))
         {
-//	        Alert_Return_Struct->payload = (char *)json_object_get_string(tmp);
             strlcpy(Alert_Return_Struct->payload, (char *)json_object_get_string(tmp), sizeof(Alert_Return_Struct->payload));
         }
 
@@ -133,11 +197,16 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Alert_Return_Struct->icmp_code = (char *)json_object_get_string(tmp);
         }
 
+    if (json_object_object_get_ex(json_obj, "app_proto", &tmp))
+        {
+            strlcpy(Alert_Return_Struct->app_proto, (char *)json_object_get_string(tmp), sizeof(Alert_Return_Struct->app_proto));
+        }
+
     /* Extra Data */
 
     if (json_object_object_get_ex(json_obj, "xff", &tmp))
-        {   
-	    Alert_Return_Struct->has_extra_data = 1; 
+        {
+            Alert_Return_Struct->has_extra_data = 1;
             Alert_Return_Struct->xff = (char *)json_object_get_string(tmp);
         }
 
@@ -167,7 +236,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
             if (json_object_object_get_ex(json_obj_alert, "rev", &tmp_alert))
                 {
-		    Alert_Return_Struct->alert_rev = atol((char *)json_object_get_string(tmp_alert));
+                    Alert_Return_Struct->alert_rev = atol((char *)json_object_get_string(tmp_alert));
                 }
 
             if (json_object_object_get_ex(json_obj_alert, "signature", &tmp_alert))
@@ -187,6 +256,213 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
         }
 
+    /* Decode flow data */
+
+    if ( MeerConfig->flow == true )
+        {
+
+            Alert_Return_Struct->has_flow = true;
+
+            if ( json_object_object_get_ex(json_obj, "flow", &tmp))
+                {
+
+                    if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == true )
+                        {
+
+                            json_obj_flow = json_tokener_parse(json_object_get_string(tmp));
+
+                            if (json_object_object_get_ex(json_obj_flow, "pkts_toserver", &tmp_flow))
+                                {
+                                    Alert_Return_Struct->flow_pkts_toserver = atol((char *)json_object_get_string(tmp_flow));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_flow, "pkts_toclient", &tmp_flow))
+                                {
+                                    Alert_Return_Struct->flow_pkts_toclient = atol((char *)json_object_get_string(tmp_flow));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_flow, "bytes_toserver", &tmp_flow))
+                                {
+                                    Alert_Return_Struct->flow_bytes_toserver = atol((char *)json_object_get_string(tmp_flow));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_flow, "bytes_toclient", &tmp_flow))
+                                {
+                                    Alert_Return_Struct->flow_bytes_toclient = atol((char *)json_object_get_string(tmp_flow));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_flow, "start", &tmp_flow))
+                                {
+                                    strlcpy(Alert_Return_Struct->flow_start_timestamp, (char *)json_object_get_string(tmp_flow), sizeof(Alert_Return_Struct->flow_start_timestamp));
+                                }
+
+                        }
+                }
+
+        }
+
+    if ( MeerConfig->http == true && !strcmp( Alert_Return_Struct->app_proto, "http" ))
+        {
+
+            Alert_Return_Struct->has_http = true;
+
+            if ( json_object_object_get_ex(json_obj, "http", &tmp))
+                {
+
+                    if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == true )
+                        {
+
+                            json_obj_http = json_tokener_parse(json_object_get_string(tmp));
+
+                            if (json_object_object_get_ex(json_obj_http, "hostname", &tmp_http))
+                                {
+                                    strlcpy(Alert_Return_Struct->http_hostname, (char *)json_object_get_string(tmp_http), sizeof(Alert_Return_Struct->http_hostname));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_http, "url", &tmp_http))
+                                {
+                                    strlcpy(Alert_Return_Struct->http_url, (char *)json_object_get_string(tmp_http), sizeof(Alert_Return_Struct->http_url));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_http, "http_content_type", &tmp_http))
+                                {
+                                    strlcpy(Alert_Return_Struct->http_content_type, (char *)json_object_get_string(tmp_http), sizeof(Alert_Return_Struct->http_content_type));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_http, "http_method", &tmp_http))
+                                {
+                                    strlcpy(Alert_Return_Struct->http_method, (char *)json_object_get_string(tmp_http), sizeof(Alert_Return_Struct->http_method));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_http, "http_user_agent", &tmp_http))
+                                {
+                                    strlcpy(Alert_Return_Struct->http_user_agent, (char *)json_object_get_string(tmp_http), sizeof(Alert_Return_Struct->http_user_agent));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_http, "http_refer", &tmp_http))
+                                {
+                                    strlcpy(Alert_Return_Struct->http_refer, (char *)json_object_get_string(tmp_http), sizeof(Alert_Return_Struct->http_refer));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_http, "protocol", &tmp_http))
+                                {
+                                    strlcpy(Alert_Return_Struct->http_protocol, (char *)json_object_get_string(tmp_http), sizeof(Alert_Return_Struct->http_protocol));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_http, "xff", &tmp_http))
+                                {
+                                    strlcpy(Alert_Return_Struct->http_xff, (char *)json_object_get_string(tmp_http), sizeof(Alert_Return_Struct->http_xff));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_http, "status", &tmp_http))
+                                {
+                                    Alert_Return_Struct->http_status = atoi( (char *)json_object_get_string(tmp_http) );
+                                }
+
+                            if (json_object_object_get_ex(json_obj_http, "length", &tmp_http))
+                                {
+                                    Alert_Return_Struct->http_length = atol( (char *)json_object_get_string(tmp_http) );
+                                }
+                        }
+                }
+
+        }
+
+    if ( MeerConfig->tls == true && !strcmp( Alert_Return_Struct->app_proto, "tls" ))
+        {
+
+            Alert_Return_Struct->has_tls = true;
+
+            if ( json_object_object_get_ex(json_obj, "tls", &tmp))
+                {
+
+                    if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == true )
+                        {
+
+                            json_obj_tls = json_tokener_parse(json_object_get_string(tmp));
+
+                            if (json_object_object_get_ex(json_obj_tls, "session_resumed", &tmp_tls))
+                                {
+                                    strlcpy(Alert_Return_Struct->tls_session_resumed, (char *)json_object_get_string(tmp_tls), sizeof(Alert_Return_Struct->tls_session_resumed));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_tls, "sni", &tmp_tls))
+                                {
+                                    strlcpy(Alert_Return_Struct->tls_sni, (char *)json_object_get_string(tmp_tls), sizeof(Alert_Return_Struct->tls_sni));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_tls, "version", &tmp_tls))
+                                {
+                                    strlcpy(Alert_Return_Struct->tls_version, (char *)json_object_get_string(tmp_tls), sizeof(Alert_Return_Struct->tls_version));
+                                }
+
+                        }
+                }
+
+        }
+
+    if ( MeerConfig->ssh == true && !strcmp( Alert_Return_Struct->app_proto, "ssh" ))
+        {
+
+            if ( json_object_object_get_ex(json_obj, "ssh", &tmp))
+                {
+
+                    if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == true )
+                        {
+
+                            json_obj_ssh_server = json_tokener_parse(json_object_get_string(tmp));
+
+                            if ( json_object_object_get_ex(json_obj_ssh_server, "server", &tmp_ssh_server))
+                                {
+
+                                    Alert_Return_Struct->has_ssh_server = true;
+
+                                    if ( Validate_JSON_String( (char *)json_object_get_string(tmp_ssh_server) ) == true )
+                                        {
+
+                                            tmp_ssh_server_2 = json_tokener_parse(json_object_get_string(tmp_ssh_server));
+
+                                            if ( json_object_object_get_ex(tmp_ssh_server_2, "proto_version", &tmp_ssh_server_3))
+                                                {
+
+                                                    strlcpy(Alert_Return_Struct->ssh_server_proto_version, (char *)json_object_get_string(tmp_ssh_server_3), sizeof(Alert_Return_Struct->ssh_server_proto_version));
+                                                }
+
+                                            if ( json_object_object_get_ex(tmp_ssh_server_2, "software_version", &tmp_ssh_server_3))
+                                                {
+
+                                                    strlcpy(Alert_Return_Struct->ssh_server_software_version, (char *)json_object_get_string(tmp_ssh_server_3), sizeof(Alert_Return_Struct->ssh_server_software_version));
+                                                }
+
+                                        }
+                                }
+
+                            if ( json_object_object_get_ex(json_obj_ssh_client, "client", &tmp_ssh_client))
+                                {
+
+                                    Alert_Return_Struct->has_ssh_client = true;
+
+                                    if ( Validate_JSON_String( (char *)json_object_get_string(tmp_ssh_client) ) == true )
+                                        {
+
+                                            tmp_ssh_client_2 = json_tokener_parse(json_object_get_string(tmp_ssh_client));
+
+                                            if ( json_object_object_get_ex(tmp_ssh_client_2, "proto_version", &tmp_ssh_client_3))
+                                                {
+
+                                                    strlcpy(Alert_Return_Struct->ssh_client_proto_version, (char *)json_object_get_string(tmp_ssh_client_3), sizeof(Alert_Return_Struct->ssh_client_proto_version));
+                                                }
+
+                                            if ( json_object_object_get_ex(tmp_ssh_client_2, "software_version", &tmp_ssh_client_3))
+                                                {
+
+                                                    strlcpy(Alert_Return_Struct->ssh_client_software_version, (char *)json_object_get_string(tmp_ssh_client_3), sizeof(Alert_Return_Struct->ssh_client_software_version));
+                                                }
+                                        }
+                                }
+                        }
+                }
+        }
 
     /* Sanity Checks
 
@@ -223,7 +499,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     if ( Alert_Return_Struct->payload[0] == '\0' )
         {
-//            Meer_Log(WARN, "JSON: \"%s\" : No payload found in flowid %s.  Setting to NONE.", json_string, Alert_Return_Struct->flowid);
             strlcpy(Alert_Return_Struct->payload, "No payload recorded by Meer", sizeof(Alert_Return_Struct->payload));
         }
 
@@ -256,7 +531,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     if ( Alert_Return_Struct->alert_rev == 0 )
         {
             Meer_Log(WARN, "JSON: \"%s\" : No alert -> rev found in flowid %s.  Setting to 0.", json_string, Alert_Return_Struct->flowid);
-	    Alert_Return_Struct->alert_rev = 0; 
+            Alert_Return_Struct->alert_rev = 0;
         }
 
     if ( Alert_Return_Struct->alert_signature[0] == '\0' )
@@ -267,7 +542,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     if ( Alert_Return_Struct->alert_category[0] == '\0' )
         {
-//                Meer_Log(WARN, "JSON: \"%s\" : No alert -> category found in flowid %s.  Setting to NONE.", json_string, Alert_Return_Struct->flowid);
             strlcpy(Alert_Return_Struct->alert_signature, "None", sizeof(Alert_Return_Struct->alert_signature));
         }
 
@@ -290,9 +564,22 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     /* Clean up local arrays */
 
     json_object_put(json_obj_alert);
-    json_object_put(tmp);
-    json_object_put(tmp_alert);
+    json_object_put(json_obj_flow);
+    json_object_put(json_obj_http);
+    json_object_put(json_obj_tls);
+    json_object_put(json_obj_ssh);
+    json_object_put(json_obj_ssh_server);
 
+    json_object_put(tmp_alert);
+    json_object_put(tmp_flow);
+    json_object_put(tmp_http);
+    json_object_put(tmp_tls);
+    json_object_put(tmp_ssh);
+    json_object_put(tmp_ssh_server);
+    json_object_put(tmp_ssh_server_2);
+    json_object_put(tmp_ssh_server_3);
+
+    json_object_put(tmp);
 
     return(Alert_Return_Struct);
 }

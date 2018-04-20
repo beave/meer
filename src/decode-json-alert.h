@@ -31,16 +31,21 @@ char src_dns[256];
     char dest_dns[256];
 
     char *proto;
-    char *app_proto;
+    char app_proto[16];
     char payload[131072];
     char *stream;
     char *packet;
 
-    bool has_extra_data; 
-    char *xff; 	
+    bool has_extra_data;
+    char *xff;
 
     char *icmp_type;
     char *icmp_code;
+
+
+    char packet_info_link[32];
+
+    /* Alert data */
 
     char alert_action[16];
     char alert_gid[5];
@@ -50,7 +55,56 @@ char src_dns[256];
     char alert_category[128];
     char alert_severity[5];
 
-    char packet_info_link[32];
+    /* Flow data */
+
+    bool     has_flow;
+
+    uint64_t flow_pkts_toserver;
+    uint64_t flow_pkts_toclient;
+    uint64_t flow_bytes_toserver;
+    uint64_t flow_bytes_toclient;
+    char flow_start_timestamp[64];
+
+    /* HTTP data */
+
+    bool     has_http;
+
+    char http_hostname[1024];
+    char http_url[4096];
+    char http_content_type[64];
+    char http_method[32];
+    char http_user_agent[16384];
+    char http_refer[4096];
+    char http_protocol[32];
+    char http_xff[128];
+    int  http_status;
+    uint64_t http_length;
+
+    /* TLS */
+
+    bool has_tls;
+
+    char tls_session_resumed[16];
+    char tls_sni[255];
+    char tls_version[16];
+
+    /* DNS */
+
+    bool has_dns;
+
+    /* SSH */
+
+    bool has_ssh_server;
+
+    char ssh_server_proto_version[8];
+    char ssh_server_software_version[128];
+
+    bool has_ssh_client;
+
+    char ssh_client_proto_version[8];
+    char ssh_client_software_version[128];
+
+
 
 };
 

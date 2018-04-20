@@ -205,6 +205,6 @@ AC_MSG_RESULT([])
 AC_MSG_RESULT([Meer has been configured!])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([Champ Clark III & The Quadrant InfoSec Team [[quadrantsec.com]]])
-AC_MSG_RESULT([Copyright (C) 2009-2018 Quadrant Information Security, et al.])
+AC_MSG_RESULT([Copyright (C) 2018 Quadrant Information Security, et al.])
 AC_MSG_RESULT([])
 

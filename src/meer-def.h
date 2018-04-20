@@ -16,6 +16,9 @@
 #define	UDP		17
 #define ICMP		1
 
+#define SSH_SERVER	0
+#define SSH_CLIENT	1
+
 #define DNS_CACHE_DEFAULT	900
 #define PACKET_BUFFER_SIZE_DEFAULT 131072
 

@@ -298,6 +298,45 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+                            else if ( !strcmp(last_pass, "flow" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->flow = true;
+                                        }
+
+                                }
+
+                            else if ( !strcmp(last_pass, "http" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->http = true;
+                                        }
+
+                                }
+
+                            else if ( !strcmp(last_pass, "tls" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->tls = true;
+                                        }
+
+                                }
+
+                            else if ( !strcmp(last_pass, "ssh" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->ssh = true;
+                                        }
+
+                                }
 
                             else if ( !strcmp(last_pass, "health" ) )
                                 {
@@ -309,8 +348,6 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-
-                            // health_signatures
 
                             else if ( !strcmp(last_pass, "health_signatures" ) && MeerConfig->health == true )
                                 {
@@ -371,12 +408,53 @@ void Load_YAML_Config( char *yaml_file )
                             if ( !strcmp(last_pass, "enabled" ))
                                 {
 
-                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ))
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
                                         {
                                             MeerOutput->mysql_enabled = true;
                                         }
 
                                 }
+
+                            if ( !strcmp(last_pass, "flow" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_flow = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "http" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_http = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "ssh" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_ssh = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "tls" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_tls = true;
+                                        }
+
+                                }
+
 
                             else if ( !strcmp(last_pass, "debug" ) && MeerOutput->mysql_enabled == true )
                                 {
@@ -411,6 +489,10 @@ void Load_YAML_Config( char *yaml_file )
                                 {
                                     strlcpy(MeerOutput->mysql_database, value, sizeof(MeerOutput->mysql_database));
                                 }
+
+
+
+
 
 
                         }

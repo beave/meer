@@ -22,50 +22,50 @@ libjson-c is required for Meer to function!
 
 #include "decode-json-alert.h"
 
-struct _Classifications *MeerClass; 
+struct _Classifications *MeerClass;
 
 bool Decode_JSON( char *json_string )
-    {
+{
 
-        struct json_object *json_obj;
-        struct json_object *tmp;
+    struct json_object *json_obj;
+    struct json_object *tmp;
 
-        if ( json_string == NULL )
-            {
-                return 1;
-            }
+    if ( json_string == NULL )
+        {
+            return 1;
+        }
 
-        json_obj = json_tokener_parse(json_string);
+    json_obj = json_tokener_parse(json_string);
 
-        if (json_object_object_get_ex(json_obj, "event_type", &tmp))
-            {
+    if (json_object_object_get_ex(json_obj, "event_type", &tmp))
+        {
 
-                if ( !strcmp(json_object_get_string(tmp), "alert") )
-                    {
+            if ( !strcmp(json_object_get_string(tmp), "alert") )
+                {
 
-                        //printf("json_string: |%s|\n", json_string);
+                    //printf("json_string: |%s|\n", json_string);
 
-                        struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
+                    struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
 
-                        DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
+                    DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
 
-                        Output_Alert( DecodeAlert, MeerClass );
-
-
-                        //printf("%s|\n", DecodeAlert->alert_signature);
-
-                        /* Done with decoding */
-
-                        free(DecodeAlert);
-
-                    }
-            }
+                    Output_Alert( DecodeAlert, MeerClass );
 
 
-        /* Delete json-c objects */
+                    //printf("%s|\n", DecodeAlert->alert_signature);
 
-        json_object_put(json_obj);
-        json_object_put(tmp);
+                    /* Done with decoding */
 
-        return 0;
-    }
+                    free(DecodeAlert);
+
+                }
+        }
+
+
+    /* Delete json-c objects */
+
+    json_object_put(json_obj);
+    json_object_put(tmp);
+
+    return 0;
+}
