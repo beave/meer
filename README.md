@@ -23,6 +23,12 @@ work with but usually contains valuable information that unifed2 does not.  This
 not aim to replicate all features of Barnyard2.  The idea is to replicate the more useful features
 and abandon the "cruft". 
 
+# Future support:
+
+Right now,  MySQL is the only "output" supported.  I would like to add Syslog and Elasticsearch
+in the future.  If you have an idea or request,  feel free to make a pull request!  If you're 
+not a programmer,  via our issues page and put in a request. 
+
 # Dependancies:
 
 Meer needs libjson-c,  libyaml and libmysqlclient (if you want to write to a MySQL database). 
