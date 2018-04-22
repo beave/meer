@@ -40,8 +40,8 @@
 
 #include "meer.h"
 #include "meer-def.h"
-#include "util.h"
 #include "config-yaml.h"
+#include "util.h"
 
 
 struct _MeerConfig *MeerConfig;
@@ -58,10 +58,10 @@ void Load_YAML_Config( char *yaml_file )
     yaml_event_t  event;
 
     bool done = 0;
+//    bool toggle = 0; 
 
     unsigned char type = 0;
     unsigned char sub_type = 0;
-    unsigned char toggle = 0;
 
     char *ptr1 = NULL;
     char *ptr2 = NULL;
@@ -180,18 +180,19 @@ void Load_YAML_Config( char *yaml_file )
                     done = true;
 
                 }
-
+/*
             else if ( event.type == YAML_MAPPING_START_EVENT )
                 {
 
                     toggle = 1;
 
                 }
+*/
 
             else if ( event.type == YAML_MAPPING_END_EVENT )
                 {
 
-                    toggle = 0;
+//                    toggle = 0;
                     sub_type = 0;
 
                 }

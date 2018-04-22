@@ -30,6 +30,8 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 #include "meer.h"
 #include "meer-def.h"

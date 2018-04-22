@@ -35,6 +35,7 @@
 #define BASE64_TABLE_MAX  122
 
 static inline void DecodeBase64Block(uint8_t ascii[ASCII_BLOCK], uint8_t b64[B64_BLOCK]);
+static inline int GetBase64Value(uint8_t c);
 
 
 /* Base64 character to index conversion table */

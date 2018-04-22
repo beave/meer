@@ -32,22 +32,24 @@
 #include <errno.h>
 #include <stdbool.h>
 
+#include "decode-json-alert.h"
+
+#include "meer.h"
+#include "meer-def.h"
+#include "util.h"
+#include "output.h"
+
 #ifdef HAVE_LIBMYSQLCLIENT
 #include <mysql/mysql.h>
 #include "output-plugins/mysql.h"
 MYSQL    *mysql;
 #endif
 
-#include "meer.h"
-#include "meer-def.h"
-#include "decode-json-alert.h"
-
 struct _MeerOutput *MeerOutput;
 struct _MeerConfig *MeerConfig;
 struct _MeerCounters *MeerCounters;
 struct _MeerHealth *MeerHealth;
 struct _Classifications *MeerClass;
-
 
 void Init_Output( void )
 {
@@ -201,5 +203,5 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 
 #endif
 
-
+return 0;
 }

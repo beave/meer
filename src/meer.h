@@ -137,3 +137,6 @@ struct _MeerCounters
 #endif
 
 };
+
+
+bool Decode_JSON( char * );

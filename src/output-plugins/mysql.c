@@ -31,17 +31,20 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <arpa/inet.h>
 
 #include <mysql/mysql.h>
+
+#include "decode-json-alert.h"
 
 #include "meer.h"
 #include "meer-def.h"
 #include "util.h"
-#include "decode-json-alert.h"
 #include "util-base64.h"
 #include "references.h"
 #include "classifications.h"
 #include "output-plugins/mysql.h"
+#include "lockfile.h"
 
 
 struct _MeerConfig *MeerConfig;
@@ -146,8 +149,6 @@ char *MySQL_DB_Query( char *sql )
     char tmp[MAX_MYSQL_QUERY];
     char *re = NULL;
 
-    int len = 0;
-
     MYSQL_RES *res;
     MYSQL_ROW row;
 
@@ -167,7 +168,7 @@ char *MySQL_DB_Query( char *sql )
 
     if ( res != NULL )
         {
-            while(row = mysql_fetch_row(res))
+            while( ( row = mysql_fetch_row(res) ) )
                 {
                     snprintf(tmp, sizeof(tmp), "%s", row[0]);
                     re=tmp;
@@ -201,7 +202,6 @@ int MySQL_Get_Class_ID ( struct _DecodeAlert *DecodeAlert )
     char class[64] = { 0 };
 
     int class_id = 0;
-    int signature_id = 0;
 
     int i = 0;
 
@@ -256,7 +256,6 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id )
 
     char tmp[MAX_MYSQL_QUERY];
     char *results;
-    char class[64];
     int i = 0;
     unsigned sig_priority = 0;
 
@@ -331,7 +330,6 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
 {
 
     char tmp[MAX_MYSQL_QUERY];
-    char *results;
     unsigned char proto = 0;
 
     unsigned char ip_src_bit[16];
@@ -361,7 +359,7 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
     /* DEBUG NEEDS IPv6 */
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO iphdr VALUES ( '%d', '%" PRIu64 "', '%" PRIu64 "', '%" PRIu64 "', '4', '0', '0', '0', '0', '0', '0', '0', '%d', '0' )",
+             "INSERT INTO iphdr VALUES ( '%d', '%" PRIu64 "', '%d, '%d', '4', '0', '0', '0', '0', '0', '0', '0', %u, '0' )",
              MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, htonl(*src_ip_u32), htonl(*dst_ip_u32), proto );
 
     (void)MySQL_DB_Query(tmp);
@@ -405,13 +403,13 @@ void MySQL_Insert_Payload ( struct _DecodeAlert *DecodeAlert )
 
     char tmp[MAX_MYSQL_QUERY];
 
-    int ret;
+    uint8_t ret;
 
     char *hex_encode;
     uint8_t *base64_decode = malloc(strlen(DecodeAlert->payload) * 2);
 
-    ret = DecodeBase64(base64_decode, (const uint8_t *)DecodeAlert->payload, strlen(DecodeAlert->payload), 1);
-    hex_encode = Hexify( base64_decode, ret );
+    ret = DecodeBase64( base64_decode, (const uint8_t *)DecodeAlert->payload, strlen(DecodeAlert->payload), 1);
+    hex_encode = Hexify( (char*)base64_decode, (int)ret );
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO data(sid, cid, data_payload) VALUES ('%d', '%" PRIu64 "', '%s')",
@@ -458,7 +456,7 @@ void MySQL_Insert_Extra_Data ( struct _DecodeAlert *DecodeAlert )
             snprintf(tmp, sizeof(tmp),
                      "INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d, %" PRIu64 ", %d, 1, %d, '%s')",
                      MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_ORIGNAL_CLIENT_IPV4,
-                     strlen( DecodeAlert->xff ), DecodeAlert->xff);
+                     (int)strlen( DecodeAlert->xff ), DecodeAlert->xff);
 
             (void)MySQL_DB_Query(tmp);
 
@@ -544,7 +542,7 @@ void MySQL_Insert_TLS ( struct _DecodeAlert *DecodeAlert )
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO tls (sid,cid,subject,issuerdn,serial,fingerprint,session_resumed,sni,version,notbefore,notafter) "
-             "VALUES ( %d, %" PRIu64 ", '%s', '%s', %d, '%d', '%s', '%s', '%s', '%s', '%s' )",
+             "VALUES ( %d, %" PRIu64 ", '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s' )",
              MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
              e_tls_subject,
              e_tls_issuerdn,

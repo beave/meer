@@ -28,6 +28,7 @@
 
 #include "meer.h"
 #include "meer-def.h"
+#include "util.h"
 #include "references.h"
 
 //struct _References *MeerReferences;
@@ -47,7 +48,6 @@ struct _References *Load_References( void )
     char *ptr1 = NULL;
     char *ptr2 = NULL;
     char *ptr3 = NULL;
-    char *ptr4 = NULL;
 
     FILE *reference_fd;
 

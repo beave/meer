@@ -34,9 +34,12 @@
 #include <string.h>
 #include <netdb.h>
 #include <sys/socket.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 #include "meer.h"
 #include "meer-def.h"
+#include "lockfile.h"
 #include "util.h"
 
 struct _MeerConfig *MeerConfig;
@@ -48,7 +51,6 @@ void Drop_Priv(void)
 {
 
     struct passwd *pw = NULL;
-    int ret;
 
     pw = getpwnam(MeerConfig->runas);
 
@@ -260,7 +262,6 @@ void DNS_Lookup( char *host, char *str, size_t size )
 
 
     struct sockaddr_in ipaddr;
-    char *ret = NULL;
     time_t t;
     struct tm *run;
     char utime_string[20] = { 0 };
@@ -271,8 +272,6 @@ void DNS_Lookup( char *host, char *str, size_t size )
     strftime(utime_string, sizeof(utime_string), "%s",  run);
     uint64_t utime = atol(utime_string);
 
-    int s = 0;
-
     char host_r[NI_MAXHOST] = { 0 };
 
     for (i=0; i<DnsCacheCount; i++)
@@ -281,6 +280,7 @@ void DNS_Lookup( char *host, char *str, size_t size )
             /* If we have a fresh copy,  return whats in memory */
 
             if ( !strcmp(host, DnsCache[i].ipaddress ) )
+		{
 
                 if ( ( utime - DnsCache[i].lookup_time ) < 300 )
                     {
@@ -301,7 +301,7 @@ void DNS_Lookup( char *host, char *str, size_t size )
 
                         inet_pton(AF_INET, host, &ipaddr.sin_addr);
 
-                        s = getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
+                        getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
 
                         strlcpy(DnsCache[i].reverse, host_r, sizeof(DnsCache[i].reverse));
                         DnsCache[i].lookup_time = utime;
@@ -309,6 +309,8 @@ void DNS_Lookup( char *host, char *str, size_t size )
                         snprintf(str, size, "%s", DnsCache[i].reverse);
                         return;
                     }
+
+		}
 
         }
 
@@ -319,7 +321,7 @@ void DNS_Lookup( char *host, char *str, size_t size )
 
     inet_pton(AF_INET, host, &ipaddr.sin_addr);
 
-    s = getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
+    getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
 
     /* Insert DNS into cache */
 

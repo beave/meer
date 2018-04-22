@@ -82,9 +82,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     struct json_object *json_obj_ssh_server = NULL;
     struct json_object *json_obj_ssh_client = NULL;
 
-    char src_dns[256] = { 0 };
-    char dest_dns[256] = { 0 };
-
     bool has_alert = false;
 
     Alert_Return_Struct = malloc(sizeof(_DecodeAlert));
@@ -141,7 +138,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     Alert_Return_Struct->smtp_helo[0] = '\0';
     Alert_Return_Struct->smtp_mail_from[0] = '\0';
-    Alert_Return_Struct->smtp_rcpt_to[0] - '\0';
+    Alert_Return_Struct->smtp_rcpt_to[0] = '\0';
 
     /* HTTP */
 

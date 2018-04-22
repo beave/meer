@@ -16,4 +16,7 @@ bool Check_Endian(void);
 char *Hexify(char *xdata, int length);
 void DNS_Lookup( char *host, char *str, size_t size );
 bool Validate_JSON_String( char *buf );
-
+bool IP2Bit(char *ipaddr, unsigned char *out);
+void Remove_Spaces(char *s);
+void Remove_Return(char *s);
+uint64_t Epoch_Lookup( void );

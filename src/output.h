@@ -1,7 +1,7 @@
 /*                                              
 ** Copyright (C) 2018 Quadrant Information Security <quadrantsec.com>
 ** Copyright (C) 2018 Champ Clark III <cclark@quadrantsec.com>
-**
+**                          
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License Version 2 as
 ** published by the Free Software Foundation.  You may not use, modify or  
@@ -13,25 +13,10 @@
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ** GNU General Public License for more details.
 **                                  
-** You should have received a copy of the GNU General Public License
+** You should have received a copy of the GNU General Public License  
 ** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"             /* From autoconf */
-#endif
-
-/* Classification structure */
-
-typedef struct _Classifications _Classifications;
-struct _Classifications
-{
-    char classtype[64];
-    char description[128];
-    unsigned char priority;
-};
-
-void Load_Classifications( void );
-unsigned char Class_Lookup_Priority( const char *class );
-int Class_Lookup( const char *class, char *str, size_t size );
+void Init_Output( void );
+bool Output_Alert ( struct _DecodeAlert *DecodeAlert );

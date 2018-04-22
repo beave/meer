@@ -43,18 +43,23 @@
 
 #include "meer.h"
 #include "meer-def.h"
+#include "decode-json-alert.h"
 
-#include "util-signal.h"
-#include "lockfile.h"
 #include "util.h"
+#include "util-signal.h"
+#include "config-yaml.h"
+#include "lockfile.h"
 #include "references.h"
 #include "classifications.h"
+#include "waldo.h"
+#include "output.h"
 
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
 struct _MeerWaldo *MeerWaldo;
 struct _MeerCounters *MeerCounters;
+struct _Classifications *MeerClass;
 
 // signal
 // open waldo / write waldo
@@ -72,7 +77,7 @@ int main (int argc, char *argv[])
         signal(SIGSEGV, &Signal_Handler );
     */
 
-    struct _Classifications *MeerClass;
+//    struct _Classifications *MeerClass;
 //    struct _References *MeerReferences;
 
     char *yaml_file = DEFAULT_CONFIG;
@@ -88,10 +93,6 @@ int main (int argc, char *argv[])
 
     uint64_t linecount = 0;
     uint64_t old_size = 0;
-    uint64_t new_size = 0;
-
-    struct json_object *json_obj;
-    struct json_object *tmp;
 
     MeerCounters = malloc(sizeof(_MeerCounters));
 
@@ -129,7 +130,7 @@ int main (int argc, char *argv[])
 
     MeerConfig->endian = Check_Endian();
 
-    MeerClass = Load_Classifications();
+    Load_Classifications();
 //    MeerReferences = Load_References();
 
     Meer_Log(NORMAL, "");
@@ -186,7 +187,7 @@ int main (int argc, char *argv[])
 
             if ( skip_flag == 0 )
                 {
-                    Decode_JSON( (char*)buf, MeerClass);
+                    Decode_JSON( (char*)buf );
                 }
 
             MeerWaldo->position++;
@@ -231,7 +232,7 @@ int main (int argc, char *argv[])
 
                             if ( skip_flag == true )
                                 {
-                                    Decode_JSON( (char*)buf, MeerClass);
+                                    Decode_JSON( (char*)buf);
                                 }
 
                             MeerWaldo->position++;

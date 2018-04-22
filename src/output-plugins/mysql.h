@@ -19,6 +19,7 @@
 */                                      
                                             
 #include <inttypes.h>
+//#include "decode-json-alert.h"
 
 typedef struct _SignatureCache _SignatureCache;
 struct _SignatureCache
@@ -54,3 +55,11 @@ void MySQL_Insert_Metadata ( struct _DecodeAlert *DecodeAlert );
 void MySQL_Insert_SMTP ( struct _DecodeAlert *DecodeAlert );
 void MySQL_Insert_Email ( struct _DecodeAlert *DecodeAlert );
 void MySQL_Escape_String( char *sql, char *str, size_t size );
+void MySQL_Record_Last_CID ( void );
+void MySQL_Connect( void );
+int MySQL_Get_Class_ID ( struct _DecodeAlert *DecodeAlert );
+int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id );
+void MySQL_Insert_Event ( struct _DecodeAlert *DecodeAlert, int signature_id );
+uint64_t MySQL_Get_Last_CID( void );
+uint32_t MySQL_Get_Sensor_ID( void );
+void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert );

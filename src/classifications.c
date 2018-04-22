@@ -30,13 +30,14 @@
 
 #include "meer.h"
 #include "meer-def.h"
+#include "util.h"
 #include "classifications.h"
 
 struct _MeerCounters *MeerCounters;
 struct _MeerConfig *MeerConfig;
 struct _Classifications *MeerClass;
 
-struct _Classifications *Load_Classifications( void )
+void Load_Classifications( void )
 {
 
     int linecount = 0;
@@ -110,7 +111,6 @@ struct _Classifications *Load_Classifications( void )
     Meer_Log(NORMAL, "Classifications file loaded [%s].", MeerConfig->classification_file);
     fclose(class_fd);
 
-    return(MeerClass);
 }
 
 
