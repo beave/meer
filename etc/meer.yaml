@@ -21,6 +21,14 @@ meer-core:
     sid_file: "/tmp/sid-msg.map"
     #gen-msg-map: "/tmp/gen-msg.map"
 
+    metadata: enabled
+    flow: enabled
+    http: enabled
+    tls: enabled
+    ssh: enabled
+    smtp: enabled
+    email: enabled
+
     dns: enabled
     dns_cache: 900
 
@@ -29,7 +37,7 @@ meer-core:
 
     waldo-file: "/tmp/my.waldo"
     lock-file: "/tmp/meer.lck"
-    follow-eve: "/tmp/alert-ids.json"
+    follow-eve: "/tmp/alert.json"
 
 
 output-plugins:
@@ -43,4 +51,12 @@ output-plugins:
     username: "XXXX"
     password: "XXXXXX"
     database: "snort_test"
+
+    metadata: enabled
+    flow: enabled
+    http: enabled
+    tls: enabled
+    ssh: enabled
+    smtp: enabled
+    email: enabled
 

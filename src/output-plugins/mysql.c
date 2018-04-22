@@ -286,7 +286,7 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id )
         {
 
             snprintf(tmp, sizeof(tmp), "INSERT INTO signature(sig_name, sig_class_id, sig_priority, sig_rev, sig_sid) "
-                     "VALUES ('%s', '%d', '%d', '%d', '%" PRIu64 "' )", DecodeAlert->alert_signature, class_id, sig_priority,
+                     "VALUES ('%s', %d, %d, %d, %" PRIu64 " )", DecodeAlert->alert_signature, class_id, sig_priority,
                      DecodeAlert->alert_rev, DecodeAlert->alert_signature_id);
 
             (void)MySQL_DB_Query(tmp);
@@ -359,7 +359,7 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
     /* DEBUG NEEDS IPv6 */
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO iphdr VALUES ( '%d', '%" PRIu64 "', '%d, '%d', '4', '0', '0', '0', '0', '0', '0', '0', %u, '0' )",
+             "INSERT INTO iphdr ( sid, cid, ip_src, ip_dst, ip_ver, ip_proto) VALUES ( %d, %" PRIu64 ", %" PRIu32 ", %" PRIu32 ", 4, %u )",
              MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, htonl(*src_ip_u32), htonl(*dst_ip_u32), proto );
 
     (void)MySQL_DB_Query(tmp);
@@ -368,7 +368,7 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
         {
 
             snprintf(tmp, sizeof(tmp),
-                     "INSERT INTO tcphdr VALUES ( '%d', '%" PRIu64 "', '%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0'  )",
+                     "INSERT INTO tcphdr (sid,cid,tcp_sport,tcp_dport) VALUES ( %d, %" PRIu64 ", %s, %s )",
                      MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, DecodeAlert->src_port, DecodeAlert->dest_port  );
 
             (void)MySQL_DB_Query(tmp);
@@ -379,7 +379,7 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
         {
 
             snprintf(tmp, sizeof(tmp),
-                     "INSERT INTO udphdr VALUES ( '%d', '%" PRIu64 "', '%s', '%s', '0', '0' )",
+                     "INSERT INTO udphdr (sid,cid,udp_sport,udp_dport) VALUES ( %d, %" PRIu64 ",%s,%s)",
                      MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, DecodeAlert->src_port, DecodeAlert->dest_port );
 
             (void)MySQL_DB_Query(tmp);
@@ -389,7 +389,7 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
     else if ( proto == ICMP )
         {
 
-            snprintf(tmp, sizeof(tmp), "INSERT INTO icmphdr VALUES ( '%d', '%" PRIu64 "', '%s', '%s', '0', '0', '0' )",
+            snprintf(tmp, sizeof(tmp), "INSERT INTO icmphdr (sid,cid,icmptype,icmpcode) VALUES ( %d, %" PRIu64 ", %s, %s)",
                      MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, DecodeAlert->icmp_type, DecodeAlert->icmp_code );
 
             (void)MySQL_DB_Query(tmp);
@@ -412,7 +412,7 @@ void MySQL_Insert_Payload ( struct _DecodeAlert *DecodeAlert )
     hex_encode = Hexify( (char*)base64_decode, (int)ret );
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO data(sid, cid, data_payload) VALUES ('%d', '%" PRIu64 "', '%s')",
+             "INSERT INTO data(sid, cid, data_payload) VALUES (%d, %" PRIu64 ", '%s')",
              MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, hex_encode );
 
     (void)MySQL_DB_Query(tmp);
@@ -435,7 +435,7 @@ void MySQL_Insert_DNS ( struct _DecodeAlert *DecodeAlert )
         }
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO dns(sid, cid, src_host, dst_host) VALUES ('%d', '%" PRIu64 "', '%s', '%s')",
+             "INSERT INTO dns(sid, cid, src_host, dst_host) VALUES (%d, %" PRIu64 ", '%s', '%s')",
              MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
              DecodeAlert->src_dns,
              DecodeAlert->dest_dns );
@@ -486,19 +486,6 @@ void MySQL_Insert_HTTP ( struct _DecodeAlert *DecodeAlert )
 {
 
     char tmp[MAX_MYSQL_QUERY] = { 0 };
-
-    /*
-        char http_hostname[255];
-        char http_url[2100];
-        char http_content_type[54];
-        char http_method[32];
-        char http_user_agent[8192];
-        char http_refer[2100];
-        char http_protocol[32];
-        char http_xff[64];
-        int  http_status;
-        uint64_t http_length;
-    */
 
     char e_http_hostname[255] = { 0 };
     char e_http_url[2100] = { 0 };
