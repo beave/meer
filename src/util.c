@@ -346,7 +346,7 @@ bool Validate_JSON_String( char *validate_in_string )
     if ( validate_string[0] != '{' )
         {
             Meer_Log(WARN, "JSON: \"%s\".  Doesn't appear to start as a valid JSON/EVE string. Skipping line.", validate_in_string);
-            return false;
+            return 1;
         }
 
 
@@ -355,12 +355,10 @@ bool Validate_JSON_String( char *validate_in_string )
     if ( ( validate_string[ strlen(validate_string) - 1] != '}' ) && ( validate_string[ strlen(validate_string) - 2] != '}' ) )
         {
             Meer_Log(WARN, "JSON: \"%s\". JSON might be truncated.  Consider increasing 'payload-buffer-size' in Suricata or Sagan. Skipping line.", validate_string);
-            return false;
+            return 1;
         }
 
-
-
-    return true;
+    return 0;
 }
 
 

@@ -125,6 +125,8 @@ char *MySQL_DB_Query( char *sql )
     char tmp[MAX_MYSQL_QUERY];
     char *re = NULL;
 
+    int len = 0;
+
     MYSQL_RES *res;
     MYSQL_ROW row;
 
@@ -180,20 +182,20 @@ int MySQL_Get_Class_ID ( struct _DecodeAlert *DecodeAlert )
     int class_id = 0;
     int signature_id = 0;
 
-    int i = 0; 
+    int i = 0;
 
     /* Check cache */
 
     for (i = 0; i<ClassificationCacheCount; i++)
-	{
+        {
 
-	if ( !strcmp(DecodeAlert->alert_category, ClassificationCache[i].class_name))
-	{
-		return(ClassificationCache[i].sig_class_id);
-	}
+            if ( !strcmp(DecodeAlert->alert_category, ClassificationCache[i].class_name))
+                {
+                    return(ClassificationCache[i].sig_class_id);
+                }
 
-	}
-    
+        }
+
     /* Lookup classtype based off the description */
 
     Class_Lookup( DecodeAlert->alert_category, class, sizeof(class) );
@@ -242,16 +244,16 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id )
     /* Search cache */
 
     for (i = 0; i<SignatureCacheCount; i++)
-	{
+        {
 
-	if (!strcmp(SignatureCache[i].sig_name, DecodeAlert->alert_signature) &&
-	            SignatureCache[i].sig_rev == DecodeAlert->alert_rev && 
-		    SignatureCache[i].sig_sid == DecodeAlert->alert_signature_id ) 
-		{
-			return(SignatureCache[i].sig_id);
-		}
+            if (!strcmp(SignatureCache[i].sig_name, DecodeAlert->alert_signature) &&
+                    SignatureCache[i].sig_rev == DecodeAlert->alert_rev &&
+                    SignatureCache[i].sig_sid == DecodeAlert->alert_signature_id )
+                {
+                    return(SignatureCache[i].sig_id);
+                }
 
-	}
+        }
 
     sig_priority = Class_Lookup_Priority( DecodeAlert->alert_category);
 
@@ -278,13 +280,13 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id )
     /* Add signature to cache */
 
     SignatureCache = (_SignatureCache *) realloc(SignatureCache, (SignatureCacheCount+1) * sizeof(_SignatureCache));
-    
+
     SignatureCache[SignatureCacheCount].sig_id = signature_id;
     SignatureCache[SignatureCacheCount].sig_rev = DecodeAlert->alert_rev;
     SignatureCache[SignatureCacheCount].sig_sid = DecodeAlert->alert_signature_id;
-    
+
     strlcpy(SignatureCache[SignatureCacheCount].sig_name, DecodeAlert->alert_signature, sizeof(SignatureCache[SignatureCacheCount].sig_name));
-    
+
     SignatureCacheCount++;
 
     return(signature_id);
@@ -415,7 +417,9 @@ void MySQL_Insert_DNS ( struct _DecodeAlert *DecodeAlert )
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO dns(sid, cid, src_host, dst_host) VALUES ('%d', '%" PRIu64 "', '%s', '%s')",
-             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, DecodeAlert->src_dns, DecodeAlert->dest_dns);
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+             DecodeAlert->src_dns,
+             DecodeAlert->dest_dns );
 
     (void)MySQL_DB_Query(tmp);
 
@@ -425,109 +429,247 @@ void MySQL_Insert_DNS ( struct _DecodeAlert *DecodeAlert )
 void MySQL_Insert_Extra_Data ( struct _DecodeAlert *DecodeAlert )
 {
 
-char tmp[MAX_MYSQL_QUERY] = { 0 };
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
 
-	if ( DecodeAlert->xff != NULL ) 
-		{
+    if ( DecodeAlert->xff != NULL )
+        {
 
-		snprintf(tmp, sizeof(tmp), 
-		"INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d, %" PRIu64 ", %d, 1, %d, '%s')", 
-		MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_ORIGNAL_CLIENT_IPV4,
-		strlen( DecodeAlert->xff ), DecodeAlert->xff);
+            snprintf(tmp, sizeof(tmp),
+                     "INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d, %" PRIu64 ", %d, 1, %d, '%s')",
+                     MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_ORIGNAL_CLIENT_IPV4,
+                     strlen( DecodeAlert->xff ), DecodeAlert->xff);
 
-		(void)MySQL_DB_Query(tmp);
+            (void)MySQL_DB_Query(tmp);
 
-		}
+        }
 
 }
 
 void MySQL_Insert_Flow ( struct _DecodeAlert *DecodeAlert )
 {
 
-char tmp[MAX_MYSQL_QUERY] = { 0 };
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
 
-	snprintf(tmp, sizeof(tmp), 
-	"INSERT INTO flow (sid,cid,pkts_toserver,pkts_toclient,bytes_toserver,bytes_toclient,start_timestamp) "
-	"VALUES ( %d, %" PRIu64 ", %" PRIu64 ", %" PRIu64 ", %" PRIu64 ", %" PRIu64 ", '%s')", 
-	MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, DecodeAlert->flow_pkts_toserver, 
-	DecodeAlert->flow_pkts_toclient, DecodeAlert->flow_bytes_toserver, DecodeAlert->flow_bytes_toclient, 
-	DecodeAlert->flow_start_timestamp ); 
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO flow (sid,cid,pkts_toserver,pkts_toclient,bytes_toserver,bytes_toclient,start_timestamp) "
+             "VALUES ( %d, %" PRIu64 ", %" PRIu64 ", %" PRIu64 ", %" PRIu64 ", %" PRIu64 ", '%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+             DecodeAlert->flow_pkts_toserver,
+             DecodeAlert->flow_pkts_toclient,
+             DecodeAlert->flow_bytes_toserver,
+             DecodeAlert->flow_bytes_toclient,
+             DecodeAlert->flow_start_timestamp );
 
-	(void)MySQL_DB_Query(tmp);
+    (void)MySQL_DB_Query(tmp);
 }
 
 void MySQL_Insert_HTTP ( struct _DecodeAlert *DecodeAlert )
 {
 
-char tmp[MAX_MYSQL_QUERY] = { 0 };
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
 
+    /*
+        char http_hostname[255];
+        char http_url[2100];
+        char http_content_type[54];
+        char http_method[32];
+        char http_user_agent[8192];
+        char http_refer[2100];
+        char http_protocol[32];
+        char http_xff[64];
+        int  http_status;
+        uint64_t http_length;
+    */
 
+    char e_http_hostname[255] = { 0 };
+    char e_http_url[2100] = { 0 };
+    char e_http_user_agent[8192] = { 0 };
+    char e_http_refer[2100] = { 0 };
 
-        snprintf(tmp, sizeof(tmp),
-        "INSERT INTO http (sid,cid,hostname,url,xff,http_content_type,http_method,http_user_agent,http_refer,protocol,status,length) "
-        "VALUES ( %d, %" PRIu64 ", '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %" PRIu64 ")", 
-	MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, 
-	Hexify(DecodeAlert->http_hostname, strlen(DecodeAlert->http_hostname)), 
-	Hexify(DecodeAlert->http_url,strlen(DecodeAlert->http_url)), 
-	DecodeAlert->http_xff,
-	DecodeAlert->http_content_type, 
-	DecodeAlert->http_method, 
-	Hexify(DecodeAlert->http_user_agent, strlen(DecodeAlert->http_user_agent)),
-	Hexify(DecodeAlert->http_refer, strlen(DecodeAlert->http_refer)), 
-	DecodeAlert->http_protocol, DecodeAlert->http_status, DecodeAlert->http_length);
+    MySQL_Escape_String( DecodeAlert->http_hostname, e_http_hostname, sizeof(e_http_hostname));
+    MySQL_Escape_String( DecodeAlert->http_url, e_http_url, sizeof(e_http_url));
+    MySQL_Escape_String( DecodeAlert->http_user_agent, e_http_user_agent, sizeof(e_http_user_agent));
+    MySQL_Escape_String( DecodeAlert->http_refer, e_http_refer, sizeof(e_http_refer));
 
-        (void)MySQL_DB_Query(tmp);
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO http (sid,cid,hostname,url,xff,http_content_type,http_method,http_user_agent,http_refer,protocol,status,length) "
+             "VALUES ( %d, %" PRIu64 ", '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %" PRIu64 ")",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+             e_http_hostname,
+             e_http_url,
+             DecodeAlert->http_xff,
+             DecodeAlert->http_content_type,
+             DecodeAlert->http_method,
+             e_http_user_agent,
+             e_http_refer,
+             DecodeAlert->http_protocol,
+             DecodeAlert->http_status,
+             DecodeAlert->http_length);
+
+    (void)MySQL_DB_Query(tmp);
 
 }
 
 void MySQL_Insert_TLS ( struct _DecodeAlert *DecodeAlert )
 {
 
-char tmp[MAX_MYSQL_QUERY] = { 0 };
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
 
-	snprintf(tmp, sizeof(tmp), 
-	"INSERT INTO tls (sid,cid,session_resumed,sni,version) "
-	"VALUES ( %d, %" PRIu64 ", '%s', '%s', '%s' )", 
-	MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
-	DecodeAlert->tls_session_resumed, DecodeAlert->tls_sni, DecodeAlert->tls_version);
+    char e_tls_issuerdn[256] = { 0 };
+    char e_tls_subject[256] = { 0 };
 
-	(void)MySQL_DB_Query(tmp);
-	
+    MySQL_Escape_String( DecodeAlert->tls_issuerdn, e_tls_issuerdn, sizeof(e_tls_issuerdn));
+    MySQL_Escape_String( DecodeAlert->tls_subject, e_tls_subject, sizeof(e_tls_subject));
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO tls (sid,cid,subject,issuerdn,serial,fingerprint,session_resumed,sni,version,notbefore,notafter) "
+             "VALUES ( %d, %" PRIu64 ", '%s', '%s', %d, '%d', '%s', '%s', '%s', '%s', '%s' )",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+             e_tls_subject,
+             e_tls_issuerdn,
+             DecodeAlert->tls_serial,
+             DecodeAlert->tls_fingerprint,
+             DecodeAlert->tls_session_resumed,
+             DecodeAlert->tls_sni,
+             DecodeAlert->tls_version,
+             DecodeAlert->tls_notbefore,
+             DecodeAlert->tls_notafter );
+
+    (void)MySQL_DB_Query(tmp);
+
 }
 
 
 void MySQL_Insert_SSH ( struct _DecodeAlert *DecodeAlert, unsigned char type )
 {
 
-	char tmp[MAX_MYSQL_QUERY] = { 0 };
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
 
-	char *table = NULL;
-	char *proto = NULL;
-	char *software = NULL;
+    char *table = NULL;
+    char *proto = NULL;
+    char e_software[128] = { 0 };
 
-	if ( type == SSH_CLIENT ) 
-		{
-		table = "ssh_client"; 
-		proto = DecodeAlert->ssh_client_proto_version;
-	        software = DecodeAlert->ssh_client_software_version;
-		} else { 
-                table = "ssh_server";
-                proto = DecodeAlert->ssh_server_proto_version;
-                software = DecodeAlert->ssh_server_software_version;
-		}
+    if ( type == SSH_CLIENT )
+        {
 
-	snprintf(tmp, sizeof(tmp), 
-	"INSERT INTO %s (sid,cid,proto_version,sofware_version) "
-	"VALUES ( %d, %" PRIu64 ", '%s', '%s' )", 
-	table,MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
-	proto, Hexify(software, strlen(software)) ); 
+            table = "ssh_client";
+            proto = DecodeAlert->ssh_client_proto_version;
 
-	(void)MySQL_DB_Query(tmp);
+            MySQL_Escape_String( DecodeAlert->ssh_client_software_version,
+                                 e_software, sizeof(e_software));
+
+        }
+    else
+        {
+
+            table = "ssh_server";
+            proto = DecodeAlert->ssh_server_proto_version;
+
+            MySQL_Escape_String( DecodeAlert->ssh_server_software_version,
+                                 e_software, sizeof(e_software));
+
+        }
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO %s (sid,cid,proto_version,sofware_version) "
+             "VALUES ( %d, %" PRIu64 ", '%s', '%s' )",
+             table,MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+             proto, e_software );
+
+    (void)MySQL_DB_Query(tmp);
+
+}
+
+void MySQL_Insert_Metadata ( struct _DecodeAlert *DecodeAlert )
+{
+
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
+    char e_alert_metadata[1024] = { 0 };
+
+    MySQL_Escape_String( DecodeAlert->alert_metadata, e_alert_metadata, sizeof(e_alert_metadata));
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO metadata (sid,cid,metadata) "
+             "VALUES ( %d, %" PRIu64 ", '%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+             e_alert_metadata);
+
+    (void)MySQL_DB_Query(tmp);
+
+}
+
+void MySQL_Insert_SMTP ( struct _DecodeAlert *DecodeAlert )
+{
+
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
+    char e_helo[255] = { 0 };
+    char e_mail_from[255] = { 0 };
+    char e_rcpt_to[131072] = { 0 };
+
+    MySQL_Escape_String( DecodeAlert->smtp_helo, e_helo, sizeof(e_helo));
+    MySQL_Escape_String( DecodeAlert->smtp_mail_from, e_mail_from, sizeof(e_mail_from));
+    MySQL_Escape_String( DecodeAlert->smtp_rcpt_to, e_rcpt_to, sizeof(e_rcpt_to));
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO smtp (sid,cid,helo,mail_from,rcpt_to) "
+             "VALUES ( %d, %" PRIu64 ", '%s', '%s', '%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+             e_helo,
+             e_mail_from,
+             e_rcpt_to);
+
+    (void)MySQL_DB_Query(tmp);
+
+}
+
+void MySQL_Insert_Email ( struct _DecodeAlert *DecodeAlert )
+{
+
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
+
+    char e_from[1024] = { 0 };
+    char e_to[10240] = { 0 };
+    char e_cc[10240] = { 0 };
+    char e_attachment[10240] = { 0 };
+
+    MySQL_Escape_String( DecodeAlert->email_from, e_from, sizeof(e_from));
+    MySQL_Escape_String( DecodeAlert->email_to, e_to, sizeof(e_to));
+    MySQL_Escape_String( DecodeAlert->email_cc, e_cc, sizeof(e_cc));
+    MySQL_Escape_String( DecodeAlert->email_attachment, e_attachment, sizeof(e_attachment));
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO email (sid,cid,status,email_from,email_to,email_cc,attachment) "
+             "VALUES ( %d, %" PRIu64 ", '%s', '%s', '%s', '%s', '%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid,
+             DecodeAlert->email_status,
+             e_from,
+             e_to,
+             e_cc,
+             e_attachment);
+
+    (void)MySQL_DB_Query(tmp);
+
 
 }
 
 
+void MySQL_Escape_String( char *sql, char *str, size_t size )
+{
 
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
+
+    int len = 0;
+
+    len = mysql_real_escape_string(MeerOutput->mysql_dbh, tmp, sql, strlen(sql));
+    tmp[len] = '\0';
+
+    snprintf(str, size, "%s", tmp);
+    return;
+
+}
+
+// Valid with
+// len = mysql_real_escape_string(MeerOutput->mysql_dbh, tmp, sql, strlen(sql));
 
 /*
 MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert,

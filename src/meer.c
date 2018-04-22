@@ -24,7 +24,8 @@
 	   reference data?
 	   add perl reference routine
 
-	   Stats on flows, http, etc.
+	   Stats on flows, http, health, etc.  Numbers get confusuing without that.
+ 	   make it part of a stats.c.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -131,11 +132,15 @@ int main (int argc, char *argv[])
     MeerClass = Load_Classifications();
 //    MeerReferences = Load_References();
 
-    Meer_Log(NORMAL, "Decode 'flow': %s", MeerConfig->flow ? "enabled" : "disabled" );
-    Meer_Log(NORMAL, "Decode 'http': %s", MeerConfig->http ? "enabled" : "disabled" );
-    Meer_Log(NORMAL, "Decode 'tls' : %s", MeerConfig->http ? "enabled" : "disabled" );
-    Meer_Log(NORMAL, "Decode 'ssh' : %s", MeerConfig->ssh ? "enabled" : "disabled" );
-
+    Meer_Log(NORMAL, "");
+    Meer_Log(NORMAL, "Decode 'metadata': %s", MeerConfig->metadata ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'flow'    : %s", MeerConfig->flow ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'http'    : %s", MeerConfig->http ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'tls'     : %s", MeerConfig->tls ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'ssh'     : %s", MeerConfig->ssh ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'smtp'    : %s", MeerConfig->smtp ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'email'   : %s", MeerConfig->email ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "");
 
     CheckLockFile();
 
@@ -169,10 +174,17 @@ int main (int argc, char *argv[])
     while(fgets(buf, sizeof(buf), fd_file) != NULL)
         {
 
+            /*
+                    if (buf[0] == '#' || buf[0] == 10 || buf[0] == ';' || buf[0] == 32)
+                            {
+            		    Meer_Log(WARN, "Skipping line");
+                                continue;
+                            }
+            */
 
             skip_flag = Validate_JSON_String( (char*)buf );
 
-            if ( skip_flag == true )
+            if ( skip_flag == 0 )
                 {
                     Decode_JSON( (char*)buf, MeerClass);
                 }
@@ -206,6 +218,14 @@ int main (int argc, char *argv[])
 
                     while(fgets(buf, sizeof(buf), fd_file) != NULL)
                         {
+
+                            /*
+                                        		if (buf[0] == '#' || buf[0] == 10 || buf[0] == ';' || buf[0] == 32)
+                                            	{
+                            			Meer_Log(WARN, "Skipping line.");
+                                               	continue;
+                                            	}
+                            */
 
                             skip_flag = Validate_JSON_String( (char*)buf );
 

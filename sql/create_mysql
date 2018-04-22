@@ -5,6 +5,9 @@
 # NEW http
 # NEW tls
 # NEW ssh_server
+# NEW metadata
+# NEW smtp
+# NEW email
 
 # Added to event "app_proto"
 # Added to event "flow_id"
@@ -194,7 +197,7 @@ CREATE TABLE flow (sid         INT      UNSIGNED NOT NULL,
 
 CREATE TABLE http (sid        	INT      UNSIGNED NOT NULL,
 		   cid         	BIGINT   UNSIGNED NOT NULL,
-	  	   hostname    	VARCHAR(512), 
+	  	   hostname    	VARCHAR(255), 
 		   url	      	TEXT, 
 		   xff	        VARCHAR(64),
 		   http_content_type VARCHAR(64), 
@@ -209,9 +212,15 @@ CREATE TABLE http (sid        	INT      UNSIGNED NOT NULL,
 
 CREATE TABLE tls (sid         INT      UNSIGNED NOT NULL,
                    cid         INT      UNSIGNED NOT NULL,
+		   subject	VARCHAR(256), 
+		   issuerdn	VARCHAR(256), 
+		   serial	INT	UNSIGNED NULL,
+		   fingerprint VARCHAR(128), 
 		   session_resumed VARCHAR(8),
 		   sni	       VARCHAR(255), 
 		   version     VARCHAR(16), 
+		   notbefore    DATETIME,
+		   notafter	DATETIME,
 		   KEY `event` (sid,cid));
 
 
@@ -226,5 +235,29 @@ CREATE TABLE ssh_client (sid         INT      UNSIGNED NOT NULL,
                    proto_version VARCHAR(8),
                    sofware_version VARCHAR(64),
                    KEY `event` (sid,cid));
-		  
+
+CREATE TABLE metadata (sid         INT      UNSIGNED NOT NULL,
+                   cid         INT      UNSIGNED NOT NULL,
+                   metadata TEXT, 
+	           KEY `event` (sid,cid));
+
+
+CREATE TABLE smtp (sid         INT      UNSIGNED NOT NULL,
+                   cid         INT      UNSIGNED NOT NULL,
+                   helo        VARCHAR(255), 
+                   mail_from   VARCHAR(255),
+		   rcpt_to     TEXT,
+		   KEY `event` (sid,cid));
+
+
+CREATE TABLE email (sid         INT      UNSIGNED NOT NULL,
+                   cid          INT      UNSIGNED NOT NULL,
+		   status	VARCHAR(32),
+		   email_from   VARCHAR(1024),
+		   email_to	TEXT,
+                   email_cc     TEXT,
+		   attachment   TEXT,
+                   KEY `event` (sid,cid));
+
+
 

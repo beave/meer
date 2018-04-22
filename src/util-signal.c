@@ -20,8 +20,6 @@ void Signal_Handler(int sig_num)
 
     close(MeerConfig->waldo_fd);
 
-    MeerOutput->mysql_last_cid++;
-
     MySQL_DB_Query("ROLLBACK");
 
     MeerOutput->mysql_last_cid++;

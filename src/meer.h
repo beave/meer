@@ -71,9 +71,11 @@ struct _MeerConfig
     bool flow;
     bool http;
     bool tls;
-    bool ssh;		/* NOT DONE */;
-    bool smtp; 		/* NOT DONE */
-    bool dns_meta;
+    bool ssh;
+    bool smtp;
+    bool email;
+    bool dns_meta;	/* NOT DONE */
+    bool metadata;
 
 };
 
@@ -105,6 +107,8 @@ struct _MeerOutput
     bool mysql_tls;
     bool mysql_ssh;
     bool mysql_smtp;
+    bool mysql_email;
+    bool mysql_metadata;
 
 
 #endif

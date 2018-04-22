@@ -41,10 +41,15 @@ void Init_Output( void )
             MeerOutput->mysql_sensor_id = MySQL_Get_Sensor_ID();
             MeerOutput->mysql_last_cid = MySQL_Get_Last_CID();
 
-            Meer_Log(NORMAL, "Record 'flow': %s", MeerOutput->mysql_flow ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Record 'http': %s", MeerOutput->mysql_http ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Record 'tls' : %s", MeerOutput->mysql_tls ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Record 'ssh' : %s", MeerOutput->mysql_ssh ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "");
+            Meer_Log(NORMAL, "Record 'metadata': %s", MeerOutput->mysql_metadata ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'flow'    : %s", MeerOutput->mysql_flow ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'http'    : %s", MeerOutput->mysql_http ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'tls'     : %s", MeerOutput->mysql_tls ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'ssh'     : %s", MeerOutput->mysql_ssh ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'smtp'    : %s", MeerOutput->mysql_smtp ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'email'   : %s", MeerOutput->mysql_email ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "");
 
             Meer_Log(NORMAL, "---------------------------------------------------------------------------");
 
@@ -141,11 +146,25 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
                             MySQL_Insert_SSH ( DecodeAlert, SSH_CLIENT );
                         }
 
+                    if ( DecodeAlert->alert_has_metadata == true && MeerOutput->mysql_metadata == true )
+                        {
+                            MySQL_Insert_Metadata ( DecodeAlert );
+                        }
+
+                    if ( DecodeAlert->has_smtp == true && MeerOutput->mysql_smtp == true )
+                        {
+                            MySQL_Insert_SMTP ( DecodeAlert );
+                        }
+
+                    if ( DecodeAlert->has_email == true && MeerOutput->mysql_email == true )
+                        {
+                            MySQL_Insert_Email ( DecodeAlert );
+                        }
+
 
                     MySQL_DB_Query("COMMIT");
 
                     MeerOutput->mysql_last_cid++;
-
 
                 }
             else

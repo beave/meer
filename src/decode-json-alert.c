@@ -35,7 +35,8 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     struct json_object *tmp_flow = NULL;
     struct json_object *tmp_http = NULL;
     struct json_object *tmp_tls = NULL;
-
+    struct json_object *tmp_smtp = NULL;
+    struct json_object *tmp_email = NULL;
     struct json_object *tmp_ssh = NULL;
 
     struct json_object *tmp_ssh_server = NULL;
@@ -46,11 +47,14 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     struct json_object *tmp_ssh_client_2 = NULL;
     struct json_object *tmp_ssh_client_3 = NULL;
 
-
+//    struct json_object *json_obj_metadata = NULL;
     struct json_object *json_obj_alert = NULL;
     struct json_object *json_obj_flow = NULL;
     struct json_object *json_obj_http = NULL;
     struct json_object *json_obj_tls = NULL;
+    struct json_object *json_obj_smtp = NULL;
+    struct json_object *json_obj_email = NULL;
+
 
     struct json_object *json_obj_ssh = NULL;
     struct json_object *json_obj_ssh_server = NULL;
@@ -94,7 +98,9 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     Alert_Return_Struct->alert_signature[0] = '\0';
     Alert_Return_Struct->alert_category[0] = '\0';
     Alert_Return_Struct->alert_severity[0] = '\0';
+    Alert_Return_Struct->alert_metadata[0] = '\0';
 
+    Alert_Return_Struct->alert_has_metadata = false;
     Alert_Return_Struct->alert_signature_id = 0;
 
     /* Flow */
@@ -106,6 +112,14 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     Alert_Return_Struct->flow_bytes_toserver = 0;
     Alert_Return_Struct->flow_bytes_toclient = 0;
     Alert_Return_Struct->flow_start_timestamp[0] = '\0';
+
+    /* SMTP */
+
+    Alert_Return_Struct->has_smtp = false;
+
+    Alert_Return_Struct->smtp_helo[0] = '\0';
+    Alert_Return_Struct->smtp_mail_from[0] = '\0';
+    Alert_Return_Struct->smtp_rcpt_to[0] - '\0';
 
     /* HTTP */
 
@@ -128,6 +142,13 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     Alert_Return_Struct->tls_session_resumed[0] = '\0';
     Alert_Return_Struct->tls_sni[0] = '\0';
     Alert_Return_Struct->tls_version[0] = '\0';
+    Alert_Return_Struct->tls_subject[0] = '\0';
+    Alert_Return_Struct->tls_issuerdn[0] = '\0';
+    Alert_Return_Struct->tls_notbefore[0] = '\0';
+    Alert_Return_Struct->tls_notafter[0] = '\0';
+    Alert_Return_Struct->tls_fingerprint[0] = '\0';
+    Alert_Return_Struct->tls_serial = 0;
+
 
     /* SSH */
 
@@ -138,6 +159,14 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     Alert_Return_Struct->ssh_client_software_version[0] = '\0';
     Alert_Return_Struct->ssh_server_proto_version[0] = '\0';
     Alert_Return_Struct->ssh_server_software_version[0] = '\0';
+
+    /* Email */
+
+    Alert_Return_Struct->email_status[0] = '\0';
+    Alert_Return_Struct->email_from[0] = '\0';
+    Alert_Return_Struct->email_to[0] = '\0';
+    Alert_Return_Struct->email_cc[0] = '\0';
+    Alert_Return_Struct->email_attachment[0] = '\0';
 
 
     /* Base information from JSON */
@@ -254,6 +283,13 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                     strlcpy(Alert_Return_Struct->alert_severity, (char *)json_object_get_string(tmp_alert), sizeof(Alert_Return_Struct->alert_severity));
                 }
 
+            if (json_object_object_get_ex(json_obj_alert, "metadata", &tmp_alert))
+                {
+                    strlcpy(Alert_Return_Struct->alert_metadata, (char *)json_object_get_string(tmp_alert), sizeof(Alert_Return_Struct->alert_metadata));
+                    Alert_Return_Struct->alert_has_metadata = true;
+
+                }
+
         }
 
     /* Decode flow data */
@@ -368,6 +404,76 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
         }
 
+    /* Proto is still "smtp",  email is a secondary part */
+
+    if ( MeerConfig->email == true && !strcmp( Alert_Return_Struct->app_proto, "smtp" ))
+        {
+
+            Alert_Return_Struct->has_email = true;
+
+            if ( json_object_object_get_ex(json_obj, "email", &tmp))
+
+                if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == true )
+                    {
+
+                        json_obj_email = json_tokener_parse(json_object_get_string(tmp));
+
+                        if (json_object_object_get_ex(json_obj_email, "status", &tmp_email))
+                            {
+                                strlcpy(Alert_Return_Struct->email_status, (char *)json_object_get_string(tmp_email), sizeof(Alert_Return_Struct->email_status));
+                            }
+
+                        if (json_object_object_get_ex(json_obj_email, "from", &tmp_email))
+                            {
+                                strlcpy(Alert_Return_Struct->email_from, (char *)json_object_get_string(tmp_email), sizeof(Alert_Return_Struct->email_from));
+                            }
+
+                        if (json_object_object_get_ex(json_obj_email, "to", &tmp_email))
+                            {
+                                strlcpy(Alert_Return_Struct->email_to, (char *)json_object_get_string(tmp_email), sizeof(Alert_Return_Struct->email_to));
+                            }
+
+                        if (json_object_object_get_ex(json_obj_email, "attachment", &tmp_email))
+                            {
+                                strlcpy(Alert_Return_Struct->email_attachment, (char *)json_object_get_string(tmp_email), sizeof(Alert_Return_Struct->email_attachment));
+                            }
+
+                    }
+
+        }
+
+    if ( MeerConfig->smtp == true && !strcmp( Alert_Return_Struct->app_proto, "smtp" ))
+        {
+
+            Alert_Return_Struct->has_smtp = true;
+
+            if ( json_object_object_get_ex(json_obj, "smtp", &tmp))
+
+                if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == true )
+                    {
+
+                        json_obj_smtp = json_tokener_parse(json_object_get_string(tmp));
+
+                        if (json_object_object_get_ex(json_obj_smtp, "helo", &tmp_smtp))
+                            {
+                                strlcpy(Alert_Return_Struct->smtp_helo, (char *)json_object_get_string(tmp_smtp), sizeof(Alert_Return_Struct->smtp_helo));
+                            }
+
+                        if (json_object_object_get_ex(json_obj_smtp, "mail_from", &tmp_smtp))
+                            {
+                                strlcpy(Alert_Return_Struct->smtp_mail_from, (char *)json_object_get_string(tmp_smtp), sizeof(Alert_Return_Struct->smtp_mail_from));
+                            }
+
+                        if (json_object_object_get_ex(json_obj_smtp, "rcpt_to", &tmp_smtp))
+                            {
+                                strlcpy(Alert_Return_Struct->smtp_rcpt_to, (char *)json_object_get_string(tmp_smtp), sizeof(Alert_Return_Struct->smtp_rcpt_to));
+                            }
+
+                    }
+
+
+        }
+
     if ( MeerConfig->tls == true && !strcmp( Alert_Return_Struct->app_proto, "tls" ))
         {
 
@@ -395,6 +501,37 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                                 {
                                     strlcpy(Alert_Return_Struct->tls_version, (char *)json_object_get_string(tmp_tls), sizeof(Alert_Return_Struct->tls_version));
                                 }
+
+                            if (json_object_object_get_ex(json_obj_tls, "subject", &tmp_tls))
+                                {
+                                    strlcpy(Alert_Return_Struct->tls_subject, (char *)json_object_get_string(tmp_tls), sizeof(Alert_Return_Struct->tls_subject));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_tls, "issuerdn", &tmp_tls))
+                                {
+                                    strlcpy(Alert_Return_Struct->tls_issuerdn, (char *)json_object_get_string(tmp_tls), sizeof(Alert_Return_Struct->tls_issuerdn));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_tls, "notbefore", &tmp_tls))
+                                {
+                                    strlcpy(Alert_Return_Struct->tls_notbefore, (char *)json_object_get_string(tmp_tls), sizeof(Alert_Return_Struct->tls_notbefore));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_tls, "notafter", &tmp_tls))
+                                {
+                                    strlcpy(Alert_Return_Struct->tls_notafter, (char *)json_object_get_string(tmp_tls), sizeof(Alert_Return_Struct->tls_notafter));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_tls, "fingerprint", &tmp_tls))
+                                {
+                                    strlcpy(Alert_Return_Struct->tls_fingerprint, (char *)json_object_get_string(tmp_tls), sizeof(Alert_Return_Struct->tls_fingerprint));
+                                }
+
+                            if (json_object_object_get_ex(json_obj_tls, "serial", &tmp_tls))
+                                {
+                                    Alert_Return_Struct->tls_serial = atoi( (char *)json_object_get_string(tmp_tls) );
+                                }
+
 
                         }
                 }
@@ -568,8 +705,12 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     json_object_put(json_obj_http);
     json_object_put(json_obj_tls);
     json_object_put(json_obj_ssh);
+    json_object_put(json_obj_smtp);
+    json_object_put(json_obj_email);
     json_object_put(json_obj_ssh_server);
 
+    json_object_put(tmp_email);
+    json_object_put(tmp_smtp);
     json_object_put(tmp_alert);
     json_object_put(tmp_flow);
     json_object_put(tmp_http);

@@ -55,6 +55,9 @@ char src_dns[256];
     char alert_category[128];
     char alert_severity[5];
 
+    char alert_metadata[1024];
+    bool alert_has_metadata;
+
     /* Flow data */
 
     bool     has_flow;
@@ -87,6 +90,12 @@ char src_dns[256];
     char tls_session_resumed[16];
     char tls_sni[255];
     char tls_version[16];
+    char tls_subject[256];
+    char tls_issuerdn[256];
+    char tls_notbefore[64];
+    char tls_notafter[64];
+    char tls_fingerprint[128];
+    uint32_t tls_serial;
 
     /* DNS */
 
@@ -95,16 +104,31 @@ char src_dns[256];
     /* SSH */
 
     bool has_ssh_server;
+    bool has_ssh_client;
 
     char ssh_server_proto_version[8];
     char ssh_server_software_version[128];
 
-    bool has_ssh_client;
-
     char ssh_client_proto_version[8];
     char ssh_client_software_version[128];
 
+    /* SMTP */
 
+    bool has_smtp;
+
+    char smtp_helo[255];
+    char smtp_mail_from[255];
+    char smtp_rcpt_to[131072];
+
+    /* Email */
+
+    bool has_email;
+
+    char email_status[32];
+    char email_from[1024];
+    char email_to[10240];
+    char email_cc[10240];
+    char email_attachment[10240];
 
 };
 

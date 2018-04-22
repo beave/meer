@@ -51,7 +51,6 @@ bool Decode_JSON( char *json_string )
 
                     Output_Alert( DecodeAlert, MeerClass );
 
-
                     //printf("%s|\n", DecodeAlert->alert_signature);
 
                     /* Done with decoding */

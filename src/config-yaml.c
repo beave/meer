@@ -298,6 +298,36 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+                            else if ( !strcmp(last_pass, "metadata" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->metadata = true;
+                                        }
+
+                                }
+
+                            else if ( !strcmp(last_pass, "smtp" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->smtp = true;
+                                        }
+
+                                }
+
+                            else if ( !strcmp(last_pass, "email" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->email = true;
+                                        }
+
+                                }
+
                             else if ( !strcmp(last_pass, "flow" ) )
                                 {
 
@@ -414,6 +444,37 @@ void Load_YAML_Config( char *yaml_file )
                                         }
 
                                 }
+
+                            if ( !strcmp(last_pass, "metadata" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_metadata = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "smtp" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_smtp = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "email" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_email = true;
+                                        }
+
+                                }
+
 
                             if ( !strcmp(last_pass, "flow" ))
                                 {
