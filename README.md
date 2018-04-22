@@ -2,9 +2,10 @@
 
 <i>Note: Meer is consider very beta!</i>
 
-"Meer" is a dedicated "spooler" for the Suricata & Sagan EVE output formats.  It functions like 
-Banryard2 (https://github.com/firnsy/barnyard2) but rather than reading Snort's "unified2" format, 
-Meer reads Suricata (https://suricata-ids.org) and Sagan (https://sagan.io) "EVE" JSON output. 
+"Meer" (GNU/GPLv2) is a dedicated "spooler" for the Suricata & Sagan EVE output formats.  It 
+functions like Banryard2 (https://github.com/firnsy/barnyard2) but rather than reading Snort's 
+"unified2" format, Meer reads Suricata (https://suricata-ids.org) and Sagan (https://sagan.io) 
+"EVE" JSON output. 
 
 Meer stores to a database similar to Barnyard2 to remain backward compatible.  This means that
 it should be functional with software like Snorby, Sguil, BASE, etc. 

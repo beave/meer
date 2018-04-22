@@ -1,26 +1,48 @@
+/*                                              
+** Copyright (C) 2018 Quadrant Information Security <quadrantsec.com>
+** Copyright (C) 2018 Champ Clark III <cclark@quadrantsec.com>
+**
+** This program is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License Version 2 as
+** published by the Free Software Foundation.  You may not use, modify or  
+** distribute this program under any other version of the GNU General
+** Public License.          
+**                              
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**                                  
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+/* Write EVE data to MySQL databases */
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"             /* From autoconf */
 #endif
+
+#ifdef HAVE_LIBMYSQLCLIENT
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
+#include <mysql/mysql.h>
 
 #include "meer.h"
 #include "meer-def.h"
-#include "mysql.h"
 #include "util.h"
 #include "decode-json-alert.h"
 #include "util-base64.h"
 #include "references.h"
 #include "classifications.h"
+#include "output-plugins/mysql.h"
 
-
-
-#ifdef HAVE_LIBMYSQLCLIENT
-#include <mysql/mysql.h>
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
@@ -31,7 +53,6 @@ uint32_t SignatureCacheCount = 0;
 
 struct _ClassificationCache *ClassificationCache;
 uint32_t ClassificationCacheCount = 0;
-
 
 void MySQL_Connect( void )
 {
