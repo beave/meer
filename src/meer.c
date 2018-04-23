@@ -22,10 +22,7 @@
 
 /* DEBUG:  Needs:
 	   reference data?
-	   add perl reference routine
-
-	   Stats on flows, http, health, etc.  Numbers get confusuing without that.
- 	   make it part of a stats.c.
+	   SIGHUP handler
 */
 
 #ifdef HAVE_CONFIG_H
@@ -68,6 +65,11 @@ int main (int argc, char *argv[])
 {
 
     signal(SIGINT,  &Signal_Handler);
+    signal(SIGQUIT,  &Signal_Handler);
+    signal(SIGTERM,  &Signal_Handler);
+    signal(SIGSEGV,  &Signal_Handler);
+    signal(SIGABRT,  &Signal_Handler);
+
     /*
         signal(SIGHUP,  &Signal_Handler);
         signal(SIGINT,  &Signal_Handler);
@@ -175,17 +177,7 @@ int main (int argc, char *argv[])
     while(fgets(buf, sizeof(buf), fd_file) != NULL)
         {
 
-            /*
-                    if (buf[0] == '#' || buf[0] == 10 || buf[0] == ';' || buf[0] == 32)
-                            {
-            		    Meer_Log(WARN, "Skipping line");
-                                continue;
-                            }
-            */
-
-            skip_flag = Validate_JSON_String( (char*)buf );
-
-            if ( skip_flag == 0 )
+            if ( Validate_JSON_String( (char*)buf ) == 0 )
                 {
                     Decode_JSON( (char*)buf );
                 }

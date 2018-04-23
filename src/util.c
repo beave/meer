@@ -43,6 +43,7 @@
 #include "util.h"
 
 struct _MeerConfig *MeerConfig;
+struct _MeerCounters *MeerCounters;
 struct _DnsCache *DnsCache;
 
 uint32_t DnsCacheCount = 0;
@@ -280,37 +281,41 @@ void DNS_Lookup( char *host, char *str, size_t size )
             /* If we have a fresh copy,  return whats in memory */
 
             if ( !strcmp(host, DnsCache[i].ipaddress ) )
-		{
+                {
 
-                if ( ( utime - DnsCache[i].lookup_time ) < 300 )
-                    {
+                    if ( ( utime - DnsCache[i].lookup_time ) < 300 )
+                        {
 
-                        snprintf(str, size, "%s", DnsCache[i].reverse);
-                        return;
+                            MeerCounters->DNSCacheCount++;
 
-                    }
-                else
-                    {
+                            snprintf(str, size, "%s", DnsCache[i].reverse);
+                            return;
 
-                        /* Re-look it up and return it if cache is stale */
+                        }
+                    else
+                        {
 
-                        memset(&ipaddr, 0, sizeof(struct sockaddr_in));
+                            /* Re-look it up and return it if cache is stale */
 
-                        ipaddr.sin_family = AF_INET;
-                        ipaddr.sin_port = htons(0);
+                            memset(&ipaddr, 0, sizeof(struct sockaddr_in));
 
-                        inet_pton(AF_INET, host, &ipaddr.sin_addr);
+                            ipaddr.sin_family = AF_INET;
+                            ipaddr.sin_port = htons(0);
 
-                        getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
+                            inet_pton(AF_INET, host, &ipaddr.sin_addr);
 
-                        strlcpy(DnsCache[i].reverse, host_r, sizeof(DnsCache[i].reverse));
-                        DnsCache[i].lookup_time = utime;
+                            getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
 
-                        snprintf(str, size, "%s", DnsCache[i].reverse);
-                        return;
-                    }
+                            strlcpy(DnsCache[i].reverse, host_r, sizeof(DnsCache[i].reverse));
+                            DnsCache[i].lookup_time = utime;
 
-		}
+                            MeerCounters->DNSCount++;
+
+                            snprintf(str, size, "%s", DnsCache[i].reverse);
+                            return;
+                        }
+
+                }
 
         }
 
@@ -332,6 +337,7 @@ void DNS_Lookup( char *host, char *str, size_t size )
     DnsCache[DnsCacheCount].lookup_time = utime;
 
     DnsCacheCount++;
+    MeerCounters->DNSCount++;
 
     snprintf(str, size, "%s", host_r);
 

@@ -18,7 +18,7 @@ CREATE TABLE `schema` ( vseq        INT      UNSIGNED NOT NULL,
 INSERT INTO `schema`  (vseq, ctime) VALUES ('108', now());       
 
 CREATE TABLE event  ( sid 	  INT 	   UNSIGNED NOT NULL,
-                      cid 	  INT 	   UNSIGNED NOT NULL,
+                      cid 	  BIGINT   UNSIGNED NOT NULL,
                       signature   INT      UNSIGNED NOT NULL, 
                       timestamp 	   DATETIME NOT NULL,
 		      app_proto	  VARCHAR(16),

@@ -58,7 +58,7 @@ void Load_YAML_Config( char *yaml_file )
     yaml_event_t  event;
 
     bool done = 0;
-//    bool toggle = 0; 
+//    bool toggle = 0;
 
     unsigned char type = 0;
     unsigned char sub_type = 0;
@@ -180,14 +180,14 @@ void Load_YAML_Config( char *yaml_file )
                     done = true;
 
                 }
-/*
-            else if ( event.type == YAML_MAPPING_START_EVENT )
-                {
+            /*
+                        else if ( event.type == YAML_MAPPING_START_EVENT )
+                            {
 
-                    toggle = 1;
+                                toggle = 1;
 
-                }
-*/
+                            }
+            */
 
             else if ( event.type == YAML_MAPPING_END_EVENT )
                 {

@@ -132,9 +132,33 @@ struct _MeerCounters
 
 #ifdef HAVE_LIBMYSQLCLIENT
 
-    int HealthCount;
+    uint64_t HealthCount;		/* Array count */
+
+    uint64_t HealthCountT;
+    uint64_t INSERTCount;
+    uint64_t SELECTCount;
+    uint64_t UPDATECount;
+
+    uint64_t ClassCacheHitCount;
+    uint64_t ClassCacheMissCount;
+
+    uint64_t SigCacheHitCount;
+    uint64_t SigCacheMissCount;
 
 #endif
+
+    uint64_t FlowCount;
+    uint64_t HTTPCount;
+    uint64_t TLSCount;
+    uint64_t SMTPCount;
+    uint64_t EmailCount;
+    uint64_t MetadataCount;
+    uint64_t SSHCount;
+
+    uint64_t DNSCount;
+    uint64_t DNSCacheCount;
+
+
 
 };
 
