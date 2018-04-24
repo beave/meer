@@ -45,11 +45,14 @@
 #include "classifications.h"
 #include "output-plugins/mysql.h"
 #include "lockfile.h"
+#include "sid-map.h"
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
 struct _MeerCounters *MeerCounters;
 struct _Classifications *MeerClass;
+
+struct _SID_Map *SID_Map;
 
 struct _SignatureCache *SignatureCache;
 uint32_t SignatureCacheCount = 0;
@@ -705,15 +708,173 @@ void MySQL_Escape_String( char *sql, char *str, size_t size )
 
 }
 
-void MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
+int MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
 {
 
-        char tmp[MAX_MYSQL_QUERY];
-        char *results;
+    char tmp[MAX_MYSQL_QUERY];
+    char *results = NULL;
 
-	// signature id, reftype, reference
-//	snprintf(tmp, sizeof(tmp), "SELECT ref_system_id from reference_system where ref_system_name='%s'", tmptoken1);
+    int ref_system_id = 0;
+    int ref_id = 0;
+    int sig_id = 0;
 
+    int i = 0;
+
+    for (i = 0; i <  MeerCounters->SIDMapCount; i++ )
+        {
+
+            /* DEBUG: If its not FOUND it should kick back a WARNING */
+
+            if ( DecodeAlert->alert_signature_id == SID_Map[i].sid )
+                {
+
+                    snprintf(tmp, sizeof(tmp),
+                             "SELECT ref_system_id FROM reference_system WHERE ref_system_name='%s'",
+                             SID_Map[i].type);
+
+                    results=MySQL_DB_Query(tmp);
+                    MeerCounters->SELECTCount++;
+
+                    if ( results == NULL )
+                        {
+
+                            snprintf(tmp, sizeof(tmp),
+                                     "INSERT INTO reference_system (ref_system_name) VALUES ('%s')",
+                                     SID_Map[i].type);
+
+                            (void)MySQL_DB_Query(tmp);
+                            MeerCounters->INSERTCount++;
+
+                            results = MySQL_DB_Query("SELECT LAST_INSERT_ID()");
+
+                        }
+
+                    ref_system_id = atoi(results);
+
+                    snprintf(tmp, sizeof(tmp),
+                             "SELECT ref_id FROM reference WHERE ref_system_id=%d AND ref_tag='%s'",
+                             ref_system_id, SID_Map[i].location);
+
+                    results=MySQL_DB_Query(tmp);
+                    MeerCounters->SELECTCount++;
+
+                    if ( results == NULL )
+                        {
+
+                            snprintf(tmp, sizeof(tmp),
+                                     "INSERT INTO reference (ref_system_id,ref_tag) VALUES (%d, '%s')",
+                                     ref_system_id, SID_Map[i].location);
+
+                            (void)MySQL_DB_Query(tmp);
+                            MeerCounters->INSERTCount++;
+
+                            results = MySQL_DB_Query("SELECT LAST_INSERT_ID()");
+
+                        }
+
+                    ref_id = atoi(results);
+
+                    sig_id = MySQL_Get_Sig_ID( DecodeAlert );
+
+                    snprintf(tmp, sizeof(tmp),
+                             "SELECT sig_id FROM sig_reference WHERE sig_id=%d AND ref_id=%d",
+                             sig_id, ref_id);
+
+                    results=MySQL_DB_Query(tmp);
+                    MeerCounters->SELECTCount++;
+
+                    if ( results == NULL )
+                        {
+
+                            snprintf(tmp, sizeof(tmp),
+                                     "INSERT INTO sig_reference (sig_id,ref_seq,ref_id) VALUES (%d,%d,%d)",
+                                     sig_id, i, ref_id);
+
+                            (void)MySQL_DB_Query(tmp);
+                            MeerCounters->INSERTCount++;
+
+                            results = MySQL_DB_Query("SELECT LAST_INSERT_ID()");
+
+                        }
+
+                }
+
+        }
+
+    return(sig_id);	/* DEBUG: Is this return right? */
+
+}
+
+
+int MySQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert )
+{
+
+    char tmp[MAX_MYSQL_QUERY];
+    char *results = NULL;
+    char class[64] = { 0 };
+
+    unsigned char sig_priority = 0;
+
+    int sig_class_id = 0;
+    int sig_id = 0;
+
+    Class_Lookup( DecodeAlert->alert_category, class, sizeof(class) );
+
+    /* DEBUG: cache here */
+
+    snprintf(tmp, sizeof(tmp),
+             "SELECT sig_class_id FROM sig_class WHERE sig_class_name='%s'",
+             class);
+
+    results=MySQL_DB_Query(tmp);
+    MeerCounters->SELECTCount++;
+
+    if ( results == NULL )
+        {
+
+            snprintf(tmp, sizeof(tmp),
+                     "INSERT INTO sig_class (sig_class_name) VALUES ('%s')",
+                     class);
+
+            results=MySQL_DB_Query(tmp);
+            MeerCounters->INSERTCount++;
+
+            results = MySQL_DB_Query("SELECT LAST_INSERT_ID()");
+
+        }
+
+    sig_class_id = atoi(results);
+
+    snprintf(tmp, sizeof(tmp),
+             "SELECT sig_id FROM signature WHERE sig_name='%s' AND sig_rev=%d AND sig_sid=%" PRIu64 "",
+             DecodeAlert->alert_signature, DecodeAlert->alert_rev, DecodeAlert->alert_signature_id);
+
+    results=MySQL_DB_Query(tmp);
+    MeerCounters->SELECTCount++;
+
+    if ( results == NULL )
+        {
+
+            sig_priority = Class_Lookup_Priority( DecodeAlert->alert_category);
+
+            snprintf(tmp, sizeof(tmp),
+                     "INSERT INTO signature (sig_name,sig_class_id,sig_priority,sig_rev,sig_sid) VALUES ('%s',%d,%d,%" PRIu32 ",%" PRIu64 ")",
+                     DecodeAlert->alert_signature,
+                     sig_class_id,
+                     sig_priority,
+                     DecodeAlert->alert_rev,
+                     DecodeAlert->alert_signature_id );
+
+            results=MySQL_DB_Query(tmp);
+            MeerCounters->INSERTCount++;
+
+            results = MySQL_DB_Query("SELECT LAST_INSERT_ID()");
+
+        }
+
+    sig_id = atoi(results);
+
+    return(sig_id);
 
 }
 

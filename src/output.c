@@ -102,7 +102,20 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
             int class_id = 0;
 
             class_id = MySQL_Get_Class_ID( DecodeAlert);
-            signature_id = MySQL_Get_Signature_ID( DecodeAlert, class_id );
+
+            if ( MeerConfig->reference_system == true )
+                {
+
+                    signature_id = MySQL_Reference_Handler ( DecodeAlert );
+
+                }
+            else
+                {
+
+                    signature_id = MySQL_Get_Signature_ID( DecodeAlert, class_id );
+
+                }
+
 
             if ( MeerConfig->health == true )
                 {
@@ -131,12 +144,15 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 
                     MySQL_Insert_Payload ( DecodeAlert );
 
-                    if ( MeerConfig->reference_system == true )
-                        {
+                    /*
+                                        if ( MeerConfig->reference_system == true )
+                                            {
 
-                            MySQL_Reference_Handler ( DecodeAlert );
+                                                MySQL_Reference_Handler ( DecodeAlert );
 
-                        }
+                                            }
+
+                    */
 
                     if ( MeerConfig->dns == true )
                         {

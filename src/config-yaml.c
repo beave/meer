@@ -608,10 +608,12 @@ void Load_YAML_Config( char *yaml_file )
             Meer_Log(ERROR, "Configuration incomplete.  No 'classification' file specified!");
         }
 
-    if ( MeerConfig->reference_file[0] == '\0' )
-        {
-            Meer_Log(ERROR, "Configuration incomplete.  No 'reference' file specified!");
-        }
+    /*
+        if ( MeerConfig->reference_file[0] == '\0' )
+            {
+                Meer_Log(ERROR, "Configuration incomplete.  No 'reference' file specified!");
+            }
+    */
 
     /*
         if ( MeerConfig->genmsgmap_file[0] == '\0' )

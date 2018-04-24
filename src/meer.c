@@ -21,8 +21,8 @@
 /* Main Meer function */
 
 /* DEBUG:  Needs:
-	   reference data?
 	   SIGHUP handler
+	   Cache for legacy reference crap
 */
 
 #ifdef HAVE_CONFIG_H
@@ -50,6 +50,7 @@
 #include "classifications.h"
 #include "waldo.h"
 #include "output.h"
+#include "sid-map.h"
 
 
 struct _MeerConfig *MeerConfig;
@@ -214,14 +215,6 @@ int main (int argc, char *argv[])
 
                     while(fgets(buf, sizeof(buf), fd_file) != NULL)
                         {
-
-                            /*
-                                        		if (buf[0] == '#' || buf[0] == 10 || buf[0] == ';' || buf[0] == 32)
-                                            	{
-                            			Meer_Log(WARN, "Skipping line.");
-                                               	continue;
-                                            	}
-                            */
 
                             skip_flag = Validate_JSON_String( (char*)buf );
 

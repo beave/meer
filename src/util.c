@@ -40,6 +40,7 @@
 #include "meer.h"
 #include "meer-def.h"
 #include "lockfile.h"
+#include "stats.h"
 #include "util.h"
 
 struct _MeerConfig *MeerConfig;
