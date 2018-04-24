@@ -94,11 +94,10 @@ void Load_YAML_Config( char *yaml_file )
     MeerConfig->runas[0] = '\0';
     MeerConfig->classification_file[0] = '\0';
     MeerConfig->reference_file[0] = '\0';
-    MeerConfig->genmsgmap_file[0] = '\0';
+    MeerConfig->sid_map_file[0] = '\0';
     MeerConfig->waldo_file[0] = '\0';
     MeerConfig->follow_file[0] = '\0';
     MeerConfig->lock_file[0] = '\0';
-//    MeerConfig->payload_buffer_size = PACKET_BUFFER_SIZE_DEFAULT;
 
     MeerOutput = malloc(sizeof(_MeerOutput));
 
@@ -256,11 +255,6 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerConfig->classification_file, value, sizeof(MeerConfig->classification_file));
                                 }
 
-                            else if ( !strcmp(last_pass, "reference" ))
-                                {
-                                    strlcpy(MeerConfig->reference_file, value, sizeof(MeerConfig->reference_file));
-                                }
-
                             /*
                                                         else if ( !strcmp(last_pass, "gen-msg-map" ))
                                                             {
@@ -281,6 +275,28 @@ void Load_YAML_Config( char *yaml_file )
                             else if ( !strcmp(last_pass, "follow-eve" ))
                                 {
                                     strlcpy(MeerConfig->follow_file, value, sizeof(MeerConfig->follow_file));
+                                }
+
+                            else if ( !strcmp(last_pass, "reference_system" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->reference_system = true;
+                                        }
+
+                                }
+
+
+                            else if ( !strcmp(last_pass, "sid_file" ) && MeerConfig->reference_system == true )
+                                {
+
+                                    strlcpy(MeerConfig->sid_map_file, value, sizeof(MeerConfig->sid_map_file));
+                                }
+
+                            else if ( !strcmp(last_pass, "reference" ) && MeerConfig->reference_system == true )
+                                {
+                                    strlcpy(MeerConfig->reference_file, value, sizeof(MeerConfig->reference_file));
                                 }
 
                             else if ( !strcmp(last_pass, "dns" ))

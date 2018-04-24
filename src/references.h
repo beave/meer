@@ -8,7 +8,7 @@ typedef struct _References _References;
 struct _References
 {
     char refid[128];
-    char refurl[2048];
+    char refurl[2100];
 };
 
-struct _References *Load_References( void );
+void Load_References( void );

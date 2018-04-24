@@ -63,3 +63,4 @@ void MySQL_Insert_Event ( struct _DecodeAlert *DecodeAlert, int signature_id );
 uint64_t MySQL_Get_Last_CID( void );
 uint32_t MySQL_Get_Sensor_ID( void );
 void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert );
+void MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert );

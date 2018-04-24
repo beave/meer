@@ -50,8 +50,8 @@ struct _MeerConfig
     char runas[32];
 
     char classification_file[256];
-    char reference_file[256];
-    char genmsgmap_file[256];
+//    char reference_file[256];
+//    char genmsgmap_file[256];
 
     char lock_file[256];
     char waldo_file[256];
@@ -60,6 +60,10 @@ struct _MeerConfig
     int waldo_fd;
 
     bool endian;
+
+    bool reference_system;
+    char reference_file[256];
+    char sid_map_file[256];
 
     bool dns;
     uint32_t dns_cache;
@@ -128,7 +132,8 @@ struct _MeerCounters
 {
 
     int ClassCount;
-    int ReferenceCount;			// DEBUG
+    int ReferenceCount;			/* Legacy refererence system */
+    int SIDMapCount;
 
 #ifdef HAVE_LIBMYSQLCLIENT
 

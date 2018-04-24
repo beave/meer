@@ -19,7 +19,7 @@ AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
 							      output.c \
 							      classifications.c \
 							      references.c \
-							      sid-msg.c \
+							      sid-map.c \
 							      decode-json.c \
 							      decode-json-alert.c \
 							      output-plugins/mysql.c

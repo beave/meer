@@ -131,8 +131,12 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 
                     MySQL_Insert_Payload ( DecodeAlert );
 
-//	    MySQL_Reference_Handler ( DecodeAlert );
+                    if ( MeerConfig->reference_system == true )
+                        {
 
+                            MySQL_Reference_Handler ( DecodeAlert );
+
+                        }
 
                     if ( MeerConfig->dns == true )
                         {

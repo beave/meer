@@ -705,12 +705,7 @@ void MySQL_Escape_String( char *sql, char *str, size_t size )
 
 }
 
-// Valid with
-// len = mysql_real_escape_string(MeerOutput->mysql_dbh, tmp, sql, strlen(sql));
-
-/*
-MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert,
-			  struct _References *MeerReferences )
+void MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
 {
 
         char tmp[MAX_MYSQL_QUERY];
@@ -721,7 +716,6 @@ MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert,
 
 
 }
-*/
 
 #endif
 

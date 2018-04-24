@@ -17,9 +17,12 @@ meer-core:
     runas: "suricata"
 
     classification: "/tmp/classification.config"
-    reference: "/tmp/reference.config"
+
+    # Legacy Snort style "reference" system. 
+
+    reference_system: enabled
     sid_file: "/tmp/sid-msg.map"
-    #gen-msg-map: "/tmp/gen-msg.map"
+    reference: "/tmp/reference.config"
 
     metadata: enabled
     flow: enabled

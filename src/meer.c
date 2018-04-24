@@ -57,9 +57,7 @@ struct _MeerOutput *MeerOutput;
 struct _MeerWaldo *MeerWaldo;
 struct _MeerCounters *MeerCounters;
 struct _Classifications *MeerClass;
-
-// signal
-// open waldo / write waldo
+struct _References *MeerReferences;
 
 int main (int argc, char *argv[])
 {
@@ -78,9 +76,6 @@ int main (int argc, char *argv[])
         signal(SIGABRT, &Signal_Handler);
         signal(SIGSEGV, &Signal_Handler );
     */
-
-//    struct _Classifications *MeerClass;
-//    struct _References *MeerReferences;
 
     char *yaml_file = DEFAULT_CONFIG;
 
@@ -133,7 +128,15 @@ int main (int argc, char *argv[])
     MeerConfig->endian = Check_Endian();
 
     Load_Classifications();
-//    MeerReferences = Load_References();
+
+    /* Legacy reference system */
+
+    if ( MeerConfig->reference_system )
+        {
+            Meer_Log(NORMAL, "Legacy reference system enabled");
+            Load_References();
+            Load_SID_Map();
+        }
 
     Meer_Log(NORMAL, "");
     Meer_Log(NORMAL, "Decode 'metadata': %s", MeerConfig->metadata ? "enabled" : "disabled" );

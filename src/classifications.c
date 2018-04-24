@@ -42,7 +42,7 @@ void Load_Classifications( void )
 
     int linecount = 0;
 
-    char buf[1024];
+    char buf[1024] = { 0 };
 
     char *ptr1 = NULL;
     char *ptr2 = NULL;
@@ -67,17 +67,14 @@ void Load_Classifications( void )
                 {
                     continue;
                 }
-            else
+
+            MeerClass = (_Classifications *) realloc(MeerClass, (MeerCounters->ClassCount+1) * sizeof(_Classifications));
+
+            if ( MeerClass == NULL )
                 {
-
-                    MeerClass = (_Classifications *) realloc(MeerClass, (MeerCounters->ClassCount+1) * sizeof(_Classifications));
-
-                    if ( MeerClass == NULL )
-                        {
-                            Meer_Log(ERROR, "[%s, line %d] Failed to reallocate memory for _Classifications. Abort!", __FILE__, __LINE__);
+                    Meer_Log(ERROR, "[%s, line %d] Failed to reallocate memory for _Classifications. Abort!", __FILE__, __LINE__);
 
 
-                        }
                 }
 
             Remove_Return(buf);

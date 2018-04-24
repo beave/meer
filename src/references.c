@@ -31,19 +31,16 @@
 #include "util.h"
 #include "references.h"
 
-//struct _References *MeerReferences;
+struct _References *MeerReferences;
 struct _MeerCounters *MeerCounters;
 struct _MeerConfig *MeerConfig;
 
-struct _References *Load_References( void )
+void Load_References( void )
 {
-
-
-    struct _References *MeerReferences = NULL;
 
     int linecount = 0;
 
-    char buf[1024];
+    char buf[1024] = { 0 };
 
     char *ptr1 = NULL;
     char *ptr2 = NULL;
@@ -67,17 +64,14 @@ struct _References *Load_References( void )
                 {
                     continue;
                 }
-            else
+
+            MeerReferences = (_References *) realloc(MeerReferences, (MeerCounters->ReferenceCount+1) * sizeof(_References));
+
+            if ( MeerReferences == NULL )
                 {
-
-                    MeerReferences = (_References *) realloc(MeerReferences, (MeerCounters->ReferenceCount+1) * sizeof(_References));
-
-                    if ( MeerReferences == NULL )
-                        {
-                            Meer_Log(ERROR, "[%s, line %d] Failed to reallocate memory for _References. Abort!", __FILE__, __LINE__);
+                    Meer_Log(ERROR, "[%s, line %d] Failed to reallocate memory for _References. Abort!", __FILE__, __LINE__);
 
 
-                        }
                 }
 
             Remove_Return(buf);
@@ -104,8 +98,6 @@ struct _References *Load_References( void )
 
     Meer_Log(NORMAL, "References file loaded [%s].", MeerConfig->reference_file);
     fclose(reference_fd);
-
-    return(MeerReferences);
 
 }
 
