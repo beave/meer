@@ -26,6 +26,9 @@ meer-core:
 
     classification: "/tmp/classification.config"
 
+    meer_log: "/var/log/meer.log"   # Meer log file
+
+
     # Meer can decode various types of data from within an "alert".  This 
     # section enabled/disabled various decoders.  
 
@@ -56,8 +59,8 @@ meer-core:
     health_signatures: 20000001,20000002,20000003,20000004
 
     waldo-file: "/var/log/meer/meer.waldo"	# Where to store the last 
-						# position in the 
-						# "follow-eve" file. 
+                                                # position in the 
+                                                # "follow-eve" file. 
 
     lock-file: "/var/run/meer.lck"		# To prevent dualing processes.
 
