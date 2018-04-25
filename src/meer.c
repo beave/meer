@@ -22,7 +22,6 @@
 
 /*
    TODO
-
 */
 
 #ifdef HAVE_CONFIG_H
@@ -83,6 +82,7 @@ int main (int argc, char *argv[])
     const struct option long_options[] =
     {
         { "help",         no_argument,          NULL,   'h' },
+        { "quiet",        no_argument,          NULL,   'q' },
 //        { "debug",        required_argument,    NULL,   'd' },
         { "daemon",       no_argument,          NULL,   'D' },
 //        { "credits",      no_argument,          NULL,   'C' },
@@ -91,7 +91,7 @@ int main (int argc, char *argv[])
     };
 
     static const char *short_options =
-        "c:hD";
+        "c:hDq";
 
     signed char c;
     int option_index = 0;
@@ -118,6 +118,8 @@ int main (int argc, char *argv[])
     memset(MeerConfig, 0, sizeof(_MeerConfig));
 
     strlcpy(MeerConfig->yaml_file, DEFAULT_CONFIG, sizeof(MeerConfig->yaml_file));
+    MeerConfig->daemonize = false;
+    MeerConfig->quiet = false;
 
     while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
         {
@@ -140,6 +142,10 @@ int main (int argc, char *argv[])
                     MeerConfig->daemonize = true;
                     break;
 
+                case 'q':
+                    MeerConfig->quiet = true;
+                    break;
+
                 default:
                     fprintf(stderr, "\nInvalid argument! See below for command line switches.\n");
                     Usage();
@@ -159,6 +165,15 @@ int main (int argc, char *argv[])
 
     memset(MeerCounters, 0, sizeof(_MeerCounters));
 
+    Load_YAML_Config(MeerConfig->yaml_file);
+
+    if (( MeerConfig->meer_log_fd = fopen(MeerConfig->meer_log, "a" )) == NULL )
+        {
+            Meer_Log(ERROR, "Cannot open Meer log file %s! [%s]. Abort!", MeerConfig->meer_log, strerror(errno));
+        }
+
+    MeerConfig->meer_log_on = true;
+
     Meer_Log(NORMAL, "");
     Meer_Log(NORMAL, " @@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    Meer version %s", VERSION);
     Meer_Log(NORMAL, " @@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security");
@@ -166,8 +181,6 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, " !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018");
     Meer_Log(NORMAL, "  :      :   : :: ::  : :: ::   :   : :");
     Meer_Log(NORMAL, "");
-
-    Load_YAML_Config(MeerConfig->yaml_file);
 
     Drop_Priv();
 

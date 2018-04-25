@@ -52,12 +52,18 @@ struct _MeerConfig
     char runas[32];
 
     bool daemonize;
+    bool quiet;
 
     char classification_file[256];
 
     char lock_file[256];
     char waldo_file[256];
     char follow_file[256];
+
+    char meer_log[256];
+    FILE *meer_log_fd;
+    bool meer_log_on;
+
 
     int waldo_fd;
 

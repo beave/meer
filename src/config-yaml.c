@@ -88,6 +88,8 @@ void Load_YAML_Config( char *yaml_file )
     MeerConfig->follow_file[0] = '\0';
     MeerConfig->lock_file[0] = '\0';
 
+    strlcpy(MeerConfig->meer_log, MEER_LOG, sizeof(MeerConfig->meer_log));
+
     MeerOutput = malloc(sizeof(_MeerOutput));
 
     if ( MeerOutput == NULL )

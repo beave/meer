@@ -24,6 +24,7 @@
 
 #define DEFAULT_CONFIG "/usr/local/etc/meer.yaml"
 #define BUFFER_SIZE 10240
+#define MEER_LOG	"/var/log/meer.log"
 
 #define NORMAL		0
 #define ERROR		1

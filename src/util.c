@@ -111,10 +111,14 @@ void Meer_Log (int type, const char *format,... )
         }
 
     vsnprintf(buf, sizeof(buf), format, ap);
-//    fprintf(config->sagan_log_stream, "[%s] [%s] - %s\n", chr, curtime, buf);
-//    fflush(config->sagan_log_stream);
 
-    if ( MeerConfig->daemonize == false )
+    if ( MeerConfig->meer_log_on == true )
+        {
+            fprintf(MeerConfig->meer_log_fd, "[%s] [%s] - %s\n", chr, curtime, buf);
+            fflush(MeerConfig->meer_log_fd);
+        }
+
+    if ( MeerConfig->daemonize == false && MeerConfig->quiet == false )
         {
             printf("[%s] [%s] %s\n", chr, curtime, buf);
         }
