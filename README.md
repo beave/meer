@@ -7,8 +7,6 @@
 :      :   : :: ::  : :: ::   :   : :
 </pre>
 
-# Meer:
-
 <i>Note: Meer is consider very beta!</i>
 
 "Meer" (GNU/GPLv2) is a dedicated "spooler" for the Suricata & Sagan EVE output formats.  It 
