@@ -1,6 +1,6 @@
 
 <pre>
-@@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    Meer version 0.0.1-git
+@@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    
 @@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security
 @!! !!@ @!@ @!!!:!   @!!!:!   @!@!!@a    https://quadrantsec.com
 !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018
