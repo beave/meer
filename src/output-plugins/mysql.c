@@ -354,7 +354,6 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
 
     char tmp[MAX_MYSQL_QUERY];
     unsigned char proto = 0;
-    unsigned char version = 4; 		/* Default to IPv4 */
 
     unsigned char ip_src_bit[16];
     uint32_t *src_ip_u32 = (uint32_t *)&ip_src_bit[0];

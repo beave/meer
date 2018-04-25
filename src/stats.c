@@ -29,6 +29,7 @@
 #include "meer.h"
 #include "meer-def.h"
 #include "stats.h"
+#include "util.h"
 
 
 struct _MeerCounters *MeerCounters;
@@ -59,7 +60,7 @@ void Statistics( void )
             Meer_Log(NORMAL, " - DNS Statistics:");
             Meer_Log(NORMAL, "");
             Meer_Log(NORMAL, " DNS Lookups   : %"PRIu64 "", MeerCounters->DNSCount);
-            Meer_Log(NORMAL, " DNS Cache Hits: %"PRIu64 "", MeerCounters->DNSCacheCount);
+            Meer_Log(NORMAL, " DNS Cache Hits: %"PRIu64 " (%.3f%%)", MeerCounters->DNSCacheCount, CalcPct(MeerCounters->DNSCacheCount,MeerCounters->DNSCount));
             Meer_Log(NORMAL, "");
 
         }
@@ -73,9 +74,9 @@ void Statistics( void )
     Meer_Log(NORMAL, " SELECT                 : %"PRIu64 "", MeerCounters->SELECTCount);
     Meer_Log(NORMAL, " UPDATE                 : %"PRIu64 "", MeerCounters->UPDATECount);
     Meer_Log(NORMAL, " Class Cache Misses     : %"PRIu64 "", MeerCounters->ClassCacheMissCount);
-    Meer_Log(NORMAL, " Class Cache Hits       : %"PRIu64 "", MeerCounters->ClassCacheHitCount);
+    Meer_Log(NORMAL, " Class Cache Hits       : %"PRIu64 " (%.3f%%)", MeerCounters->ClassCacheHitCount, CalcPct(MeerCounters->ClassCacheHitCount, MeerCounters->ClassCacheMissCount));
     Meer_Log(NORMAL, " Signature Cache Misses : %"PRIu64 "", MeerCounters->ClassCacheMissCount);
-    Meer_Log(NORMAL, " Signature Cache Hits   : %"PRIu64 "", MeerCounters->ClassCacheHitCount);
+    Meer_Log(NORMAL, " Signature Cache Hits   : %"PRIu64 " (%.3f%%)", MeerCounters->ClassCacheHitCount, CalcPct(MeerCounters->ClassCacheHitCount, MeerCounters->ClassCacheMissCount));
 
     Meer_Log(NORMAL, "");
 

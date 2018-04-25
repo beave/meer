@@ -21,3 +21,4 @@ void Remove_Spaces(char *s);
 void Remove_Return(char *s);
 uint64_t Epoch_Lookup( void );
 bool Is_IPv6 (char *ipaddr);
+double CalcPct(uint64_t cnt, uint64_t total);

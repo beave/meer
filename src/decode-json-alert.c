@@ -93,7 +93,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     memset(Alert_Return_Struct, 0, sizeof(_DecodeAlert));
 
     Alert_Return_Struct->event_type = "alert";
-    Alert_Return_Struct->has_extra_data = 0;
+//    Alert_Return_Struct->has_extra_data = 0;
     Alert_Return_Struct->ip_version = 4;
 
     Alert_Return_Struct->timestamp = NULL;
@@ -251,11 +251,9 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             strlcpy(Alert_Return_Struct->app_proto, (char *)json_object_get_string(tmp), sizeof(Alert_Return_Struct->app_proto));
         }
 
-    /* Extra Data */
-
     if (json_object_object_get_ex(json_obj, "xff", &tmp))
         {
-            Alert_Return_Struct->has_extra_data = 1;
+//            Alert_Return_Struct->has_extra_data = 1;
             Alert_Return_Struct->xff = (char *)json_object_get_string(tmp);
         }
 

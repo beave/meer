@@ -36,7 +36,7 @@ char src_dns[256];
     char *stream;
     char *packet;
 
-    bool has_extra_data;
+//    bool has_extra_data;
     char *xff;
 
     char *icmp_type;

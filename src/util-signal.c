@@ -45,8 +45,6 @@ struct _MeerOutput *MeerOutput;
 void Signal_Handler(int sig_num)
 {
 
-    char tmp_yaml[256] = { 0 };
-
     switch( sig_num )
         {
 

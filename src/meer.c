@@ -22,8 +22,6 @@
 
 /*
    TODO
-   For stats, display percentages
-   DNS decoder needed?
 
 */
 
@@ -41,6 +39,8 @@
 #include <errno.h>
 #include <getopt.h>
 #include <fcntl.h>
+#include <sys/wait.h>
+
 
 #include "meer.h"
 #include "meer-def.h"
@@ -95,8 +95,6 @@ int main (int argc, char *argv[])
 
     signed char c;
     int option_index = 0;
-
-    char yaml_file[256] = { 0 };
 
     int fd_int;
     FILE *fd_file;

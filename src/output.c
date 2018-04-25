@@ -174,7 +174,7 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
                             MySQL_Insert_DNS ( DecodeAlert );
                         }
 
-                    if ( MeerOutput->mysql_extra_data = true && DecodeAlert->has_extra_data == 1 )
+                    if ( MeerOutput->mysql_extra_data == true )
                         {
                             MySQL_Insert_Extra_Data ( DecodeAlert );
                         }
