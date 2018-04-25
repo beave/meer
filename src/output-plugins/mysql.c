@@ -96,9 +96,12 @@ uint32_t MySQL_Get_Sensor_ID( void )
 
     uint32_t sensor_id = 0;
 
+    /* For some reason Barnyar2 liked the hostname to be "hostname:interface".  We're simply mirroring
+       that functionality here */
+
     snprintf(tmp, sizeof(tmp),
-             "SELECT sid FROM sensor WHERE hostname='%s' AND interface='%s' AND detail=1 AND encoding='0'",
-             MeerConfig->hostname, MeerConfig->interface);
+             "SELECT sid FROM sensor WHERE hostname='%s:%s' AND interface='%s' AND detail=1 AND encoding='0'",
+             MeerConfig->hostname, MeerConfig->interface, MeerConfig->interface);
 
     results=MySQL_DB_Query(tmp);
     MeerCounters->SELECTCount++;
