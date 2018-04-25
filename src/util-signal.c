@@ -81,6 +81,9 @@ void Signal_Handler(int sig_num)
 
 #endif
 
+            fflush(MeerConfig->meer_log_fd);
+            fclose(MeerConfig->meer_log_fd);
+
             exit(0);
 
         /* Signals to ignore */
