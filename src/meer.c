@@ -169,9 +169,9 @@ int main (int argc, char *argv[])
 
     Load_YAML_Config(MeerConfig->yaml_file);
 
-    CheckLockFile();
-
     Drop_Priv();
+
+    CheckLockFile();
 
     MeerConfig->endian = Check_Endian();
 
@@ -348,7 +348,7 @@ int main (int argc, char *argv[])
 
                             skip_flag = Validate_JSON_String( (char*)buf );
 
-                            if ( skip_flag == true )
+                            if ( skip_flag == 0 )
                                 {
                                     Decode_JSON( (char*)buf);
                                 }
