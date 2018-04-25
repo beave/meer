@@ -62,7 +62,7 @@ void CheckLockFile ( void )
                 {
                     if (!fgets(buf, sizeof(buf), lck))
                         {
-                            Meer_Log(ERROR, "[%s, line %d] Lock file (%s) is open for reading,  but can't read contents.", __FILE__, __LINE__, MeerConfig->lock_file);
+                            Meer_Log(ERROR, "[%s, line %d] Lock file (%s) is open for reading, but can't read contents.", __FILE__, __LINE__, MeerConfig->lock_file);
                         }
 
                     fclose(lck);
@@ -70,7 +70,7 @@ void CheckLockFile ( void )
 
                     if ( pid == 0 )
                         {
-                            Meer_Log(ERROR, "[%s, line %d] Lock file read but pid value is zero.  Aborting.....", __FILE__, __LINE__);
+                            Meer_Log(ERROR, "[%s, line %d] Lock file read but pid value is zero. Aborting.....", __FILE__, __LINE__);
                         }
 
                     /* Check to see if process is running.  We use kill with 0 signal
@@ -84,7 +84,7 @@ void CheckLockFile ( void )
                     else
                         {
 
-                            Meer_Log(NORMAL, "Lock file is present,  but Meer isn't at pid %d (Removing stale %s file)\n", pid, MeerConfig->lock_file);
+                            Meer_Log(NORMAL, "Lock file is present,  but Meer isn't at pid %d (Removing stale %s file)", pid, MeerConfig->lock_file);
 
                             if (unlink(MeerConfig->lock_file))
                                 {
@@ -118,7 +118,7 @@ void Remove_Lock_File ( void )
 
     if ( (stat(MeerConfig->lock_file, &lckcheck) == 0) && unlink(MeerConfig->lock_file) != 0 )
         {
-            Meer_Log(ERROR, "[%s, line %d] Cannot remove lock file (%s - %s)\n", __FILE__, __LINE__, MeerConfig->lock_file, strerror(errno));
+            Meer_Log(ERROR, "[%s, line %d] Cannot remove lock file (%s - %s)", __FILE__, __LINE__, MeerConfig->lock_file, strerror(errno));
         }
 }
 

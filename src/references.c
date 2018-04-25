@@ -33,7 +33,7 @@
 
 struct _References *MeerReferences;
 struct _MeerCounters *MeerCounters;
-struct _MeerConfig *MeerConfig;
+struct _MeerOutput *MeerOutput;
 
 void Load_References( void )
 {
@@ -50,9 +50,9 @@ void Load_References( void )
 
     MeerCounters->ReferenceCount = 0;
 
-    if (( reference_fd = fopen(MeerConfig->reference_file, "r" )) == NULL )
+    if (( reference_fd = fopen(MeerOutput->mysql_reference_file, "r" )) == NULL )
         {
-            Meer_Log(ERROR, "[%s, line %d] Cannot open '%s'", __FILE__,  __LINE__, MeerConfig->reference_file);
+            Meer_Log(ERROR, "[%s, line %d] Cannot open '%s'", __FILE__,  __LINE__, MeerOutput->mysql_reference_file);
         }
 
     while(fgets(buf, sizeof(buf), reference_fd) != NULL)
@@ -92,11 +92,11 @@ void Load_References( void )
             strlcpy(MeerReferences[MeerCounters->ReferenceCount].refid, ptr2, sizeof(MeerReferences[MeerCounters->ReferenceCount].refid));
             strlcpy(MeerReferences[MeerCounters->ReferenceCount].refurl, ptr2, sizeof(MeerReferences[MeerCounters->ReferenceCount].refurl));
 
-            MeerCounters->ClassCount++;
+            MeerCounters->ReferenceCount++;
 
         }
 
-    Meer_Log(NORMAL, "References file loaded [%s].", MeerConfig->reference_file);
+    Meer_Log(NORMAL, "References file loaded [%s].", MeerOutput->mysql_reference_file);
     fclose(reference_fd);
 
 }

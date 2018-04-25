@@ -45,13 +45,15 @@ typedef struct _MeerConfig _MeerConfig;
 struct _MeerConfig
 {
 
+    char yaml_file[256];
+
     char interface[64];
     char hostname[64];
     char runas[32];
 
+    bool daemonize;
+
     char classification_file[256];
-//    char reference_file[256];
-//    char genmsgmap_file[256];
 
     char lock_file[256];
     char waldo_file[256];
@@ -60,10 +62,6 @@ struct _MeerConfig
     int waldo_fd;
 
     bool endian;
-
-    bool reference_system;
-    char reference_file[256];
-    char sid_map_file[256];
 
     bool dns;
     uint32_t dns_cache;
@@ -97,6 +95,7 @@ struct _MeerOutput
 
     bool mysql_enabled;
     bool mysql_debug;
+    bool mysql_extra_data;
     char mysql_server[128];
     uint32_t mysql_port;
     char mysql_username[64];
@@ -113,6 +112,10 @@ struct _MeerOutput
     bool mysql_smtp;
     bool mysql_email;
     bool mysql_metadata;
+
+    bool mysql_reference_system;
+    char mysql_reference_file[256];
+    char mysql_sid_map_file[256];
 
 
 #endif

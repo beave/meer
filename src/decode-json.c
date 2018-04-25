@@ -69,15 +69,11 @@ bool Decode_JSON( char *json_string )
             if ( !strcmp(json_object_get_string(tmp), "alert") )
                 {
 
-                    //printf("json_string: |%s|\n", json_string);
-
                     struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
 
                     DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
 
                     Output_Alert( DecodeAlert );
-
-                    //printf("%s|\n", DecodeAlert->alert_signature);
 
                     /* Done with decoding */
 

@@ -1,28 +1,33 @@
 %YAML 1.1
 ---
 
+# @@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    
+# @@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security
+# @!! !!@ @!@ @!!!:!   @!!!:!   @!@!!@a    https://quadrantsec.com
+# !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018
+#  :      :   : :: ::  : :: ::   :   : :
+
 #  Meer configuration file [http://github.com/beave/meer]
 #  Champ Clark III & The Quadrant Information Security Team: https://quadrantsec.com
 #  Copyright (C) 2018 Quadrant Information Security., et al.
 
 meer-core:
 
-  # Core Settings
+#############################################################################
+# Core Meer Settings
+#############################################################################
 
   core:
 
     interface: "syslog"   # Can be anything.  Sagan "syslog", suricata "eth0".
-    hostname: "XXXXX"  # Unique name for this sensor (no spaces)
+    hostname: "XXXXX"     # Unique name for this sensor (no spaces)
 
-    runas: "suricata"
+    runas: "suricata"	  # Use to "run as" (drop priviledges too). 
 
     classification: "/tmp/classification.config"
 
-    # Legacy Snort style "reference" system. 
-
-    reference_system: enabled
-    sid_file: "/tmp/sid-msg.map"
-    reference: "/tmp/reference.config"
+    # Meer can decode various types of data from within an "alert".  This 
+    # section enabled/disabled various decoders.  
 
     metadata: enabled
     flow: enabled
@@ -32,18 +37,41 @@ meer-core:
     smtp: enabled
     email: enabled
 
+    # If "dns" is enabled, Meer can do reverse DNS (PTR) lookups of IP.  The
+    # "dns_cache" is the amount of time Meer should "cache" a PTR record for. 
+    # DNS cache is to not overload DNS servers with lookups. 
+
     dns: enabled
-    dns_cache: 900
+    dns_cache: 900	# Time in seconds. 
+
+    # "health" checks are signatures that are generated every so often to 
+    # make sure a sensor is up and operational.  Rather than storing the data
+    # as a normal "alert", these events can be treated differently.  For
+    # example, if MySQL/MariaDB output is enabled, "health" sigantures will 
+    # update the "sensor.health" table and not create an "alert".  Think of
+    # it like a "ping" events.  This can be useful for detecting when Meer, 
+    # Suricata or Sagan have "died" unexpectedly.
 
     health: enabled
     health_signatures: 20000001,20000002,20000003,20000004
 
-    waldo-file: "/tmp/my.waldo"
-    lock-file: "/tmp/meer.lck"
-    follow-eve: "/tmp/alert.json"
+    waldo-file: "/var/log/meer/meer.waldo"	# Where to store the last 
+						# position in the 
+						# "follow-eve" file. 
 
+    lock-file: "/var/run/meer.lck"		# To prevent dualing processes.
+
+    follow-eve: "/var/log/suricata/alert.json"	# The Suricata/Sagan file to monitor
+    #follow-eve: "/var/log/sagan/alert.json"	
+
+#############################################################################
+# Output Plugins 
+#############################################################################
 
 output-plugins:
+
+  # MySQL/MariaDB output - Stores data from Suricata or Sagan into a semi-
+  # traditional "Barnyard2" like database. 
 
   mysql:
 
@@ -55,6 +83,15 @@ output-plugins:
     password: "XXXXXX"
     database: "snort_test"
 
+    # Store decoded JSON data that is similar to Unified2 "extra" data to the
+    # "extra" table; 
+
+    extra_data: enabled
+
+    # This allows Meer to stored in a MySQL/MariaDB decoded data from Suricata
+    # or Sagan.  If you want this data sorted,  make sure you have the
+    # decoders enabled in the "core" section! 
+
     metadata: enabled
     flow: enabled
     http: enabled
@@ -62,4 +99,16 @@ output-plugins:
     ssh: enabled
     smtp: enabled
     email: enabled
+
+    # If you would like Meer to mimic the legacy "reference" tables from
+    # Snort/Barnayrd2, enable it here.  If your using more than one database
+    # to store data,  you'll likely want to leave this disabled.  The legacy
+    # reference system isn't very efficient and there's better ways to keep 
+    # track of this data.  This is also a memory hog and preformance killer.
+    # See tools/reference_handler/reference_handler.pl to build a centeralized 
+    # reference table.
+
+    reference_system: disabled
+    sid_file: "/tmp/sid-msg.map-suri"
+    reference: "/tmp/reference.config"
 

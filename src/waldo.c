@@ -72,4 +72,6 @@ void Init_Waldo( void )
             Meer_Log(NORMAL, "Waldo loaded. Current position: %" PRIu64 "", MeerWaldo->position);
         }
 
+    Meer_Log(NORMAL, "");
+
 }

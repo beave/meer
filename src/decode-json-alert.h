@@ -42,6 +42,8 @@ char src_dns[256];
     char *icmp_type;
     char *icmp_code;
 
+    unsigned char ip_version;
+
 
     char packet_info_link[32];
 
@@ -72,8 +74,8 @@ char src_dns[256];
 
     bool     has_http;
 
-    char http_hostname[1024];
-    char http_url[4096];
+    char http_hostname[256];
+    char http_url[2100];
     char http_content_type[64];
     char http_method[32];
     char http_user_agent[16384];

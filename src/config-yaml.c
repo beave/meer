@@ -69,15 +69,6 @@ void Load_YAML_Config( char *yaml_file )
     char last_pass[128] = { 0 };
     char tmp[256] = { 0 };
 
-    MeerConfig = malloc(sizeof(_MeerConfig));
-
-    if ( MeerConfig == NULL )
-        {
-            Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _MeerConfig. Abort!", __FILE__, __LINE__);
-        }
-
-    memset(MeerConfig, 0, sizeof(_MeerConfig));
-
     MeerHealth = malloc(sizeof(_MeerHealth));
 
     if ( MeerHealth == NULL )
@@ -93,8 +84,6 @@ void Load_YAML_Config( char *yaml_file )
     MeerConfig->hostname[0] = '\0';
     MeerConfig->runas[0] = '\0';
     MeerConfig->classification_file[0] = '\0';
-    MeerConfig->reference_file[0] = '\0';
-    MeerConfig->sid_map_file[0] = '\0';
     MeerConfig->waldo_file[0] = '\0';
     MeerConfig->follow_file[0] = '\0';
     MeerConfig->lock_file[0] = '\0';
@@ -117,6 +106,7 @@ void Load_YAML_Config( char *yaml_file )
     MeerOutput->mysql_username[0] = '\0';
     MeerOutput->mysql_password[0] = '\0';
     MeerOutput->mysql_database[0] = '\0';
+    MeerOutput->mysql_extra_data = false;
 
 #endif
 
@@ -277,28 +267,6 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerConfig->follow_file, value, sizeof(MeerConfig->follow_file));
                                 }
 
-                            else if ( !strcmp(last_pass, "reference_system" ))
-                                {
-
-                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
-                                        {
-                                            MeerConfig->reference_system = true;
-                                        }
-
-                                }
-
-
-                            else if ( !strcmp(last_pass, "sid_file" ) && MeerConfig->reference_system == true )
-                                {
-
-                                    strlcpy(MeerConfig->sid_map_file, value, sizeof(MeerConfig->sid_map_file));
-                                }
-
-                            else if ( !strcmp(last_pass, "reference" ) && MeerConfig->reference_system == true )
-                                {
-                                    strlcpy(MeerConfig->reference_file, value, sizeof(MeerConfig->reference_file));
-                                }
-
                             else if ( !strcmp(last_pass, "dns" ))
                                 {
 
@@ -397,7 +365,6 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-
                             else if ( !strcmp(last_pass, "health_signatures" ) && MeerConfig->health == true )
                                 {
 
@@ -438,7 +405,7 @@ void Load_YAML_Config( char *yaml_file )
                             if ( !strcmp(last_pass, "enabled" ))
                                 {
 
-                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ))
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled") )
                                         {
                                             Meer_Log(ERROR, "Error.  Meer wasn't compiled with MySQL support.  Abort!");
                                         }
@@ -462,6 +429,27 @@ void Load_YAML_Config( char *yaml_file )
                                             MeerOutput->mysql_enabled = true;
                                         }
 
+                                }
+
+                            else if ( !strcmp(last_pass, "reference_system" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_reference_system = true;
+                                        }
+
+                                }
+
+                            else if ( !strcmp(last_pass, "sid_file" ) && MeerOutput->mysql_reference_system == true )
+                                {
+
+                                    strlcpy(MeerOutput->mysql_sid_map_file, value, sizeof(MeerOutput->mysql_sid_map_file));
+                                }
+
+                            else if ( !strcmp(last_pass, "reference" ) && MeerOutput->mysql_reference_system == true )
+                                {
+                                    strlcpy(MeerOutput->mysql_reference_file, value, sizeof(MeerOutput->mysql_reference_file));
                                 }
 
                             if ( !strcmp(last_pass, "metadata" ))
@@ -539,11 +527,12 @@ void Load_YAML_Config( char *yaml_file )
                             else if ( !strcmp(last_pass, "debug" ) && MeerOutput->mysql_enabled == true )
                                 {
 
-                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ))
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled") )
                                         {
                                             MeerOutput->mysql_debug = true;
                                         }
                                 }
+
 
                             else if ( !strcmp(last_pass, "server" ) && MeerOutput->mysql_enabled == true )
                                 {
@@ -570,7 +559,14 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerOutput->mysql_database, value, sizeof(MeerOutput->mysql_database));
                                 }
 
+                            else if ( !strcmp(last_pass, "extra_data" ) && MeerOutput->mysql_enabled == true )
+                                {
 
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_extra_data = true;
+                                        }
+                                }
 
 
 
@@ -607,20 +603,6 @@ void Load_YAML_Config( char *yaml_file )
         {
             Meer_Log(ERROR, "Configuration incomplete.  No 'classification' file specified!");
         }
-
-    /*
-        if ( MeerConfig->reference_file[0] == '\0' )
-            {
-                Meer_Log(ERROR, "Configuration incomplete.  No 'reference' file specified!");
-            }
-    */
-
-    /*
-        if ( MeerConfig->genmsgmap_file[0] == '\0' )
-            {
-                Meer_Log(ERROR, "Configuration incomplete.  No 'gen-msg-map' file specified!");
-            }
-    */
 
     if ( MeerConfig->waldo_file[0] == '\0' )
         {

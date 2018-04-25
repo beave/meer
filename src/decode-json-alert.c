@@ -70,14 +70,12 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     struct json_object *tmp_ssh_client_2 = NULL;
     struct json_object *tmp_ssh_client_3 = NULL;
 
-//    struct json_object *json_obj_metadata = NULL;
     struct json_object *json_obj_alert = NULL;
     struct json_object *json_obj_flow = NULL;
     struct json_object *json_obj_http = NULL;
     struct json_object *json_obj_tls = NULL;
     struct json_object *json_obj_smtp = NULL;
     struct json_object *json_obj_email = NULL;
-
 
     struct json_object *json_obj_ssh = NULL;
     struct json_object *json_obj_ssh_server = NULL;
@@ -96,6 +94,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     Alert_Return_Struct->event_type = "alert";
     Alert_Return_Struct->has_extra_data = 0;
+    Alert_Return_Struct->ip_version = 4;
 
     Alert_Return_Struct->timestamp = NULL;
     Alert_Return_Struct->src_ip = NULL;
@@ -210,6 +209,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
         {
             Alert_Return_Struct->src_ip = (char *)json_object_get_string(tmp);
         }
+
 
     if (json_object_object_get_ex(json_obj, "src_port", &tmp))
         {
@@ -634,15 +634,12 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                 }
         }
 
-    /* Sanity Checks
-
-    Check the basic information first */
+    /* Check the basic information first */
 
     if ( Alert_Return_Struct->timestamp == NULL )
         {
             Meer_Log(ERROR, "JSON: \"%s\" : No timestamp found in flowid %s.", json_string, Alert_Return_Struct->flowid);
         }
-
 
     if ( Alert_Return_Struct->flowid == NULL )
         {
@@ -672,9 +669,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             strlcpy(Alert_Return_Struct->payload, "No payload recorded by Meer", sizeof(Alert_Return_Struct->payload));
         }
 
-
     /* Do we have all the alert information we'd expect */
-
 
     if ( has_alert == false )
         {
@@ -729,7 +724,10 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
         }
 
-    /* DEBUG: Sanity check here? */
+    if ( Is_IPv6(Alert_Return_Struct->src_ip) != 0 )
+        {
+            Alert_Return_Struct->ip_version = 6;
+        }
 
     /* Clean up local arrays */
 

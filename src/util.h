@@ -20,3 +20,4 @@ bool IP2Bit(char *ipaddr, unsigned char *out);
 void Remove_Spaces(char *s);
 void Remove_Return(char *s);
 uint64_t Epoch_Lookup( void );
+bool Is_IPv6 (char *ipaddr);

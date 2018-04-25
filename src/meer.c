@@ -20,9 +20,11 @@
 
 /* Main Meer function */
 
-/* DEBUG:  Needs:
-	   SIGHUP handler
-	   Cache for legacy reference crap
+/*
+   TODO
+   For stats, display percentages
+   DNS decoder needed?
+
 */
 
 #ifdef HAVE_CONFIG_H
@@ -37,6 +39,8 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
+#include <getopt.h>
+#include <fcntl.h>
 
 #include "meer.h"
 #include "meer-def.h"
@@ -51,6 +55,7 @@
 #include "waldo.h"
 #include "output.h"
 #include "sid-map.h"
+#include "usage.h"
 
 
 struct _MeerConfig *MeerConfig;
@@ -68,17 +73,30 @@ int main (int argc, char *argv[])
     signal(SIGTERM,  &Signal_Handler);
     signal(SIGSEGV,  &Signal_Handler);
     signal(SIGABRT,  &Signal_Handler);
+//    signal(SIGHUP,  &Signal_Handler);		/* DEBUG: Need SIGHUP handler */
+    signal(SIGUSR1,  &Signal_Handler);
 
-    /*
-        signal(SIGHUP,  &Signal_Handler);
-        signal(SIGINT,  &Signal_Handler);
-        signal(SIGQUIT, &Signal_Handler);
-        signal(SIGTERM, &Signal_Handler);
-        signal(SIGABRT, &Signal_Handler);
-        signal(SIGSEGV, &Signal_Handler );
-    */
+    /* MOST configuration options should happen in the meer.yaml.  Barnyard2's
+       "command line" verses "barnyard2.conf" gets really annoying.  Meer is
+       trying to avoid that.  Hence,  very few command line options! */
 
-    char *yaml_file = DEFAULT_CONFIG;
+    const struct option long_options[] =
+    {
+        { "help",         no_argument,          NULL,   'h' },
+//        { "debug",        required_argument,    NULL,   'd' },
+        { "daemon",       no_argument,          NULL,   'D' },
+//        { "credits",      no_argument,          NULL,   'C' },
+        { "config",       required_argument,    NULL,   'c' },
+        {0, 0, 0, 0}
+    };
+
+    static const char *short_options =
+        "c:hD";
+
+    signed char c;
+    int option_index = 0;
+
+    char yaml_file[256] = { 0 };
 
     int fd_int;
     FILE *fd_file;
@@ -92,6 +110,48 @@ int main (int argc, char *argv[])
     uint64_t linecount = 0;
     uint64_t old_size = 0;
 
+    MeerConfig = malloc(sizeof(_MeerConfig));
+
+    if ( MeerConfig == NULL )
+        {
+            Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _MeerConfig. Abort!", __FILE__, __LINE__);
+        }
+
+    memset(MeerConfig, 0, sizeof(_MeerConfig));
+
+    strlcpy(MeerConfig->yaml_file, DEFAULT_CONFIG, sizeof(MeerConfig->yaml_file));
+
+    while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
+        {
+
+            switch(c)
+                {
+
+                    if (c == -1) break;
+
+                case 'c':
+                    strlcpy(MeerConfig->yaml_file,optarg,sizeof(MeerConfig->yaml_file) - 1);
+                    break;
+
+                case 'h':
+                    Usage();
+                    exit(0);
+                    break;
+
+                case 'D':
+                    MeerConfig->daemonize = true;
+                    break;
+
+                default:
+                    fprintf(stderr, "\nInvalid argument! See below for command line switches.\n");
+                    Usage();
+                    exit(0);
+                    break;
+
+                }
+
+        }
+
     MeerCounters = malloc(sizeof(_MeerCounters));
 
     if ( MeerCounters == NULL )
@@ -101,19 +161,6 @@ int main (int argc, char *argv[])
 
     memset(MeerCounters, 0, sizeof(_MeerCounters));
 
-    /* The only command line option is to specify a non-default configuration
-       file */
-
-    if ( argc > 2 )
-        {
-            Meer_Log(ERROR, "Too many arguments.  Only one YAML file can be specified.\n");
-        }
-
-    if ( argc == 2 )
-        {
-            yaml_file = argv[1];
-        }
-
     Meer_Log(NORMAL, "");
     Meer_Log(NORMAL, " @@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    Meer version %s", VERSION);
     Meer_Log(NORMAL, " @@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security");
@@ -122,22 +169,15 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, "  :      :   : :: ::  : :: ::   :   : :");
     Meer_Log(NORMAL, "");
 
-    Load_YAML_Config(yaml_file);
+    Load_YAML_Config(MeerConfig->yaml_file);
+
+    CheckLockFile();
 
     Drop_Priv();
 
     MeerConfig->endian = Check_Endian();
 
     Load_Classifications();
-
-    /* Legacy reference system */
-
-    if ( MeerConfig->reference_system )
-        {
-            Meer_Log(NORMAL, "Legacy reference system enabled");
-            Load_References();
-            Load_SID_Map();
-        }
 
     Meer_Log(NORMAL, "");
     Meer_Log(NORMAL, "Decode 'metadata': %s", MeerConfig->metadata ? "enabled" : "disabled" );
@@ -149,8 +189,6 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, "Decode 'email'   : %s", MeerConfig->email ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "");
 
-    CheckLockFile();
-
     Init_Waldo();
 
     Init_Output();
@@ -161,6 +199,94 @@ int main (int argc, char *argv[])
         }
 
     fd_int = fileno(fd_file);
+
+    /* Become a daemon if requested */
+
+    if ( MeerConfig->daemonize == true )
+        {
+
+            Meer_Log(NORMAL, "Becoming a daemon!");
+
+            pid_t pid = 0;
+            pid = fork();
+
+            if ( pid == 0 )
+                {
+
+                    /* Child */
+
+                    if ( setsid() == -1 )
+                        {
+                            Meer_Log(ERROR, "[%s, line %d] Failed creating new session while daemonizing", __FILE__, __LINE__);
+                            exit(1);
+                        }
+
+                    pid = fork();
+
+                    if ( pid == 0 )
+                        {
+
+                            /* Grandchild, the actual daemon */
+
+                            if ( chdir("/") == -1 )
+                                {
+                                    Meer_Log(ERROR, "[%s, line %d] Failed changing directory to / after daemonizing [errno %d]", __FILE__, __LINE__, errno);
+                                    exit(1);
+                                }
+
+                            /* Close and re-open stdin, stdout, and stderr, so as to
+                               to release anyone waiting on them. */
+
+                            close(0);
+                            close(1);
+                            close(2);
+
+                            if ( open("/dev/null", O_RDONLY) == -1 )
+                                {
+                                    Meer_Log(ERROR, "[%s, line %d] Failed reopening stdin after daemonizing [errno %d]", __FILE__, __LINE__, errno);
+                                }
+
+                            if ( open("/dev/null", O_WRONLY) == -1 )
+                                {
+                                    Meer_Log(ERROR, "[%s, line %d] Failed reopening stdout after daemonizing [errno %d]", __FILE__, __LINE__, errno);
+                                }
+
+                            if ( open("/dev/null", O_RDWR) == -1 )
+                                {
+                                    Meer_Log(ERROR, "[%s, line %d] Failed reopening stderr after daemonizing [errno %d]", __FILE__, __LINE__, errno);
+                                }
+
+                        }
+                    else if ( pid < 0 )
+                        {
+
+                            Meer_Log(ERROR, "[%s, line %d] Failed second fork while daemonizing", __FILE__, __LINE__);
+                            exit(1);
+
+                        }
+                    else
+                        {
+
+                            exit(0);
+                        }
+
+                }
+            else if ( pid < 0 )
+                {
+
+                    Meer_Log(ERROR, "[%s, line %d] Failed first fork while daemonizing", __FILE__, __LINE__);
+                    exit(1);
+
+                }
+            else
+                {
+
+                    /* Wait for child to exit */
+                    waitpid(pid, NULL, 0);
+                    exit(0);
+                }
+        }
+
 
 
     if ( MeerWaldo->position != 0 )
@@ -175,6 +301,12 @@ int main (int argc, char *argv[])
                 }
 
             Meer_Log(NORMAL, "Reached target record of %" PRIu64 ".  Processing new records.", MeerWaldo->position);
+
+        }
+    else
+        {
+
+            Meer_Log(NORMAL, "Ingesting data. Working........");
 
         }
 

@@ -38,6 +38,8 @@
 #include "meer-def.h"
 #include "util.h"
 #include "output.h"
+#include "references.h"
+#include "sid-map.h"
 
 #ifdef HAVE_LIBMYSQLCLIENT
 #include <mysql/mysql.h>
@@ -60,6 +62,22 @@ void Init_Output( void )
         {
 
             Meer_Log(NORMAL, "--[ MySQL/MariaDB information ]--------------------------------------------");
+            Meer_Log(NORMAL, "");
+
+            Meer_Log(NORMAL, "Extra data: %s", MeerOutput->mysql_extra_data ? "enabled" : "disabled" );
+
+            /* Legacy reference system */
+
+            Meer_Log(NORMAL, "Legacy Reference System': %s", MeerOutput->mysql_reference_system ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "");
+
+            if ( MeerOutput->mysql_reference_system )
+                {
+                    Load_References();
+                    Load_SID_Map();
+                    Meer_Log(NORMAL, "");
+                }
+
             MySQL_Connect();
 
             MeerOutput->mysql_sensor_id = MySQL_Get_Sensor_ID();
@@ -103,20 +121,6 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 
             class_id = MySQL_Get_Class_ID( DecodeAlert);
 
-            if ( MeerConfig->reference_system == true )
-                {
-
-                    signature_id = MySQL_Reference_Handler ( DecodeAlert );
-
-                }
-            else
-                {
-
-                    signature_id = MySQL_Get_Signature_ID( DecodeAlert, class_id );
-
-                }
-
-
             if ( MeerConfig->health == true )
                 {
 
@@ -138,28 +142,39 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 
                     MySQL_DB_Query("BEGIN");
 
+                    if ( MeerOutput->mysql_reference_system == true )
+                        {
+
+                            signature_id = MySQL_Legacy_Reference_Handler ( DecodeAlert );
+
+                            /* The SID doesn't have any reference data.  We just get it into the
+                                       signature table */
+
+                            if ( signature_id == 0 )
+                                {
+                                    signature_id = MySQL_Get_Signature_ID( DecodeAlert, class_id );
+                                }
+
+                        }
+                    else
+                        {
+
+                            signature_id = MySQL_Get_Signature_ID( DecodeAlert, class_id );
+
+                        }
+
                     MySQL_Insert_Event( DecodeAlert, signature_id );
 
                     MySQL_Insert_Header( DecodeAlert );
 
                     MySQL_Insert_Payload ( DecodeAlert );
 
-                    /*
-                                        if ( MeerConfig->reference_system == true )
-                                            {
-
-                                                MySQL_Reference_Handler ( DecodeAlert );
-
-                                            }
-
-                    */
-
                     if ( MeerConfig->dns == true )
                         {
                             MySQL_Insert_DNS ( DecodeAlert );
                         }
 
-                    if ( DecodeAlert->has_extra_data == 1 )
+                    if ( MeerOutput->mysql_extra_data = true && DecodeAlert->has_extra_data == 1 )
                         {
                             MySQL_Insert_Extra_Data ( DecodeAlert );
                         }

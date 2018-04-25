@@ -94,6 +94,8 @@ uint32_t MySQL_Get_Sensor_ID( void )
     char tmp[MAX_MYSQL_QUERY];
     char *results;
 
+    uint32_t sensor_id = 0;
+
     snprintf(tmp, sizeof(tmp),
              "SELECT sid FROM sensor WHERE hostname='%s' AND interface='%s' AND detail=1 AND encoding='0'",
              MeerConfig->hostname, MeerConfig->interface);
@@ -106,8 +108,9 @@ uint32_t MySQL_Get_Sensor_ID( void )
     if ( results != NULL )
         {
 
-            Meer_Log(NORMAL, "Using Database Sensor ID: %d", atoi(results) );
-            return( atoi(results) );
+            sensor_id = atoi(results);
+            Meer_Log(NORMAL, "Using Database Sensor ID: %d", sensor_id );
+            return( sensor_id );
         }
 
     snprintf(tmp, sizeof(tmp),
@@ -119,9 +122,11 @@ uint32_t MySQL_Get_Sensor_ID( void )
 
     results = MySQL_DB_Query("SELECT LAST_INSERT_ID()");
 
-    Meer_Log(NORMAL, "Using New Database Sensor ID: %d", atoi(results));
+    sensor_id = atoi(results);
 
-    return( atoi(results) );
+    Meer_Log(NORMAL, "Using New Database Sensor ID: %d", sensor_id);
+
+    return( sensor_id );
 
 }
 
@@ -130,6 +135,7 @@ uint64_t MySQL_Get_Last_CID( void )
 
     char tmp[MAX_MYSQL_QUERY] = { 0 };
     char *results = NULL;
+    int  last_cid = 0;
 
     snprintf(tmp, sizeof(tmp), "SELECT last_cid FROM sensor WHERE sid=%d ", MeerOutput->mysql_sensor_id);
 
@@ -139,10 +145,10 @@ uint64_t MySQL_Get_Last_CID( void )
     if ( results != NULL )
         {
 
-            Meer_Log(NORMAL, "Last CID: %d", atoi(results) );
-            return( atol(results) );
+            last_cid = atoi(results);
+            Meer_Log(NORMAL, "Last CID: %d", last_cid );
+            return( last_cid );
         }
-
 
     return(0);
 }
@@ -298,8 +304,8 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id )
     if ( results == NULL )
         {
 
-            snprintf(tmp, sizeof(tmp), "INSERT INTO signature(sig_name,sig_class_id,sig_priority,sig_rev, sig_sid) "
-                     "VALUES ('%s',%d,%d,%d,%" PRIu64 ")", DecodeAlert->alert_signature, class_id, sig_priority,
+            snprintf(tmp, sizeof(tmp), "INSERT INTO signature (sig_name,sig_class_id,sig_priority,sig_rev,sig_sid,sig_gid) "
+                     "VALUES ('%s',%d,%d,%d,%" PRIu64 ",1)", DecodeAlert->alert_signature, class_id, sig_priority,
                      DecodeAlert->alert_rev, DecodeAlert->alert_signature_id);
 
             (void)MySQL_DB_Query(tmp);
@@ -348,6 +354,7 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
 
     char tmp[MAX_MYSQL_QUERY];
     unsigned char proto = 0;
+    unsigned char version = 4; 		/* Default to IPv4 */
 
     unsigned char ip_src_bit[16];
     uint32_t *src_ip_u32 = (uint32_t *)&ip_src_bit[0];
@@ -373,15 +380,13 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
             proto = ICMP;
         }
 
-    /* DEBUG NEEDS IPv6 */
-
     /* Legacy database allow things like ip_len to be set to NULL.  This may break
        functionality on some consoles.  We set it to 0,  even though we shouldn't
        have too :( */
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO iphdr ( sid, cid,ip_src,ip_dst,ip_ver,ip_proto,ip_hlen,ip_tos,ip_len,ip_id,ip_flags,ip_off,ip_ttl,ip_csum) VALUES (%d,%" PRIu64 ",%" PRIu32 ",%" PRIu32 ",4,%u,0,0,0,0,0,0,0,0)",
-             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, htonl(*src_ip_u32), htonl(*dst_ip_u32), proto );
+             "INSERT INTO iphdr ( sid, cid,ip_src,ip_dst,ip_src_t,ip_dst_t,ip_ver,ip_proto,ip_hlen,ip_tos,ip_len,ip_id,ip_flags,ip_off,ip_ttl,ip_csum) VALUES (%d,%" PRIu64 ",%" PRIu32 ",%" PRIu32 ",'%s','%s',%u,%u,0,0,0,0,0,0,0,0)",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, htonl(*src_ip_u32), htonl(*dst_ip_u32), DecodeAlert->src_ip, DecodeAlert->dest_ip, DecodeAlert->ip_version, proto );
 
     (void)MySQL_DB_Query(tmp);
     MeerCounters->INSERTCount++;
@@ -413,7 +418,7 @@ void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert )
     else if ( proto == ICMP )
         {
 
-            snprintf(tmp, sizeof(tmp), "INSERT INTO icmphdr (sid,cid,icmptype,icmpcode,icmp_csum,icmp_id,icmp_seq) VALUES (%d,%" PRIu64 ",%s,%s,0,0,0)",
+            snprintf(tmp, sizeof(tmp), "INSERT INTO icmphdr (sid,cid,icmp_type,icmp_code,icmp_csum,icmp_id,icmp_seq) VALUES (%d,%" PRIu64 ",%s,%s,0,0,0)",
                      MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, DecodeAlert->icmp_type, DecodeAlert->icmp_code );
 
             (void)MySQL_DB_Query(tmp);
@@ -477,6 +482,13 @@ void MySQL_Insert_Extra_Data ( struct _DecodeAlert *DecodeAlert )
 
     char tmp[MAX_MYSQL_QUERY] = { 0 };
 
+    char e_http_hostname[512] = { 0 };
+    char e_http_url[3200] = { 0 };
+
+    char e_email_attachment[10240] = { 0 };
+    char e_smtp_rcpt_to[10240] = { 0 };
+    char e_smtp_mail_from[10240] = { 0 };
+
     if ( DecodeAlert->xff != NULL )
         {
 
@@ -487,6 +499,111 @@ void MySQL_Insert_Extra_Data ( struct _DecodeAlert *DecodeAlert )
 
             (void)MySQL_DB_Query(tmp);
             MeerCounters->INSERTCount++;
+
+        }
+
+    if ( DecodeAlert->ip_version == 6 )
+        {
+
+            snprintf(tmp, sizeof(tmp),
+                     "INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d,%" PRIu64 ",%d,1,%d,'%s')",
+                     MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_IPV6_SOURCE_ADDRESS,
+                     (int)strlen( DecodeAlert->src_ip ), DecodeAlert->src_ip);
+
+            (void)MySQL_DB_Query(tmp);
+            MeerCounters->INSERTCount++;
+
+            snprintf(tmp, sizeof(tmp),
+                     "INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d,%" PRIu64 ",%d,1,%d,'%s')",
+                     MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_IPV6_DESTINATION_ADDRESS,
+                     (int)strlen( DecodeAlert->dest_ip ), DecodeAlert->dest_ip);
+
+            (void)MySQL_DB_Query(tmp);
+            MeerCounters->INSERTCount++;
+
+        }
+
+    if ( DecodeAlert->has_http == true )
+        {
+
+            if ( DecodeAlert->http_hostname[0] != '\0' )
+                {
+
+                    MySQL_Escape_String( DecodeAlert->http_hostname, e_http_hostname, sizeof(e_http_hostname));
+
+                    snprintf(tmp, sizeof(tmp),
+                             "INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d,%" PRIu64 ",%d,1,%d,'%s')",
+                             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_HTTP_HOSTNAME,
+                             (int)strlen( e_http_hostname ), e_http_hostname );
+
+                    (void)MySQL_DB_Query(tmp);
+                    MeerCounters->INSERTCount++;
+
+                }
+
+            if ( DecodeAlert->http_url[0] != '\0' )
+                {
+
+                    MySQL_Escape_String( DecodeAlert->http_url, e_http_url, sizeof(e_http_url));
+
+                    snprintf(tmp, sizeof(tmp),
+                             "INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d,%" PRIu64 ",%d,1,%d,'%s')",
+                             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_HTTP_URI,
+                             (int)strlen( e_http_url ), e_http_url);
+
+                    (void)MySQL_DB_Query(tmp);
+                    MeerCounters->INSERTCount++;
+
+                }
+
+        }
+
+    if ( DecodeAlert->has_smtp == true )
+        {
+
+            if ( DecodeAlert->email_attachment[0] != '\0' )
+                {
+
+                    MySQL_Escape_String( DecodeAlert->email_attachment, e_email_attachment, sizeof(e_email_attachment));
+
+                    snprintf(tmp, sizeof(tmp),
+                             "INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d,%" PRIu64 ",%d,1,%d,'%s')",
+                             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_SMTP_FILENAME,
+                             (int)strlen( e_http_hostname ), e_email_attachment );
+
+                    (void)MySQL_DB_Query(tmp);
+                    MeerCounters->INSERTCount++;
+
+                }
+
+            if ( DecodeAlert->smtp_rcpt_to[0] != '\0' )
+                {
+
+                    MySQL_Escape_String( DecodeAlert->smtp_rcpt_to, e_smtp_rcpt_to, sizeof(e_smtp_rcpt_to));
+
+                    snprintf(tmp, sizeof(tmp),
+                             "INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d,%" PRIu64 ",%d,1,%d,'%s')",
+                             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_SMTP_RCPT_TO,
+                             (int)strlen( e_smtp_rcpt_to ), e_smtp_rcpt_to );
+
+                    (void)MySQL_DB_Query(tmp);
+                    MeerCounters->INSERTCount++;
+
+                }
+
+            if ( DecodeAlert->smtp_mail_from[0] != '\0' )
+                {
+
+                    MySQL_Escape_String( DecodeAlert->smtp_mail_from, e_smtp_mail_from, sizeof(e_smtp_mail_from));
+
+                    snprintf(tmp, sizeof(tmp),
+                             "INSERT INTO extra (sid,cid,type,datatype,len,data) VALUES (%d,%" PRIu64 ",%d,1,%d,'%s')",                             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, EXTRA_SMTP_MAIL_FROM,
+                             (int)strlen( e_smtp_mail_from ), e_smtp_mail_from );
+
+                    (void)MySQL_DB_Query(tmp);
+                    MeerCounters->INSERTCount++;
+
+                }
 
         }
 
@@ -516,10 +633,10 @@ void MySQL_Insert_HTTP ( struct _DecodeAlert *DecodeAlert )
 
     char tmp[MAX_MYSQL_QUERY] = { 0 };
 
-    char e_http_hostname[255] = { 0 };
-    char e_http_url[2100] = { 0 };
-    char e_http_user_agent[8192] = { 0 };
-    char e_http_refer[2100] = { 0 };
+    char e_http_hostname[512] = { 0 };
+    char e_http_url[4100] = { 0 };
+    char e_http_user_agent[16384] = { 0 };
+    char e_http_refer[4100] = { 0 };
 
     MySQL_Escape_String( DecodeAlert->http_hostname, e_http_hostname, sizeof(e_http_hostname));
     MySQL_Escape_String( DecodeAlert->http_url, e_http_url, sizeof(e_http_url));
@@ -708,7 +825,7 @@ void MySQL_Escape_String( char *sql, char *str, size_t size )
 
 }
 
-int MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
+int MySQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
 {
 
     char tmp[MAX_MYSQL_QUERY];
@@ -722,8 +839,6 @@ int MySQL_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
 
     for (i = 0; i <  MeerCounters->SIDMapCount; i++ )
         {
-
-            /* DEBUG: If its not FOUND it should kick back a WARNING */
 
             if ( DecodeAlert->alert_signature_id == SID_Map[i].sid )
                 {
@@ -813,8 +928,6 @@ int MySQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert )
     char *results = NULL;
     char class[64] = { 0 };
 
-    unsigned char sig_priority = 0;
-
     int sig_class_id = 0;
     int sig_id = 0;
 
@@ -844,35 +957,7 @@ int MySQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert )
         }
 
     sig_class_id = atoi(results);
-
-    snprintf(tmp, sizeof(tmp),
-             "SELECT sig_id FROM signature WHERE sig_name='%s' AND sig_rev=%d AND sig_sid=%" PRIu64 "",
-             DecodeAlert->alert_signature, DecodeAlert->alert_rev, DecodeAlert->alert_signature_id);
-
-    results=MySQL_DB_Query(tmp);
-    MeerCounters->SELECTCount++;
-
-    if ( results == NULL )
-        {
-
-            sig_priority = Class_Lookup_Priority( DecodeAlert->alert_category);
-
-            snprintf(tmp, sizeof(tmp),
-                     "INSERT INTO signature (sig_name,sig_class_id,sig_priority,sig_rev,sig_sid) VALUES ('%s',%d,%d,%" PRIu32 ",%" PRIu64 ")",
-                     DecodeAlert->alert_signature,
-                     sig_class_id,
-                     sig_priority,
-                     DecodeAlert->alert_rev,
-                     DecodeAlert->alert_signature_id );
-
-            results=MySQL_DB_Query(tmp);
-            MeerCounters->INSERTCount++;
-
-            results = MySQL_DB_Query("SELECT LAST_INSERT_ID()");
-
-        }
-
-    sig_id = atoi(results);
+    sig_id = MySQL_Get_Signature_ID( DecodeAlert, sig_class_id );
 
     return(sig_id);
 

@@ -24,8 +24,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>    /* standard unix functions, like getpid()         */
-#include <signal.h>    /* signal name macros, and the signal() prototype */
+#include <unistd.h>
+#include <signal.h>
+#include <string.h>
 
 #include "meer.h"
 #include "meer-def.h"
@@ -37,15 +38,14 @@
 #include "output-plugins/mysql.h"
 #endif
 
-
 struct _MeerWaldo *MeerWaldo;
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
 
-
 void Signal_Handler(int sig_num)
 {
 
+    char tmp_yaml[256] = { 0 };
 
     switch( sig_num )
         {
@@ -88,10 +88,12 @@ void Signal_Handler(int sig_num)
         /* Signals to ignore */
         case 17:                /* Child process has exited. */
         case 28:                /* Terminal 'resize'/alarm. */
+
             break;
 
         case SIGUSR1:
-//                    Statistics();
+
+            Statistics();
             break;
 
         default:
