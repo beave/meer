@@ -14,6 +14,8 @@ functions like Banryard2 (https://github.com/firnsy/barnyard2) but rather than r
 "unified2" format, Meer reads Suricata (https://suricata-ids.org) and Sagan (https://sagan.io) 
 "EVE" JSON output. 
 
+# Meer with MySQL/MariaDB output:
+
 Meer stores to a database similar to Barnyard2 to remain backward compatible.  This means that
 it should be functional with software like Snorby, Sguil, BASE, etc. 
 
