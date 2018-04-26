@@ -63,7 +63,7 @@ meer-core:
                                                 # position in the 
                                                 # "follow-eve" file. 
 
-    lock-file: "/var/run/meer/meer.lck"		# To prevent dualing processes.
+    lock-file: "/var/log/meer/meer.lck"		# To prevent dualing processes.
 
     follow-eve: "/var/log/suricata/alert.json"	# The Suricata/Sagan file to monitor
     #follow-eve: "/var/log/sagan/alert.json"	
@@ -105,7 +105,7 @@ output-plugins:
     email: enabled
 
     # If you would like Meer to mimic the legacy "reference" tables from
-    # Snort/Barnayrd2, enable it here.  If your using more than one database
+    # Snort/Barnyard2, enable it here.  If your using more than one database
     # to store data,  you'll likely want to leave this disabled.  The legacy
     # reference system isn't very efficient and there's better ways to keep 
     # track of this data.  This is also a memory hog and preformance killer.
