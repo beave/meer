@@ -3,11 +3,10 @@
 
 VERSION=`cat src/version.h | grep "#define VERSION " | sed -e 's/^.*\"\(.*\)\"/\1/'`
 
-AC_INIT([sagan], m4_esyscmd_s([cat src/version.h | cut -d\" -f2]))
+AC_INIT([meer], m4_esyscmd_s([cat src/version.h | cut -d\" -f2]))
 AC_CONFIG_SRCDIR([src])
 AC_CANONICAL_SYSTEM
 AC_GNU_SOURCE
-AC_CONFIG_MACRO_DIR([m4])
 AM_MAINTAINER_MODE([disable])
 
 # Check OS
@@ -111,7 +110,7 @@ PKG_PROG_PKG_CONFIG
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 
-AC_CHECK_HEADERS([stdio.h stdlib.h sys/types.h unistd.h stdint.h inttypes.h ctype.h errno.h fcntl.h sys/stat.h string.h getopt.h time.h stdarg.h limits.h stdbool.h arpa/inet.h netinet/in.h sys/time.h sys/socket.h sys/mmap.h sys/mman.h sys/prctl.h])
+AC_CHECK_HEADERS([stdio.h stdlib.h sys/types.h unistd.h stdint.h inttypes.h ctype.h errno.h fcntl.h sys/stat.h string.h getopt.h time.h stdarg.h stdbool.h arpa/inet.h netinet/in.h sys/time.h sys/socket.h sys/mmap.h sys/mman.h])
 
 AC_CHECK_SIZEOF([size_t])
 
@@ -135,13 +134,40 @@ AC_STRUCT_TM
 #AX_EXT
 AM_PROG_AS
 
-AC_CHECK_FUNCS([select strstr strchr strcmp strlen sizeof write snprintf strncat strlcat strlcpy getopt_long gethostbyname socket htons connect send recv dup2 strspn strdup memset access ftruncate strerror mmap shm_open gettimeofday])
+AC_CHECK_FUNCS([select strstr strchr strcmp strlen sizeof write snprintf strncat strlcat strlcpy getopt_long gethostbyname socket htons connect send recv strspn memset access ftruncate strerror mmap shm_open gettimeofday])
+
+# json-c
+
+AC_ARG_WITH(libjsonc_includes,
+        [  --with-libjsonc-includes=DIR  libjson-c include directory],
+        [with_libjsonc_includes="$withval"],[with_libjsonc_includes=no])
+AC_ARG_WITH(libjsonc_libraries,
+        [  --with-libjscon-libraries=DIR    libjson-c library directory],
+        [with_libjsonc_libraries="$withval"],[with_libjsonc_libraries="no"])
+
+if test "$with_libjsonc_includes" != "no"; then
+    CPPFLAGS="${CPPFLAGS} -I${with_libjsonc_includes}"
+fi
+
+AC_CHECK_HEADER(json-c.h,,LIBJSONC="no")
+
+if test "$with_libjsonc_libraries" != "no"; then
+    LDFLAGS="${LDFLAGS} -L${with_libjsonc_libraries}"
+fi
+
+LIBJSONC=""
+AC_CHECK_LIB(json-c,main,,LIBJSON="no")
+
+if test "$LIBJSONC" = "no"; then
+    echo
+    echo "   ERROR! Required libjson-c library not found, go get it."
+    echo
+    echo "   Debian/Ubuntu: apt-get install libjson-c-dev"
+    echo
+    exit 1
+fi
 
 AC_CHECK_LIB(json-c, main,,AC_MSG_ERROR(Meer needs libjson-c!))
-
-# OSX doesn't have librt - this needs to be fixed!
-
-#AC_CHECK_LIB(rt, main,,AC_MSG_ERROR(Meer needs librt!))
 
 # libyaml
 
@@ -202,9 +228,13 @@ src/Makefile])
 AC_OUTPUT
 
 AC_MSG_RESULT([])
-AC_MSG_RESULT([Meer has been configured!])
+AC_MSG_RESULT([@@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@])
+AC_MSG_RESULT([@@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security])
+AC_MSG_RESULT([@!! !!@ @!@ @!!!:!   @!!!:!   @!@!!@a    https://quadrantsec.com])
+AC_MSG_RESULT([!!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018])
+AC_MSG_RESULT([:      :   : :: ::  : :: ::   :   : :    By Champ Clark III])  
 AC_MSG_RESULT([])
-AC_MSG_RESULT([Champ Clark III & The Quadrant InfoSec Team [[quadrantsec.com]]])
-AC_MSG_RESULT([Copyright (C) 2018 Quadrant Information Security, et al.])
+AC_MSG_RESULT([Meer is configured! Now type 'make'])
 AC_MSG_RESULT([])
+
 

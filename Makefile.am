@@ -1,5 +1,5 @@
 AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS =
 SUBDIRS = src
 
 #INCLUDES = @INCLUDES@
