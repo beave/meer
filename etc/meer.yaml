@@ -27,7 +27,7 @@ meer-core:
     classification: "/etc/suricata/classification.config"
     #classification: "/usr/local/etc/sagan-rule/classification.config"
 
-    meer_log: "/var/log/meer.log"   # Meer log file
+    meer_log: "/var/log/meer/meer.log"   # Meer log file
 
 
     # Meer can decode various types of data from within an "alert".  This 
@@ -63,7 +63,7 @@ meer-core:
                                                 # position in the 
                                                 # "follow-eve" file. 
 
-    lock-file: "/var/run/meer.lck"		# To prevent dualing processes.
+    lock-file: "/var/run/meer/meer.lck"		# To prevent dualing processes.
 
     follow-eve: "/var/log/suricata/alert.json"	# The Suricata/Sagan file to monitor
     #follow-eve: "/var/log/sagan/alert.json"	
