@@ -24,7 +24,8 @@ meer-core:
 
     runas: "suricata"	  # Use to "run as" (drop priviledges too). 
 
-    classification: "/tmp/classification.config"
+    classification: "/etc/suricata/classification.config"
+    #classification: "/usr/local/etc/sagan-rule/classification.config"
 
     meer_log: "/var/log/meer.log"   # Meer log file
 

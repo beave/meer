@@ -335,10 +335,9 @@ int main (int argc, char *argv[])
 
     Meer_Log(NORMAL, "Read in %" PRIu64 " lines",MeerWaldo->position);
 
-
     if (fstat(fd_int, &st))
         {
-            Meer_Log(ERROR, "Cannot state follow file %s.  Abort", MeerConfig->follow_file);
+            Meer_Log(ERROR, "Cannot 'stat' spool file '%s' [%s]  Abort!", MeerConfig->follow_file, strerror(errno));
         }
 
     old_size = (uint64_t) st.st_size;
@@ -348,10 +347,36 @@ int main (int argc, char *argv[])
     while(1)
         {
 
+            /* If the spool file disappears, then we wait to see if a new one
+                   shows up.  Suricata might be rotating the alert.json file */
+
             if (fstat(fd_int, &st))
                 {
-                    Meer_Log(ERROR, "Cannot state follow file %s.  Abort", MeerConfig->follow_file);
+
+                    fclose(fd_file);
+
+                    old_size = 0;
+                    linecount = 0;
+                    MeerWaldo->position = 0;
+
+                    Meer_Log(ERROR, "Follow JSON File '%s' disappeared [%s].", MeerConfig->follow_file, strerror(errno) );
+                    Meer_Log(ERROR, "Waiting for new spool file....");
+
+                    while ( fstat(fd_int, &st) != 0 )
+                        {
+
+                            sleep(1);
+
+                        }
+
+                    if (( fd_file = fopen(MeerConfig->follow_file, "r" )) == NULL )
+                        {
+                            Meer_Log(ERROR, "Cannot re-open %s. [%s]", MeerConfig->follow_file, strerror(errno) );
+                        }
+
                 }
+
+            /* Check spool file.  If it's grown,  read in the new data */
 
             if ( (uint64_t) st.st_size > old_size )
                 {
@@ -373,10 +398,12 @@ int main (int argc, char *argv[])
 
                 }
 
+            /* If the spool file has _shunk_,  it's been truncated.  We need to
+                   re-open it! */
 
             else if ( (uint64_t) st.st_size < old_size )
                 {
-                    Meer_Log(WARN, "File Truncated! Re-opening %s!", MeerConfig->follow_file );
+                    Meer_Log(WARN, "Spool file Truncated! Re-opening '%s'!", MeerConfig->follow_file );
 
                     fclose(fd_file);
 
