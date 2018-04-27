@@ -35,7 +35,7 @@ and abandon the "cruft".
 * MySQL/MariaDB output is backward compatible with legacy Snort/Barnyard2 database.
 * MySQL/MariaDB internal SQL “caching” makes Meer interactions with databases more efficients. 
 
-# Future support: 
+# Future "output" support: 
 
 Meer is under development.  This is our brief "roadmap" of what we would like to see Meer do.  If
 you have any ideas or requests,  please let us know via our "issues" page (https://github.com/beave/meer/issues).
