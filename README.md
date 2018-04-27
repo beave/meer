@@ -20,16 +20,16 @@ Meer is meant to be modular and simple. This project does not aim to replicate a
 
 # Output Plugins:
 
-* MySQL/Maria DB output - This output plugin stores data to a database similar to Snort/Barnyard2.  This makes is backward compatible with Snorby,  Sguil, BASE, etc. The database schema has been extended to record other alert metadata like ‘flow’, ‘http’, ‘smtp’, ‘tls’, ‘ssh’ and other information.  This extra data can be extremely useful for security analysts.   This output also supports features I’ve done my port of Barnyard2 (https://github.com/beave/barnyard2-extra) like reverse DNS/PTR lookups,  “health” checks and “extra data” (for example XFF HTTP headers).   Meer uses internal SQL “caching” to make it more efficient when interacting with databases. 
+* MySQL/Maria DB output - This output plugin stores data to a database similar to Snort/Barnyard2.  This makes is backward compatible with Snorby,  Sguil, BASE, etc. The database schema has been extended to record other alert metadata like ‘flow’, ‘http’, ‘smtp’, ‘tls’, ‘ssh’ and other information.  This extra data can be extremely useful for security analysts.   This output plug in supports features I’ve done in my fork of Barnyard2 known as Barnyard2-Extra (https://github.com/beave/barnyard2-extra). For example; reverse DNS/PTR lookups,  “health” checks and “extra data” (for example XFF HTTP headers).   Meer uses internal SQL “caching” to make it more efficient when interacting with databases. 
 
 # Current Features:
 
 
 * Meer is written in C and has a very small memory footprint (only several meg of RAM).  It also CPU efficient. 
 * Fast startup times (under one second).  
-* Simple command line and configuration syntax.  Uses a YAML configurations similar to Suricata and Sagan. 
+* Simple command line and configuration syntax.  Meer uses a YAML configurations similar to Suricata and Sagan. 
 * Out of the box IPv6 support. 
-* Meer can do reverse DNS/PTR record lookups.   Meer has an internal DNS cache system to not overburden DNS servers with repeated queries. 
+* Meer can do reverse DNS/PTR record lookups.   Meer has an internal DNS cache system so to not overburden DNS servers with repeated queries. 
 * MySQL/MariaDB output is backward compatible with legacy Snort/Barnyard2 database.
 * MySQL/MariaDB internal SQL “caching” makes Meer interactions with databases more efficients. 
 
