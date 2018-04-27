@@ -19,19 +19,19 @@ meer-core:
 
   core:
 
-    interface: "syslog"   # Can be anything.  Sagan "syslog", suricata "eth0".
-    hostname: "XXXXX"     # Unique name for this sensor (no spaces)
+    hostname: "mysensor"  # Unique name for this sensor (no spaces)
+    interface: "eth0"     # Can be anything.  Sagan "syslog", suricata "eth0".
 
-    runas: "suricata"	  # Use to "run as" (drop priviledges too). 
+    runas: "suricata"	  # User to "drop priviledges" too. 
+    #runas: "sagan"
 
     classification: "/etc/suricata/classification.config"
     #classification: "/usr/local/etc/sagan-rule/classification.config"
 
     meer_log: "/var/log/meer/meer.log"   # Meer log file
 
-
     # Meer can decode various types of data from within an "alert".  This 
-    # section enabled/disabled various decoders.  
+    # section enabled/disabled various JSON decoders.  
 
     metadata: enabled
     flow: enabled
@@ -41,21 +41,22 @@ meer-core:
     smtp: enabled
     email: enabled
 
-    # If "dns" is enabled, Meer can do reverse DNS (PTR) lookups of IP.  The
-    # "dns_cache" is the amount of time Meer should "cache" a PTR record for. 
-    # DNS cache is to not overload DNS servers with lookups. 
+    # If "dns" is enabled, Meer will do reverse DNS (PTR) lookups of an IP. 
+    # The "dns_cache" is the amount of time Meer should "cache" a PTR record
+    # for.  The DNS cache prevents Meer from doing repeated lookups of an 
+    # already looked up PTR record.  This reduces overloading DNS servers.
 
     dns: enabled
     dns_cache: 900	# Time in seconds. 
 
-    # "health" checks are signatures that are generated every so often to 
-    # make sure a sensor is up and operational.  Rather than storing the data
-    # as a normal "alert", these events can be treated differently.  For
-    # example, if MySQL/MariaDB output is enabled, "health" sigantures will 
-    # update the "sensor.health" table and not create an "alert".  Think of
-    # it like a "ping" events.  This can be useful for detecting when Meer, 
-    # Suricata or Sagan have "died" unexpectedly.
-
+    # "health" checks are a set of signatures that are triggered every so 
+    # often to ensure a sensor is up and operational.  When these events
+    # are triggered,  they are not stored into the database as normal alert
+    # data.  For example,  with MySQL/MariaDB output enabled, they update the 
+    # "sensor.health" table with the current epoch time.  Think of these
+    # events like a "ping" for your sensor.  This can be useful for detecting
+    # when Meer, Suricata or Sagan have "died" unexpectedly.
+  
     health: enabled
     health_signatures: 20000001,20000002,20000003,20000004
 
@@ -75,7 +76,7 @@ meer-core:
 output-plugins:
 
   # MySQL/MariaDB output - Stores data from Suricata or Sagan into a semi-
-  # traditional "Barnyard2" like database. 
+  # traditional "Barnyard2/Snort" like database. 
 
   mysql:
 
@@ -88,13 +89,16 @@ output-plugins:
     database: "snort_test"
 
     # Store decoded JSON data that is similar to Unified2 "extra" data to the
-    # "extra" table; 
+    # "extra" table.
 
     extra_data: enabled
 
-    # This allows Meer to stored in a MySQL/MariaDB decoded data from Suricata
-    # or Sagan.  If you want this data sorted,  make sure you have the
-    # decoders enabled in the "core" section! 
+    # Store extra decoded JSON metadata from Suricata or Sagan.  This requires
+    # your database to have the metadata, flow, http, etc. tables.  If all are
+    # disabled,  Meer will stored data in strictly a Barnyard2/Snort method. 
+    # If you want to store this decoded information,  and you likely do,  make
+    # sure you have the decoders enabled in the "core" section of this Meer 
+    # configuration file! 
 
     metadata: enabled
     flow: enabled
@@ -106,13 +110,16 @@ output-plugins:
 
     # If you would like Meer to mimic the legacy "reference" tables from
     # Snort/Barnyard2, enable it here.  If your using more than one database
-    # to store data,  you'll likely want to leave this disabled.  The legacy
-    # reference system isn't very efficient and there's better ways to keep 
-    # track of this data.  This is also a memory hog and preformance killer.
-    # See tools/reference_handler/reference_handler.pl to build a centeralized 
-    # reference table.
+    # to store Suricata or Sagan data, you'll likely want to leave this 
+    # disabled. The legacy reference system isn't very efficient and there's
+    # better ways to keep track of this data.  This is also a memory hog and
+    # preformance killer.  See tools/reference_handler/reference_handler.pl to
+    # build a centeralized reference table.
 
     reference_system: disabled
-    sid_file: "/tmp/sid-msg.map-suri"
-    reference: "/tmp/reference.config"
+    sid_file: "/etc/suricata/rules/sid-msg.map"	  # Created with "create-sidmap"
+    reference: "/etc/suricata/reference.config"
+
+    #sid_file: "/usr/local/etc/sagan-rules/sagan-sid-msg.map"
+    #reference: "/usr/local/etc/sagan-rules//reference.config"
 
