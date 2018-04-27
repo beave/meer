@@ -23,8 +23,7 @@ and abandon the "cruft".
 
 # Output Plugins:
 
-MySQL/Maria DB output - This output plugin stores data to a database similar to Snort/Barnyard2.  This makes is backward compatible with Snorby,  Sguil, BASE, etc. The database schema has been extended to record other alert metadata like ‘flow’, ‘http’, ‘smtp’, ‘tls’, ‘ssh’ and other information.  This extra data can be extremely useful for security analysts.   This output also supports features I’ve done my port of Barnyard2 (https://github.com/beave/barnyard2-extra) like reverse DNS/PTR lookups,  “health” checks and “extra data” (for example XFF HTTP headers).   Meer uses internal SQL “caching” to make it more efficient when interacting with databases. 
-
+* MySQL/Maria DB output - This output plugin stores data to a database similar to Snort/Barnyard2.  This makes is backward compatible with Snorby,  Sguil, BASE, etc. The database schema has been extended to record other alert metadata like ‘flow’, ‘http’, ‘smtp’, ‘tls’, ‘ssh’ and other information.  This extra data can be extremely useful for security analysts.   This output also supports features I’ve done my port of Barnyard2 (https://github.com/beave/barnyard2-extra) like reverse DNS/PTR lookups,  “health” checks and “extra data” (for example XFF HTTP headers).   Meer uses internal SQL “caching” to make it more efficient when interacting with databases. 
 
 # Current Features:
 
@@ -36,4 +35,14 @@ MySQL/Maria DB output - This output plugin stores data to a database similar to 
 * MySQL/MariaDB output is backward compatible with legacy Snort/Barnyard2 database.
 * MySQL/MariaDB internal SQL “caching” makes Meer interactions with databases more efficients. 
 
+# Future support: 
+
+Meer is under development.  This is our brief "roadmap" of what we would like to see Meer do.  If
+you have any ideas or requests,  please let us know via our "issues" page (https://github.com/beave/meer/issues).
+
+* Syslog support (JSON, decoded, etc). 
+* Elasticsearch
+* Snortsam (??)
+* Generic MySQL/MariaDB template driven writer (for building block lists, etc)
+* Unified2 <- THIS IS A JOKE. 
 
