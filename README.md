@@ -14,7 +14,7 @@
 
 <b>The quick explanation: </b> Have you ever worked with Barnyard2?  The idea behind Meer is very similar,  but rather than reading Snort’s “Unified2” files,  Meer reads Suricata and Sagan EVE JSON files. 
 
-<b>The longer explanation: <b> “Meer” is a dedicated “spooler” for the Suricata IDS/IPS and Sagan log analysis engine.  This means that as Suricata or Sagan write alerts out of a file,  Meer can ‘follow’ that file and store alert information in a database.  You can think of the “spool” file as a “queue” system for alerts from Suricata or Sagan.   Using “spooling” system ensures the delivery of alerts to a back end database.  
+<b>The longer explanation: </b> “Meer” is a dedicated “spooler” for the Suricata IDS/IPS and Sagan log analysis engine.  This means that as Suricata or Sagan write alerts out of a file,  Meer can ‘follow’ that file and store alert information in a database.  You can think of the “spool” file as a “queue” system for alerts from Suricata or Sagan.   Using “spooling” system ensures the delivery of alerts to a back end database.  
 
 Meer is meant to be modular and simple.  We find that the EVE JSON is not only more simple to
 work with but usually contains valuable information that unified does not.  This project does   
