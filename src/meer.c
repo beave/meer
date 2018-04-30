@@ -108,7 +108,7 @@ int main (int argc, char *argv[])
     uint64_t linecount = 0;
     uint64_t old_size = 0;
 
-    MeerConfig = malloc(sizeof(_MeerConfig));
+    MeerConfig = (struct _MeerConfig *) malloc(sizeof(_MeerConfig));
 
     if ( MeerConfig == NULL )
         {
@@ -156,7 +156,7 @@ int main (int argc, char *argv[])
 
         }
 
-    MeerCounters = malloc(sizeof(_MeerCounters));
+    MeerCounters = (struct _MeerCounters *) malloc(sizeof(_MeerCounters));
 
     if ( MeerCounters == NULL )
         {

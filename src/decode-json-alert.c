@@ -83,7 +83,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     bool has_alert = false;
 
-    Alert_Return_Struct = malloc(sizeof(_DecodeAlert));
+    Alert_Return_Struct = (struct _DecodeAlert *) malloc(sizeof(_DecodeAlert));
 
     if ( Alert_Return_Struct == NULL )
         {

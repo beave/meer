@@ -69,7 +69,7 @@ void Load_YAML_Config( char *yaml_file )
     char last_pass[128] = { 0 };
     char tmp[256] = { 0 };
 
-    MeerHealth = malloc(sizeof(_MeerHealth));
+    MeerHealth = (struct _MeerHealth *) malloc(sizeof(_MeerHealth));
 
     if ( MeerHealth == NULL )
         {
@@ -90,7 +90,7 @@ void Load_YAML_Config( char *yaml_file )
 
     strlcpy(MeerConfig->meer_log, MEER_LOG, sizeof(MeerConfig->meer_log));
 
-    MeerOutput = malloc(sizeof(_MeerOutput));
+    MeerOutput = (struct _MeerOutput *) malloc(sizeof(_MeerOutput));
 
     if ( MeerOutput == NULL )
         {
