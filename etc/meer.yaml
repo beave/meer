@@ -26,7 +26,7 @@ meer-core:
     #runas: "sagan"
 
     classification: "/etc/suricata/classification.config"
-    #classification: "/usr/local/etc/sagan-rule/classification.config"
+    #classification: "/usr/local/etc/sagan-rules/classification.config"
 
     meer_log: "/var/log/meer/meer.log"   # Meer log file
 
