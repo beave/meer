@@ -53,14 +53,14 @@ struct _Classifications *MeerClass;
 bool Decode_JSON( char *json_string )
 {
 
-    struct json_object *json_obj;
-    struct json_object *tmp;
+    struct json_object *json_obj = NULL;
+    struct json_object *tmp = NULL;
 
     if ( json_string == NULL )
         {
             return 1;
         }
-
+    
     json_obj = json_tokener_parse(json_string);
 
     if (json_object_object_get_ex(json_obj, "event_type", &tmp))
