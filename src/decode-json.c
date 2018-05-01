@@ -60,7 +60,7 @@ bool Decode_JSON( char *json_string )
         {
             return 1;
         }
-    
+
     json_obj = json_tokener_parse(json_string);
 
     if (json_object_object_get_ex(json_obj, "event_type", &tmp))

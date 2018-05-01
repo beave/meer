@@ -93,7 +93,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     memset(Alert_Return_Struct, 0, sizeof(_DecodeAlert));
 
     Alert_Return_Struct->event_type = "alert";
-//    Alert_Return_Struct->has_extra_data = 0;
     Alert_Return_Struct->ip_version = 4;
 
     Alert_Return_Struct->timestamp = NULL;
@@ -253,7 +252,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     if (json_object_object_get_ex(json_obj, "xff", &tmp))
         {
-//            Alert_Return_Struct->has_extra_data = 1;
             Alert_Return_Struct->xff = (char *)json_object_get_string(tmp);
         }
 
@@ -310,6 +308,8 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
                 }
 
+            json_object_put(json_obj_alert);
+
         }
 
     /* Decode flow data */
@@ -352,6 +352,8 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                                 {
                                     strlcpy(Alert_Return_Struct->flow_start_timestamp, (char *)json_object_get_string(tmp_flow), sizeof(Alert_Return_Struct->flow_start_timestamp));
                                 }
+
+                            json_object_put(json_obj_flow);
 
                         }
                 }
@@ -422,6 +424,8 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                                 {
                                     Alert_Return_Struct->http_length = atol( (char *)json_object_get_string(tmp_http) );
                                 }
+
+                            json_object_put(json_obj_http);
                         }
                 }
 
@@ -463,6 +467,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                                 strlcpy(Alert_Return_Struct->email_attachment, (char *)json_object_get_string(tmp_email), sizeof(Alert_Return_Struct->email_attachment));
                             }
 
+                        json_object_put(json_obj_email);
                     }
 
         }
@@ -496,6 +501,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                                 strlcpy(Alert_Return_Struct->smtp_rcpt_to, (char *)json_object_get_string(tmp_smtp), sizeof(Alert_Return_Struct->smtp_rcpt_to));
                             }
 
+                        json_object_put(json_obj_smtp);
                     }
 
 
@@ -561,6 +567,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                                     Alert_Return_Struct->tls_serial = atoi( (char *)json_object_get_string(tmp_tls) );
                                 }
 
+                            json_object_put(json_obj_tls);
 
                         }
                 }
@@ -602,6 +609,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                                                     strlcpy(Alert_Return_Struct->ssh_server_software_version, (char *)json_object_get_string(tmp_ssh_server_3), sizeof(Alert_Return_Struct->ssh_server_software_version));
                                                 }
 
+                                            json_object_put(tmp_ssh_server_2);
                                         }
                                 }
 
@@ -626,8 +634,12 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
                                                     strlcpy(Alert_Return_Struct->ssh_client_software_version, (char *)json_object_get_string(tmp_ssh_client_3), sizeof(Alert_Return_Struct->ssh_client_software_version));
                                                 }
+
+                                            json_object_put(tmp_ssh_client_2);
                                         }
                                 }
+
+                            json_object_put(json_obj_ssh_server);
                         }
                 }
         }
@@ -726,20 +738,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
         {
             Alert_Return_Struct->ip_version = 6;
         }
-
-
-    /* Delete json-c _root_ objects */
-
-    json_object_put(json_obj_alert);
-    json_object_put(json_obj_flow);
-    json_object_put(json_obj_http);
-    json_object_put(json_obj_tls);
-    json_object_put(json_obj_ssh);
-    json_object_put(json_obj_smtp);
-    json_object_put(json_obj_email);
-    json_object_put(json_obj_ssh_server);
-
-    json_object_put(tmp);
 
     return(Alert_Return_Struct);
 }
