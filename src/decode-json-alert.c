@@ -727,7 +727,8 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Alert_Return_Struct->ip_version = 6;
         }
 
-    /* Clean up local arrays */
+
+    /* Delete json-c _root_ objects */
 
     json_object_put(json_obj_alert);
     json_object_put(json_obj_flow);
@@ -737,17 +738,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     json_object_put(json_obj_smtp);
     json_object_put(json_obj_email);
     json_object_put(json_obj_ssh_server);
-
-    json_object_put(tmp_email);
-    json_object_put(tmp_smtp);
-    json_object_put(tmp_alert);
-    json_object_put(tmp_flow);
-    json_object_put(tmp_http);
-    json_object_put(tmp_tls);
-    json_object_put(tmp_ssh);
-    json_object_put(tmp_ssh_server);
-    json_object_put(tmp_ssh_server_2);
-    json_object_put(tmp_ssh_server_3);
 
     json_object_put(tmp);
 
