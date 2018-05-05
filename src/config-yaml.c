@@ -58,10 +58,11 @@ void Load_YAML_Config( char *yaml_file )
     yaml_event_t  event;
 
     bool done = 0;
-//    bool toggle = 0;
 
     unsigned char type = 0;
     unsigned char sub_type = 0;
+
+//  bool toggle = 0;
 
     char *ptr1 = NULL;
     char *ptr2 = NULL;
@@ -108,7 +109,9 @@ void Load_YAML_Config( char *yaml_file )
     MeerOutput->mysql_username[0] = '\0';
     MeerOutput->mysql_password[0] = '\0';
     MeerOutput->mysql_database[0] = '\0';
-    MeerOutput->mysql_extra_data = false;
+    MeerOutput->mysql_extra_data = true;
+    MeerOutput->mysql_reconnect = true;
+    MeerOutput->mysql_reconnect_time = MYSQL_RECONNECT_TIME;
 
 #endif
 
@@ -570,6 +573,19 @@ void Load_YAML_Config( char *yaml_file )
                                         }
                                 }
 
+                            else if ( !strcmp(last_pass, "reconnect" ) && MeerOutput->mysql_enabled == true )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->mysql_reconnect = true;
+                                        }
+                                }
+
+                            else if ( !strcmp(last_pass, "reconnect_time" ) && MeerOutput->mysql_enabled == true )
+                                {
+                                    MeerOutput->mysql_reconnect_time = atoi(value);
+                                }
 
 
 

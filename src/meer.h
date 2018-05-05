@@ -111,6 +111,9 @@ struct _MeerOutput
     MYSQL *mysql_dbh;
     uint64_t mysql_last_cid;
 
+    bool mysql_reconnect;
+    uint32_t mysql_reconnect_time;
+
     bool mysql_flow;
     bool mysql_http;
     bool mysql_tls;

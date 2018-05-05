@@ -36,5 +36,6 @@ void Usage( void )
     printf("-D, --dameon\t\tPut Meer in the background.\n");
     printf("-c, --config\t\tMeer Configuration File [default: %s]\n", DEFAULT_CONFIG);
     printf("-h, --help\t\tMeer help screen.\n");
+    printf("-q, --quiet\t\tTell Meer to be quiet.\n");
 
 }

@@ -136,6 +136,14 @@ AM_PROG_AS
 
 AC_CHECK_FUNCS([select strstr strchr strcmp strlen sizeof write snprintf strncat strlcat strlcpy getopt_long gethostbyname socket htons connect send recv strspn memset access ftruncate strerror mmap shm_open gettimeofday])
 
+AC_ARG_ENABLE(quadrant,                                                                               
+[  --enable-quadrant       Enable Quadrant Information Security specific support],
+       enable_quadrant="$enableval", enable_quadrant="no")
+
+if test "x$enable_quadrant" = "xyes"; then
+    CPPFLAGS="$CPPFLAGS -DQUADRANT"
+fi
+
 # json-c
 
 AC_ARG_WITH(libjsonc_includes,

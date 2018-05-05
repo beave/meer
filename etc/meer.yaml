@@ -88,6 +88,12 @@ output-plugins:
     password: "XXXXXX"
     database: "snort_test"
 
+    # Automatically reconnect to the MySQL/MariaDB database when disconnected.
+
+    reconnect: enabled
+    reconnect_time: 10 
+
+
     # Store decoded JSON data that is similar to Unified2 "extra" data to the
     # "extra" table.
 

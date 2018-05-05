@@ -220,6 +220,19 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
                         }
 
 
+                    /* Record CID in case of crash/disconnections */
+
+                    MySQL_Record_Last_CID();
+
+                    /* These are very Quadrant specific queries.  You likely don't want them. */
+
+#ifdef QUADRANT
+
+                    MySQL_DB_Quadrant( DecodeAlert, signature_id );
+
+#endif
+
+
                     MySQL_DB_Query("COMMIT");
 
                     MeerOutput->mysql_last_cid++;

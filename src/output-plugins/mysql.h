@@ -65,3 +65,10 @@ uint32_t MySQL_Get_Sensor_ID( void );
 void MySQL_Insert_Header ( struct _DecodeAlert *DecodeAlert );
 int MySQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert );
 int MySQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert );
+void MySQL_Error_Handling ( char *sql );
+
+#ifdef QUADRANT
+void MySQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id );
+#endif
+
+

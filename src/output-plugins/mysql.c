@@ -71,10 +71,6 @@ void MySQL_Connect( void )
             Meer_Log(ERROR, "[%s, line %d] Error initializing MySQL", __FILE__, __LINE__);
         }
 
-    my_bool reconnect = true;
-    mysql_options(MeerOutput->mysql_dbh,MYSQL_READ_DEFAULT_GROUP,MeerOutput->mysql_database);
-    mysql_options(MeerOutput->mysql_dbh,MYSQL_OPT_RECONNECT, &reconnect);
-
     if (!mysql_real_connect(MeerOutput->mysql_dbh, MeerOutput->mysql_server,
                             MeerOutput->mysql_username, MeerOutput->mysql_password, MeerOutput->mysql_database,
                             MeerOutput->mysql_port, NULL, 0 ))
@@ -117,8 +113,8 @@ uint32_t MySQL_Get_Sensor_ID( void )
         }
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO sensor (hostname, interface, filter, detail, encoding, last_cid) VALUES ('%s', '%s', NULL, '1', '0', '0')",
-             MeerConfig->hostname, MeerConfig->interface);
+             "INSERT INTO sensor (hostname, interface, filter, detail, encoding, last_cid) VALUES ('%s:%s', '%s', NULL, '1', '0', '0')",
+             MeerConfig->hostname, MeerConfig->interface, MeerConfig->interface);
 
     MySQL_DB_Query(tmp);
     MeerCounters->INSERTCount++;
@@ -174,9 +170,7 @@ char *MySQL_DB_Query( char *sql )
 
     if ( mysql_real_query(MeerOutput->mysql_dbh, sql, strlen(sql) ) )
         {
-            Remove_Lock_File();
-            Meer_Log(ERROR, "[%s, line %d] MySQL/MariaDB Error [%u:] \"%s\"\nOffending SQL statement: %s\n", __FILE__,  __LINE__, mysql_errno(MeerOutput->mysql_dbh), mysql_error(MeerOutput->mysql_dbh), sql);
-
+            MySQL_Error_Handling( sql );
         }
 
     res = mysql_use_result(MeerOutput->mysql_dbh);
@@ -965,6 +959,139 @@ int MySQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert )
 
 }
 
+
+void MySQL_Error_Handling ( char *sql )
+{
+
+    /* Reconnect on network event */
+
+    if ( MeerOutput->mysql_reconnect == true &&
+            ( mysql_errno(MeerOutput->mysql_dbh) == 2003 ||
+              mysql_errno(MeerOutput->mysql_dbh) == 2006 ) )
+        {
+
+            while ( mysql_errno(MeerOutput->mysql_dbh) == 2003 || mysql_errno(MeerOutput->mysql_dbh) == 2006 )
+                {
+
+                    Meer_Log(WARN, "MySQL/MariaDB has gone away.  Sleeping for %d seconds before attempting to reconnect.", MeerOutput->mysql_reconnect_time);
+
+                    sleep(MeerOutput->mysql_reconnect_time);
+
+                    if (!mysql_real_connect(MeerOutput->mysql_dbh, MeerOutput->mysql_server,
+                                            MeerOutput->mysql_username, MeerOutput->mysql_password, MeerOutput->mysql_database,
+                                            MeerOutput->mysql_port, NULL, 0 ))
+                        {
+
+                            Meer_Log(WARN, "[%s, line %d] MySQL Error %u: \"%s\"", __FILE__,  __LINE__,
+                                     mysql_errno(MeerOutput->mysql_dbh), mysql_error(MeerOutput->mysql_dbh));
+
+                        }
+
+                }
+
+            Meer_Log(NORMAL, "Successfully reconnected to MySQL/MariaDB database.");
+
+            return;
+        }
+
+    /* All other errors */
+
+    Remove_Lock_File();
+    Meer_Log(ERROR, "[%s, line %d] MySQL/MariaDB Error [%u:] \"%s\"\nOffending SQL statement: %s\n", __FILE__,  __LINE__, mysql_errno(MeerOutput->mysql_dbh), mysql_error(MeerOutput->mysql_dbh), sql);
+
+}
+
 #endif
+
+#ifdef QUADRANT
+
+/* These are various Quadrant specific queries.  You likely don'y want them.
+   They are mostly for statistics. */
+
+void MySQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
+{
+
+    char tmp[MAX_MYSQL_QUERY] = { 0 };
+
+    unsigned char ip_src_bit[16] = { 0 };
+    uint32_t *src_ip_u32 = (uint32_t *)&ip_src_bit[0];
+
+    IP2Bit(DecodeAlert->src_ip, ip_src_bit);
+
+    snprintf(tmp, sizeof(tmp),
+             "UPDATE sensor SET events_count = events_count+1 WHERE sid = %d",
+             MeerOutput->mysql_sensor_id);
+
+    (void)MySQL_DB_Query(tmp);
+
+    snprintf(tmp, sizeof(tmp),
+             "UPDATE signature SET events_count = events_count+1 WHERE sig_id = %u",
+             signature_id );
+
+    (void)MySQL_DB_Query(tmp);
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO events_ip6src_sig_48hr (ip_src,ip_src_char,sid,cid,sig_id,timestamp) VALUES (%lu,'%s',%d,%" PRIu64 ", %" PRIu64 ",now())",
+             src_ip_u32, DecodeAlert->src_ip, MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+
+    (void)MySQL_DB_Query(tmp);
+
+    /*
+
+         snprintf(tmp, sizeof(tmp),
+         "INSERT INTO events_ip6src_sig_year (ip_src,ip_src_char,sid,cid,sig_id,timestamp) VALUES (%lu,'%s',%d,%" PRIu64 ", %" PRIu64 ",now())",
+         src_ip_u32, DecodeAlert->src_ip, MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+
+         (void)MySQL_DB_Query(tmp);
+
+    */
+
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO tmp_events_24 (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64 ",%d,now())",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+
+    (void)MySQL_DB_Query(tmp);
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO tmp_events_today (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64 ",%d, now())",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+
+    (void)MySQL_DB_Query(tmp);
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO tmp_events_yesterday (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64 ",%d,now())",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+
+    (void)MySQL_DB_Query(tmp);
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO tmp_events_week (sid,cid,signature,timestamp) VALUES (%u,% " PRIu64 ",%d,now())",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+
+    (void)MySQL_DB_Query(tmp);
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO tmp_events_month (sid,cid,signature,timestamp) VALUES (%u, %" PRIu64 ",%d, now())",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+
+    (void)MySQL_DB_Query(tmp);
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO tmp_events_quarter (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64", %d, now())",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+
+    (void)MySQL_DB_Query(tmp);
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO tmp_events_year (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64", %d, now())",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+
+    (void)MySQL_DB_Query(tmp);
+
+}
+
+#endif
+
 
 
