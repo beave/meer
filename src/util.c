@@ -402,16 +402,7 @@ double CalcPct(uint64_t cnt, uint64_t total)
 {
     double pct = 0.0;
 
-    if (total == 0.0)
-        {
-            pct = (double)cnt;
-        }
-    else
-        {
-            pct = (double)cnt / (double)total;
-        }
-
-    pct *= 100.0;
+    pct = (double)cnt / (( (double)cnt + (double)total ) / 100 );
 
     return pct;
 }

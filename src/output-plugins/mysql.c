@@ -1031,16 +1031,16 @@ void MySQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
     (void)MySQL_DB_Query(tmp);
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO events_ip6src_sig_48hr (ip_src,ip_src_char,sid,cid,sig_id,timestamp) VALUES (%lu,'%s',%d,%" PRIu64 ", %" PRIu64 ",now())",
-             src_ip_u32, DecodeAlert->src_ip, MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+             "INSERT INTO events_ip6src_sig_48hr (ip_src,ip_src_char,sid,cid,sig_id,timestamp) VALUES (%lu,'%s',%d,%" PRIu64 ", %" PRIu64 ", '%s')",
+             src_ip_u32, DecodeAlert->src_ip, MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
 
     (void)MySQL_DB_Query(tmp);
 
     /*
 
          snprintf(tmp, sizeof(tmp),
-         "INSERT INTO events_ip6src_sig_year (ip_src,ip_src_char,sid,cid,sig_id,timestamp) VALUES (%lu,'%s',%d,%" PRIu64 ", %" PRIu64 ",now())",
-         src_ip_u32, DecodeAlert->src_ip, MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+         "INSERT INTO events_ip6src_sig_year (ip_src,ip_src_char,sid,cid,sig_id,timestamp) VALUES (%lu,'%s',%d,%" PRIu64 ", %" PRIu64 ", '%s')",
+         src_ip_u32, DecodeAlert->src_ip, MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
 
          (void)MySQL_DB_Query(tmp);
 
@@ -1048,44 +1048,44 @@ void MySQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO tmp_events_24 (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64 ",%d,now())",
-             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+             "INSERT INTO tmp_events_24 (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64 ",%d,'%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
 
     (void)MySQL_DB_Query(tmp);
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO tmp_events_today (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64 ",%d, now())",
-             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+             "INSERT INTO tmp_events_today (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64 ",%d, '%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
 
     (void)MySQL_DB_Query(tmp);
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO tmp_events_yesterday (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64 ",%d,now())",
-             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+             "INSERT INTO tmp_events_yesterday (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64 ",%d,'%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
 
     (void)MySQL_DB_Query(tmp);
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO tmp_events_week (sid,cid,signature,timestamp) VALUES (%u,% " PRIu64 ",%d,now())",
-             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+             "INSERT INTO tmp_events_week (sid,cid,signature,timestamp) VALUES (%u,% " PRIu64 ",%d,'%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
 
     (void)MySQL_DB_Query(tmp);
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO tmp_events_month (sid,cid,signature,timestamp) VALUES (%u, %" PRIu64 ",%d, now())",
-             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+             "INSERT INTO tmp_events_month (sid,cid,signature,timestamp) VALUES (%u, %" PRIu64 ",%d,'%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
 
     (void)MySQL_DB_Query(tmp);
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO tmp_events_quarter (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64", %d, now())",
-             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+             "INSERT INTO tmp_events_quarter (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64",%d,'%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
 
     (void)MySQL_DB_Query(tmp);
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO tmp_events_year (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64", %d, now())",
-             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id );
+             "INSERT INTO tmp_events_year (sid,cid,signature,timestamp) VALUES (%u,%" PRIu64",%d,'%s')",
+             MeerOutput->mysql_sensor_id, MeerOutput->mysql_last_cid, signature_id, DecodeAlert->timestamp );
 
     (void)MySQL_DB_Query(tmp);
 

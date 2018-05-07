@@ -93,7 +93,6 @@ output-plugins:
     reconnect: enabled
     reconnect_time: 10 
 
-
     # Store decoded JSON data that is similar to Unified2 "extra" data to the
     # "extra" table.
 
