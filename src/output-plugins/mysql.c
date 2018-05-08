@@ -32,6 +32,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 #include <mysql/mysql.h>
 
