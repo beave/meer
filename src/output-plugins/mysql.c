@@ -429,7 +429,7 @@ void MySQL_Insert_Payload ( struct _DecodeAlert *DecodeAlert )
 
     char tmp[MAX_MYSQL_QUERY];
 
-    uint8_t ret;
+    uint32_t ret;
 
     char *hex_encode;
     uint8_t *base64_decode = malloc(strlen(DecodeAlert->payload) * 2);

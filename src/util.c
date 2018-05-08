@@ -222,6 +222,7 @@ bool Check_Endian()
 
 char *Hexify(char *xdata, int length)
 {
+
     char conv[] = "0123456789ABCDEF";
     char *retbuf = NULL;
     char *index;
