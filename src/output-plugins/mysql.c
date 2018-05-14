@@ -968,10 +968,11 @@ void MySQL_Error_Handling ( char *sql )
 
     if ( MeerOutput->mysql_reconnect == true &&
             ( mysql_errno(MeerOutput->mysql_dbh) == 2003 ||
-              mysql_errno(MeerOutput->mysql_dbh) == 2006 ) )
+              mysql_errno(MeerOutput->mysql_dbh) == 2006 ||
+              mysql_errno(MeerOutput->mysql_dbh) == 2013 ) )
         {
 
-            while ( mysql_errno(MeerOutput->mysql_dbh) == 2003 || mysql_errno(MeerOutput->mysql_dbh) == 2006 )
+            while ( mysql_errno(MeerOutput->mysql_dbh) == 2003 || mysql_errno(MeerOutput->mysql_dbh) == 2006 || mysql_errno(MeerOutput->mysql_dbh) == 2013 )
                 {
 
                     Meer_Log(WARN, "MySQL/MariaDB has gone away.  Sleeping for %d seconds before attempting to reconnect.", MeerOutput->mysql_reconnect_time);

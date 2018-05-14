@@ -267,6 +267,11 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerConfig->lock_file, value, sizeof(MeerConfig->lock_file));
                                 }
 
+                            else if ( !strcmp(last_pass, "meer_log" ))
+                                {
+                                    strlcpy(MeerConfig->meer_log, value, sizeof(MeerConfig->meer_log));
+                                }
+
                             else if ( !strcmp(last_pass, "follow-eve" ))
                                 {
                                     strlcpy(MeerConfig->follow_file, value, sizeof(MeerConfig->follow_file));
