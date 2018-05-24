@@ -81,7 +81,7 @@ void Init_Output( void )
             MySQL_Connect();
 
             MeerOutput->mysql_sensor_id = MySQL_Get_Sensor_ID();
-            MeerOutput->mysql_last_cid = MySQL_Get_Last_CID();
+            MeerOutput->mysql_last_cid = MySQL_Get_Last_CID() + 1;
 
             Meer_Log(NORMAL, "");
             Meer_Log(NORMAL, "Record 'metadata': %s", MeerOutput->mysql_metadata ? "enabled" : "disabled" );
