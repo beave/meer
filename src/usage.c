@@ -37,5 +37,7 @@ void Usage( void )
     printf("-c, --config\t\tMeer Configuration File [default: %s]\n", DEFAULT_CONFIG);
     printf("-h, --help\t\tMeer help screen.\n");
     printf("-q, --quiet\t\tTell Meer to be quiet.\n");
+    printf("\nMeer was compile on %s at %s.\n", __DATE__, __TIME__);
+
 
 }

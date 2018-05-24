@@ -126,5 +126,5 @@ output-plugins:
     reference: "/etc/suricata/reference.config"
 
     #sid_file: "/usr/local/etc/sagan-rules/sagan-sid-msg.map"
-    #reference: "/usr/local/etc/sagan-rules//reference.config"
+    #reference: "/usr/local/etc/sagan-rules/reference.config"
 
