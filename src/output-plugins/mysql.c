@@ -274,6 +274,8 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id )
     int i = 0;
     unsigned sig_priority = 0;
 
+    char e_alert_signature[256]; 
+
     int signature_id = 0;
 
     /* Search cache */
@@ -293,8 +295,10 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id )
 
     sig_priority = Class_Lookup_Priority( DecodeAlert->alert_category);
 
+    MySQL_Escape_String( DecodeAlert->alert_signature, e_alert_signature, sizeof(e_alert_signature));
+
     snprintf(tmp, sizeof(tmp), "SELECT sig_id FROM signature WHERE sig_name='%s' AND sig_rev=%d AND sig_sid=%" PRIu64 "",
-             DecodeAlert->alert_signature, DecodeAlert->alert_rev, DecodeAlert->alert_signature_id);
+             e_alert_signature, DecodeAlert->alert_rev, DecodeAlert->alert_signature_id);
 
     results = MySQL_DB_Query(tmp);
     MeerCounters->SELECTCount++;
@@ -303,7 +307,7 @@ int MySQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id )
         {
 
             snprintf(tmp, sizeof(tmp), "INSERT INTO signature (sig_name,sig_class_id,sig_priority,sig_rev,sig_sid,sig_gid) "
-                     "VALUES ('%s',%d,%d,%d,%" PRIu64 ",1)", DecodeAlert->alert_signature, class_id, sig_priority,
+                     "VALUES ('%s',%d,%d,%d,%" PRIu64 ",1)", e_alert_signature, class_id, sig_priority,
                      DecodeAlert->alert_rev, DecodeAlert->alert_signature_id);
 
             (void)MySQL_DB_Query(tmp);

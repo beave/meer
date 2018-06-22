@@ -19,7 +19,6 @@
 */
 
 #include <inttypes.h>
-//#include "decode-json-alert.h"
 
 typedef struct _SignatureCache _SignatureCache;
 struct _SignatureCache
