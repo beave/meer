@@ -60,7 +60,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     struct json_object *tmp_tls = NULL;
     struct json_object *tmp_smtp = NULL;
     struct json_object *tmp_email = NULL;
-    struct json_object *tmp_ssh = NULL;
+    //struct json_object *tmp_ssh = NULL;
 
     struct json_object *tmp_ssh_server = NULL;
     struct json_object *tmp_ssh_server_2 = NULL;
@@ -77,7 +77,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     struct json_object *json_obj_smtp = NULL;
     struct json_object *json_obj_email = NULL;
 
-    struct json_object *json_obj_ssh = NULL;
+//    struct json_object *json_obj_ssh = NULL;
     struct json_object *json_obj_ssh_server = NULL;
     struct json_object *json_obj_ssh_client = NULL;
 

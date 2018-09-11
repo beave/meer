@@ -62,13 +62,17 @@ void Load_YAML_Config( char *yaml_file )
     unsigned char type = 0;
     unsigned char sub_type = 0;
 
-//  bool toggle = 0;
+    char last_pass[128] = { 0 };
+
+
+#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
 
     char *ptr1 = NULL;
     char *ptr2 = NULL;
 
-    char last_pass[128] = { 0 };
     char tmp[256] = { 0 };
+
+#endif
 
     MeerHealth = (struct _MeerHealth *) malloc(sizeof(_MeerHealth));
 
@@ -102,16 +106,16 @@ void Load_YAML_Config( char *yaml_file )
 
 #ifdef HAVE_LIBMYSQLCLIENT
 
-    MeerOutput->mysql_enabled = false;
-    MeerOutput->mysql_debug = false;
-    MeerOutput->mysql_server[0] = '\0';
-    MeerOutput->mysql_port = 0;
-    MeerOutput->mysql_username[0] = '\0';
-    MeerOutput->mysql_password[0] = '\0';
-    MeerOutput->mysql_database[0] = '\0';
-    MeerOutput->mysql_extra_data = true;
-    MeerOutput->mysql_reconnect = true;
-    MeerOutput->mysql_reconnect_time = MYSQL_RECONNECT_TIME;
+    MeerOutput->sql_enabled = false;
+    MeerOutput->sql_debug = false;
+    MeerOutput->sql_server[0] = '\0';
+    MeerOutput->sql_port = 0;
+    MeerOutput->sql_username[0] = '\0';
+    MeerOutput->sql_password[0] = '\0';
+    MeerOutput->sql_database[0] = '\0';
+    MeerOutput->sql_extra_data = true;
+    MeerOutput->sql_reconnect = true;
+    MeerOutput->sql_reconnect_time = SQL_RECONNECT_TIME;
 
 #endif
 
@@ -174,19 +178,10 @@ void Load_YAML_Config( char *yaml_file )
                     done = true;
 
                 }
-            /*
-                        else if ( event.type == YAML_MAPPING_START_EVENT )
-                            {
-
-                                toggle = 1;
-
-                            }
-            */
 
             else if ( event.type == YAML_MAPPING_END_EVENT )
                 {
 
-//                    toggle = 0;
                     sub_type = 0;
 
                 }
@@ -220,9 +215,9 @@ void Load_YAML_Config( char *yaml_file )
                     else if ( type == YAML_TYPE_OUTPUT )
                         {
 
-                            if ( !strcmp(value, "mysql"))
+                            if ( !strcmp(value, "sql"))
                                 {
-                                    sub_type = YAML_MEER_MYSQL;
+                                    sub_type = YAML_MEER_SQL;
                                 }
 
                         }
@@ -365,6 +360,8 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
+
                             else if ( !strcmp(last_pass, "health" ) )
                                 {
 
@@ -404,12 +401,14 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+#endif
+
                         }
 
 
 #ifndef HAVE_LIBMYSQLCLIENT
 
-                    if ( type == YAML_TYPE_OUTPUT &&  sub_type == YAML_MEER_MYSQL )
+                    if ( type == YAML_TYPE_OUTPUT &&  sub_type == YAML_MEER_SQL )
                         {
 
                             if ( !strcmp(last_pass, "enabled" ))
@@ -428,7 +427,7 @@ void Load_YAML_Config( char *yaml_file )
 
 #ifdef HAVE_LIBMYSQLCLIENT
 
-                    if ( type == YAML_TYPE_OUTPUT &&  sub_type == YAML_MEER_MYSQL )
+                    if ( type == YAML_TYPE_OUTPUT &&  sub_type == YAML_MEER_SQL )
                         {
 
                             if ( !strcmp(last_pass, "enabled" ))
@@ -436,7 +435,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_enabled = true;
+                                            MeerOutput->sql_enabled = true;
                                         }
 
                                 }
@@ -446,20 +445,20 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_reference_system = true;
+                                            MeerOutput->sql_reference_system = true;
                                         }
 
                                 }
 
-                            else if ( !strcmp(last_pass, "sid_file" ) && MeerOutput->mysql_reference_system == true )
+                            else if ( !strcmp(last_pass, "sid_file" ) && MeerOutput->sql_reference_system == true )
                                 {
 
-                                    strlcpy(MeerOutput->mysql_sid_map_file, value, sizeof(MeerOutput->mysql_sid_map_file));
+                                    strlcpy(MeerOutput->sql_sid_map_file, value, sizeof(MeerOutput->sql_sid_map_file));
                                 }
 
-                            else if ( !strcmp(last_pass, "reference" ) && MeerOutput->mysql_reference_system == true )
+                            else if ( !strcmp(last_pass, "reference" ) && MeerOutput->sql_reference_system == true )
                                 {
-                                    strlcpy(MeerOutput->mysql_reference_file, value, sizeof(MeerOutput->mysql_reference_file));
+                                    strlcpy(MeerOutput->sql_reference_file, value, sizeof(MeerOutput->sql_reference_file));
                                 }
 
                             if ( !strcmp(last_pass, "metadata" ))
@@ -467,7 +466,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_metadata = true;
+                                            MeerOutput->sql_metadata = true;
                                         }
 
                                 }
@@ -477,7 +476,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_smtp = true;
+                                            MeerOutput->sql_smtp = true;
                                         }
 
                                 }
@@ -487,7 +486,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_email = true;
+                                            MeerOutput->sql_email = true;
                                         }
 
                                 }
@@ -498,7 +497,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_flow = true;
+                                            MeerOutput->sql_flow = true;
                                         }
 
                                 }
@@ -508,7 +507,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_http = true;
+                                            MeerOutput->sql_http = true;
                                         }
 
                                 }
@@ -518,7 +517,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_ssh = true;
+                                            MeerOutput->sql_ssh = true;
                                         }
 
                                 }
@@ -528,77 +527,96 @@ void Load_YAML_Config( char *yaml_file )
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_tls = true;
+                                            MeerOutput->sql_tls = true;
                                         }
 
                                 }
 
 
-                            else if ( !strcmp(last_pass, "debug" ) && MeerOutput->mysql_enabled == true )
+                            else if ( !strcmp(last_pass, "debug" ) && MeerOutput->sql_enabled == true )
                                 {
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled") )
                                         {
-                                            MeerOutput->mysql_debug = true;
+                                            MeerOutput->sql_debug = true;
                                         }
                                 }
 
 
-                            else if ( !strcmp(last_pass, "server" ) && MeerOutput->mysql_enabled == true )
+                            else if ( !strcmp(last_pass, "server" ) && MeerOutput->sql_enabled == true )
                                 {
-                                    strlcpy(MeerOutput->mysql_server, value, sizeof(MeerOutput->mysql_server));
+                                    strlcpy(MeerOutput->sql_server, value, sizeof(MeerOutput->sql_server));
                                 }
 
-                            else if ( !strcmp(last_pass, "port" ) && MeerOutput->mysql_enabled == true )
+                            else if ( !strcmp(last_pass, "port" ) && MeerOutput->sql_enabled == true )
                                 {
-                                    MeerOutput->mysql_port = atoi(value);
+                                    MeerOutput->sql_port = atoi(value);
                                 }
 
-                            else if ( !strcmp(last_pass, "username" ) && MeerOutput->mysql_enabled == true )
+                            else if ( !strcmp(last_pass, "username" ) && MeerOutput->sql_enabled == true )
                                 {
-                                    strlcpy(MeerOutput->mysql_username, value, sizeof(MeerOutput->mysql_username));
+                                    strlcpy(MeerOutput->sql_username, value, sizeof(MeerOutput->sql_username));
                                 }
 
-                            else if ( !strcmp(last_pass, "password" ) && MeerOutput->mysql_enabled == true )
+                            else if ( !strcmp(last_pass, "password" ) && MeerOutput->sql_enabled == true )
                                 {
-                                    strlcpy(MeerOutput->mysql_password, value, sizeof(MeerOutput->mysql_password));
+                                    strlcpy(MeerOutput->sql_password, value, sizeof(MeerOutput->sql_password));
                                 }
 
-                            else if ( !strcmp(last_pass, "database" ) && MeerOutput->mysql_enabled == true )
+                            else if ( !strcmp(last_pass, "database" ) && MeerOutput->sql_enabled == true )
                                 {
-                                    strlcpy(MeerOutput->mysql_database, value, sizeof(MeerOutput->mysql_database));
+                                    strlcpy(MeerOutput->sql_database, value, sizeof(MeerOutput->sql_database));
                                 }
 
-                            else if ( !strcmp(last_pass, "extra_data" ) && MeerOutput->mysql_enabled == true )
+                            else if ( !strcmp(last_pass, "extra_data" ) && MeerOutput->sql_enabled == true )
                                 {
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_extra_data = true;
+                                            MeerOutput->sql_extra_data = true;
                                         }
                                 }
 
-                            else if ( !strcmp(last_pass, "reconnect" ) && MeerOutput->mysql_enabled == true )
+                            else if ( !strcmp(last_pass, "reconnect" ) && MeerOutput->sql_enabled == true )
                                 {
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->mysql_reconnect = true;
+                                            MeerOutput->sql_reconnect = true;
                                         }
                                 }
 
-                            else if ( !strcmp(last_pass, "reconnect_time" ) && MeerOutput->mysql_enabled == true )
+                            else if ( !strcmp(last_pass, "reconnect_time" ) && MeerOutput->sql_enabled == true )
                                 {
-                                    MeerOutput->mysql_reconnect_time = atoi(value);
+                                    MeerOutput->sql_reconnect_time = atoi(value);
                                 }
 
+                            else if ( !strcmp(last_pass, "driver" ) && MeerOutput->sql_enabled == true )
+                                {
 
+                                    if ( !strcasecmp(value, "mysql" ) )
+                                        {
+                                            MeerOutput->sql_driver = DB_MYSQL;
+                                        }
+
+                                    else if ( !strcasecmp(value, "postgresql" ) )
+                                        {
+                                            MeerOutput->sql_driver = DB_POSTGRESQL;
+                                        }
+
+                                    if ( MeerOutput->sql_driver == 0 )
+                                        {
+                                            Meer_Log(ERROR, "SQL driver '%s' is invalid. Abort!", value);
+                                        }
+
+                                }
 
                         }
 
 #endif
 
                     strlcpy(last_pass, value, sizeof(last_pass));
+
                 } /* end of else */
 
 
@@ -644,33 +662,33 @@ void Load_YAML_Config( char *yaml_file )
 
 #ifdef HAVE_LIBMYSQLCLIENT
 
-    if ( MeerOutput->mysql_enabled == true )
+    if ( MeerOutput->sql_enabled == true )
         {
 
-            if ( MeerOutput->mysql_server[0] == '\0' )
+            if ( MeerOutput->sql_server[0] == '\0' )
                 {
-                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'server' specified!");
+                    Meer_Log(ERROR, "SQL output configuration incomplete.  No 'server' specified!");
                 }
 
-            if ( MeerOutput->mysql_username[0] == '\0' )
+            if ( MeerOutput->sql_username[0] == '\0' )
                 {
-                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'username' specified!");
+                    Meer_Log(ERROR, "SQL output configuration incomplete.  No 'username' specified!");
                 }
 
 
-            if ( MeerOutput->mysql_password[0] == '\0' )
+            if ( MeerOutput->sql_password[0] == '\0' )
                 {
-                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'password' specified!");
+                    Meer_Log(ERROR, "SQL output configuration incomplete.  No 'password' specified!");
                 }
 
-            if ( MeerOutput->mysql_database[0] == '\0' )
+            if ( MeerOutput->sql_database[0] == '\0' )
                 {
-                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'database' specified!");
+                    Meer_Log(ERROR, "SQL output configuration incomplete.  No 'database' specified!");
                 }
 
-            if ( MeerOutput->mysql_port == 0 )
+            if ( MeerOutput->sql_port == 0 )
                 {
-                    Meer_Log(ERROR, "MySQL output configuration incomplete.  No 'port' specified!");
+                    Meer_Log(ERROR, "SQL output configuration incomplete.  No 'port' specified!");
                 }
         }
 

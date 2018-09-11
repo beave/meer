@@ -30,12 +30,18 @@
 
 #include "meer.h"
 #include "meer-def.h"
+#include "config-yaml.h"
 #include "decode-json-alert.h"
 #include "lockfile.h"
 #include "stats.h"
+#include "output-plugins/sql.h"
 
 #ifdef HAVE_LIBMYSQLCLIENT
 #include "output-plugins/mysql.h"
+#endif
+
+#ifdef HAVE_LIBPQ
+#include "output-plugins/postgresql.h"
 #endif
 
 struct _MeerWaldo *MeerWaldo;
@@ -53,33 +59,53 @@ void Signal_Handler(int sig_num)
         case SIGQUIT:
         case SIGINT:
         case SIGTERM:
-        case SIGSEGV:
-        case SIGABRT:
+//        case SIGSEGV:
+//        case SIGABRT:
+
+#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
+
+            close(MeerConfig->waldo_fd);
+
+            if ( MeerOutput->sql_enabled == true )
+                {
 
 #ifdef HAVE_LIBMYSQLCLIENT
 
-            if ( MeerOutput->mysql_enabled == true )
-                {
-                    close(MeerConfig->waldo_fd);
+                    if ( MeerOutput->sql_driver == DB_MYSQL )
+                        {
+                            MySQL_DB_Query("ROLLBACK");
+                            MeerOutput->sql_last_cid++;
+                            SQL_Record_Last_CID();
+                            sleep(1);
+                            mysql_close(MeerOutput->mysql_dbh);
+                        }
 
-                    MySQL_DB_Query("ROLLBACK");
 
-                    MeerOutput->mysql_last_cid++;
+#endif
 
-                    MySQL_Record_Last_CID();
+#ifdef HAVE_LIBPQ
 
-                    sleep(1);
+                    if ( MeerOutput->sql_driver == DB_POSTGRESQL )
+                        {
+                            PG_DB_Query("ROLLBACK");
+                            MeerOutput->sql_last_cid++;
+                            SQL_Record_Last_CID();
+                            sleep(1);
+                            PQfinish(MeerOutput->psql);
+                        }
 
-                    mysql_close(MeerOutput->mysql_dbh);
-
-                    Remove_Lock_File();
-
-                    Statistics();
-                    Meer_Log(NORMAL, "Last CID is : %" PRIu64 ".", MeerOutput->mysql_last_cid);
+#endif
 
                 }
 
 #endif
+
+
+            Remove_Lock_File();
+
+            Statistics();
+            Meer_Log(NORMAL, "Last CID is : %" PRIu64 ".", MeerOutput->sql_last_cid);
+
 
             Meer_Log(NORMAL, "Shutdown complete.");
 
@@ -89,6 +115,7 @@ void Signal_Handler(int sig_num)
             exit(0);
 
         /* Signals to ignore */
+
         case 17:                /* Child process has exited. */
         case 28:                /* Terminal 'resize'/alarm. */
 
@@ -99,8 +126,8 @@ void Signal_Handler(int sig_num)
             Statistics();
             break;
 
-        default:
-            Meer_Log(NORMAL, "[Received signal %d. Meer doesn't know how to deal with]", sig_num);
+//        default:
+//            Meer_Log(NORMAL, "[Received signal %d. Meer doesn't know how to deal with]", sig_num);
         }
 
 }

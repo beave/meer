@@ -78,9 +78,11 @@ output-plugins:
   # MySQL/MariaDB output - Stores data from Suricata or Sagan into a semi-
   # traditional "Barnyard2/Snort" like database. 
 
-  mysql:
+  sql:
 
     enabled: yes
+    driver: mysql        # "mysql" or "postgresql"
+    port: 3306		 # Change to 5432 for PostgreSQL
     debug: no
     server: 127.0.0.1
     port: 3306
@@ -88,7 +90,7 @@ output-plugins:
     password: "XXXXXX"
     database: "snort_test"
 
-    # Automatically reconnect to the MySQL/MariaDB database when disconnected.
+    # Automatically reconnect to the database when disconnected.
 
     reconnect: enabled
     reconnect_time: 10 

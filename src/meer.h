@@ -26,6 +26,11 @@
 #include <mysql/mysql.h>
 #endif
 
+#ifdef HAVE_LIBPQ
+#include <postgresql/libpq-fe.h>
+#endif
+
+
 #include <stdbool.h>
 #include <inttypes.h>
 
@@ -99,35 +104,45 @@ struct _MeerOutput
 
 #ifdef HAVE_LIBMYSQLCLIENT
 
-    bool mysql_enabled;
-    bool mysql_debug;
-    bool mysql_extra_data;
-    char mysql_server[128];
-    uint32_t mysql_port;
-    char mysql_username[64];
-    char mysql_password[64];
-    char mysql_database[64];
-    uint32_t mysql_sensor_id;
     MYSQL *mysql_dbh;
-    uint64_t mysql_last_cid;
-
-    bool mysql_reconnect;
-    uint32_t mysql_reconnect_time;
-
-    bool mysql_flow;
-    bool mysql_http;
-    bool mysql_tls;
-    bool mysql_ssh;
-    bool mysql_smtp;
-    bool mysql_email;
-    bool mysql_metadata;
-
-    bool mysql_reference_system;
-    char mysql_reference_file[256];
-    char mysql_sid_map_file[256];
-
 
 #endif
+
+#ifdef HAVE_LIBPQ
+
+    PGconn   *psql;
+    PGresult *result;
+
+#endif
+
+    bool sql_enabled;
+    bool sql_debug;
+    bool sql_extra_data;
+    char sql_server[128];
+    uint32_t sql_port;
+    char sql_username[64];
+    char sql_password[64];
+    char sql_database[64];
+    uint32_t sql_sensor_id;
+    uint64_t sql_last_cid;
+
+    bool sql_reconnect;
+    uint32_t sql_reconnect_time;
+
+    bool sql_flow;
+    bool sql_http;
+    bool sql_tls;
+    bool sql_ssh;
+    bool sql_smtp;
+    bool sql_email;
+    bool sql_metadata;
+
+    char sql_driver;
+
+    bool sql_reference_system;
+    char sql_reference_file[256];
+    char sql_sid_map_file[256];
+
 
 };
 
@@ -147,7 +162,7 @@ struct _MeerCounters
     int ReferenceCount;			/* Legacy refererence system */
     int SIDMapCount;
 
-#ifdef HAVE_LIBMYSQLCLIENT
+#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
 
     uint64_t HealthCount;		/* Array count */
 

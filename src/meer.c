@@ -70,7 +70,7 @@ int main (int argc, char *argv[])
     signal(SIGINT,  &Signal_Handler);
     signal(SIGQUIT,  &Signal_Handler);
     signal(SIGTERM,  &Signal_Handler);
-    signal(SIGSEGV,  &Signal_Handler);
+//    signal(SIGSEGV,  &Signal_Handler);
     signal(SIGABRT,  &Signal_Handler);
 //    signal(SIGHUP,  &Signal_Handler);		/* DEBUG: Need SIGHUP handler */
     signal(SIGUSR1,  &Signal_Handler);
@@ -83,7 +83,6 @@ int main (int argc, char *argv[])
     {
         { "help",         no_argument,          NULL,   'h' },
         { "quiet",        no_argument,          NULL,   'q' },
-//        { "debug",        required_argument,    NULL,   'd' },
         { "daemon",       no_argument,          NULL,   'D' },
 //        { "credits",      no_argument,          NULL,   'C' },
         { "config",       required_argument,    NULL,   'c' },

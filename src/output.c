@@ -40,10 +40,12 @@
 #include "output.h"
 #include "references.h"
 #include "sid-map.h"
+#include "config-yaml.h"
+
+#include "output-plugins/sql.h"
 
 #ifdef HAVE_LIBMYSQLCLIENT
 #include <mysql/mysql.h>
-#include "output-plugins/mysql.h"
 MYSQL    *mysql;
 #endif
 
@@ -56,41 +58,52 @@ struct _Classifications *MeerClass;
 void Init_Output( void )
 {
 
-#ifdef HAVE_LIBMYSQLCLIENT
+#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
 
-    if ( MeerOutput->mysql_enabled )
+    if ( MeerOutput->sql_enabled )
         {
 
-            Meer_Log(NORMAL, "--[ MySQL/MariaDB information ]--------------------------------------------");
+
+            Meer_Log(NORMAL, "--[ SQL information ]--------------------------------------------");
             Meer_Log(NORMAL, "");
 
-            Meer_Log(NORMAL, "Extra data: %s", MeerOutput->mysql_extra_data ? "enabled" : "disabled" );
+            if ( MeerOutput->sql_driver == DB_MYSQL )
+                {
+                    Meer_Log(NORMAL, "SQL Driver: MySQL/MariaDB");
+                }
+
+            else if ( MeerOutput->sql_driver == DB_POSTGRESQL )
+                {
+                    Meer_Log(NORMAL, "SQL Driver: PostgreSQL");
+                }
+
+            Meer_Log(NORMAL, "Extra data: %s", MeerOutput->sql_extra_data ? "enabled" : "disabled" );
 
             /* Legacy reference system */
 
-            Meer_Log(NORMAL, "Legacy Reference System': %s", MeerOutput->mysql_reference_system ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Legacy Reference System': %s", MeerOutput->sql_reference_system ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "");
 
-            if ( MeerOutput->mysql_reference_system )
+            if ( MeerOutput->sql_reference_system )
                 {
                     Load_References();
                     Load_SID_Map();
                     Meer_Log(NORMAL, "");
                 }
 
-            MySQL_Connect();
+            SQL_Connect();
 
-            MeerOutput->mysql_sensor_id = MySQL_Get_Sensor_ID();
-            MeerOutput->mysql_last_cid = MySQL_Get_Last_CID() + 1;
+            MeerOutput->sql_sensor_id = SQL_Get_Sensor_ID();
+            MeerOutput->sql_last_cid = SQL_Get_Last_CID() + 1;
 
             Meer_Log(NORMAL, "");
-            Meer_Log(NORMAL, "Record 'metadata': %s", MeerOutput->mysql_metadata ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Record 'flow'    : %s", MeerOutput->mysql_flow ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Record 'http'    : %s", MeerOutput->mysql_http ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Record 'tls'     : %s", MeerOutput->mysql_tls ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Record 'ssh'     : %s", MeerOutput->mysql_ssh ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Record 'smtp'    : %s", MeerOutput->mysql_smtp ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Record 'email'   : %s", MeerOutput->mysql_email ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'metadata': %s", MeerOutput->sql_metadata ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'flow'    : %s", MeerOutput->sql_flow ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'http'    : %s", MeerOutput->sql_http ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'tls'     : %s", MeerOutput->sql_tls ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'ssh'     : %s", MeerOutput->sql_ssh ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'smtp'    : %s", MeerOutput->sql_smtp ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Record 'email'   : %s", MeerOutput->sql_email ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "");
 
             Meer_Log(NORMAL, "---------------------------------------------------------------------------");
@@ -106,20 +119,20 @@ void Init_Output( void )
 bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 {
 
-    char tmp[MAX_MYSQL_QUERY] = { 0 };
+#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
 
-#ifdef HAVE_LIBMYSQLCLIENT
+    char tmp[MAX_SQL_QUERY] = { 0 };
 
     bool health_flag = 0;
     int i = 0;
 
-    if ( MeerOutput->mysql_enabled )
+    if ( MeerOutput->sql_enabled )
         {
 
             int signature_id = 0;
             int class_id = 0;
 
-            class_id = MySQL_Get_Class_ID( DecodeAlert);
+            class_id = SQL_Get_Class_ID( DecodeAlert );
 
             if ( MeerConfig->health == true )
                 {
@@ -140,89 +153,91 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
             if ( health_flag == 0 )
                 {
 
-                    MySQL_DB_Query("BEGIN");
+                    SQL_DB_Query("BEGIN");
 
-                    if ( MeerOutput->mysql_reference_system == true )
+                    if ( MeerOutput->sql_reference_system == true )
                         {
 
-                            signature_id = MySQL_Legacy_Reference_Handler ( DecodeAlert );
+                            signature_id = SQL_Legacy_Reference_Handler ( DecodeAlert );
 
                             /* The SID doesn't have any reference data.  We just get it into the
                                        signature table */
 
                             if ( signature_id == 0 )
                                 {
-                                    signature_id = MySQL_Get_Signature_ID( DecodeAlert, class_id );
+                                    signature_id = SQL_Get_Signature_ID( DecodeAlert, class_id );
                                 }
 
                         }
                     else
                         {
 
-                            signature_id = MySQL_Get_Signature_ID( DecodeAlert, class_id );
+                            signature_id = SQL_Get_Signature_ID( DecodeAlert, class_id );
 
                         }
 
-                    MySQL_Insert_Event( DecodeAlert, signature_id );
+                    SQL_Insert_Event( DecodeAlert, signature_id );
 
-                    MySQL_Insert_Header( DecodeAlert );
+                    SQL_Insert_Header( DecodeAlert );
 
-                    MySQL_Insert_Payload ( DecodeAlert );
+                    SQL_Insert_Payload ( DecodeAlert );
 
                     if ( MeerConfig->dns == true )
                         {
-                            MySQL_Insert_DNS ( DecodeAlert );
+                            SQL_Insert_DNS ( DecodeAlert );
                         }
 
-                    if ( MeerOutput->mysql_extra_data == true )
+                    /* We can have multiple "xff" fields in extra data */
+
+                    if ( MeerOutput->sql_extra_data == true )
                         {
-                            MySQL_Insert_Extra_Data ( DecodeAlert );
+                            SQL_Insert_Extra_Data ( DecodeAlert );
                         }
 
-                    if ( DecodeAlert->has_flow == true && MeerOutput->mysql_flow == true )
+                    if ( DecodeAlert->has_flow == true && MeerOutput->sql_flow == true )
                         {
-                            MySQL_Insert_Flow ( DecodeAlert );
+                            SQL_Insert_Flow ( DecodeAlert );
                         }
 
-                    if ( DecodeAlert->has_http == true && MeerOutput->mysql_http == true )
+                    if ( DecodeAlert->has_http == true && MeerOutput->sql_http == true )
                         {
-                            MySQL_Insert_HTTP ( DecodeAlert );
+                            SQL_Insert_HTTP ( DecodeAlert );
                         }
 
-                    if ( DecodeAlert->has_tls == true && MeerOutput->mysql_tls == true )
+                    if ( DecodeAlert->has_tls == true && MeerOutput->sql_tls == true )
                         {
-                            MySQL_Insert_TLS ( DecodeAlert );
+                            SQL_Insert_TLS ( DecodeAlert );
                         }
 
-                    if ( DecodeAlert->has_ssh_server == true && MeerOutput->mysql_ssh == true )
+                    if ( DecodeAlert->has_ssh_server == true && MeerOutput->sql_ssh == true )
                         {
-                            MySQL_Insert_SSH ( DecodeAlert, SSH_SERVER );
+                            SQL_Insert_SSH ( DecodeAlert, SSH_SERVER );
                         }
 
-                    if ( DecodeAlert->has_ssh_client == true && MeerOutput->mysql_ssh == true )
+                    if ( DecodeAlert->has_ssh_client == true && MeerOutput->sql_ssh == true )
                         {
-                            MySQL_Insert_SSH ( DecodeAlert, SSH_CLIENT );
+                            SQL_Insert_SSH ( DecodeAlert, SSH_CLIENT );
                         }
 
-                    if ( DecodeAlert->alert_has_metadata == true && MeerOutput->mysql_metadata == true )
+                    if ( DecodeAlert->alert_has_metadata == true && MeerOutput->sql_metadata == true )
                         {
-                            MySQL_Insert_Metadata ( DecodeAlert );
+                            SQL_Insert_Metadata ( DecodeAlert );
                         }
 
-                    if ( DecodeAlert->has_smtp == true && MeerOutput->mysql_smtp == true )
+                    if ( DecodeAlert->has_smtp == true && MeerOutput->sql_smtp == true )
                         {
-                            MySQL_Insert_SMTP ( DecodeAlert );
+                            SQL_Insert_SMTP ( DecodeAlert );
                         }
 
-                    if ( DecodeAlert->has_email == true && MeerOutput->mysql_email == true )
+                    if ( DecodeAlert->has_email == true && MeerOutput->sql_email == true )
                         {
-                            MySQL_Insert_Email ( DecodeAlert );
+                            SQL_Insert_Email ( DecodeAlert );
                         }
 
 
                     /* Record CID in case of crash/disconnections */
 
-                    MySQL_Record_Last_CID();
+                    SQL_Record_Last_CID();
 
                     /* These are very Quadrant specific queries.  You likely don't want them. */
 
@@ -233,17 +248,17 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 #endif
 
 
-                    MySQL_DB_Query("COMMIT");
+                    SQL_DB_Query("COMMIT");
 
-                    MeerOutput->mysql_last_cid++;
+                    MeerOutput->sql_last_cid++;
 
                 }
             else
                 {
 
-                    snprintf(tmp, sizeof(tmp), "UPDATE sensor SET health=%" PRIu64 " WHERE sid=%d", Epoch_Lookup(), MeerOutput->mysql_sensor_id);
+                    snprintf(tmp, sizeof(tmp), "UPDATE sensor SET health=%" PRIu64 " WHERE sid=%d", Epoch_Lookup(), MeerOutput->sql_sensor_id);
 
-                    MySQL_DB_Query( (char*)tmp );
+                    SQL_DB_Query( (char*)tmp );
 
                     MeerCounters->HealthCountT++;
                     MeerCounters->UPDATECount++;

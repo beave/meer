@@ -57,9 +57,9 @@ void Load_SID_Map ( void )
 
     MeerCounters->SIDMapCount = 0;
 
-    if (( sid_map_fd = fopen(MeerOutput->mysql_sid_map_file, "r" )) == NULL )
+    if (( sid_map_fd = fopen(MeerOutput->sql_sid_map_file, "r" )) == NULL )
         {
-            Meer_Log(ERROR, "[%s, line %d] Cannot open '%s'", __FILE__,  __LINE__, MeerOutput->mysql_sid_map_file);
+            Meer_Log(ERROR, "[%s, line %d] Cannot open '%s'", __FILE__,  __LINE__, MeerOutput->sql_sid_map_file);
         }
 
     while(fgets(buf, sizeof(buf), sid_map_fd) != NULL)
@@ -78,7 +78,7 @@ void Load_SID_Map ( void )
 
             if ( sid_ptr == NULL )
                 {
-                    Meer_Log(ERROR, "[%s, line %d] SID not found in %s. Abort!", __FILE__, __LINE__, MeerOutput->mysql_sid_map_file);
+                    Meer_Log(ERROR, "[%s, line %d] SID not found in %s. Abort!", __FILE__, __LINE__, MeerOutput->sql_sid_map_file);
                 }
 
             Remove_Spaces(sid_ptr);
@@ -87,7 +87,7 @@ void Load_SID_Map ( void )
 
             if ( msg_ptr == NULL )
                 {
-                    Meer_Log(ERROR, "[%s, line %d] 'msg' not found in %s. Abort!", __FILE__, __LINE__, MeerOutput->mysql_sid_map_file);
+                    Meer_Log(ERROR, "[%s, line %d] 'msg' not found in %s. Abort!", __FILE__, __LINE__, MeerOutput->sql_sid_map_file);
                 }
 
             ref_ptr = strtok(NULL, "||");
@@ -112,7 +112,7 @@ void Load_SID_Map ( void )
 
                     if ( type == NULL )
                         {
-                            Meer_Log(ERROR, "[%s, line %d] 'type' not found in %s. Abort!", __FILE__, __LINE__, MeerOutput->mysql_sid_map_file);
+                            Meer_Log(ERROR, "[%s, line %d] 'type' not found in %s. Abort!", __FILE__, __LINE__, MeerOutput->sql_sid_map_file);
                         }
 
                     flag = 0;
@@ -135,7 +135,7 @@ void Load_SID_Map ( void )
 
                     if ( location == NULL )
                         {
-                            Meer_Log(ERROR, "[%s, line %d] 'location' not found in %s. Abort!", __FILE__, __LINE__, MeerOutput->mysql_sid_map_file);
+                            Meer_Log(ERROR, "[%s, line %d] 'location' not found in %s. Abort!", __FILE__, __LINE__, MeerOutput->sql_sid_map_file);
                         }
 
                     strlcpy(SID_Map[MeerCounters->SIDMapCount].type, type, sizeof(SID_Map[MeerCounters->SIDMapCount].type));
@@ -159,7 +159,7 @@ void Load_SID_Map ( void )
 
         }
 
-    Meer_Log(NORMAL, "SID map file loaded [%s].", MeerOutput->mysql_sid_map_file);
+    Meer_Log(NORMAL, "SID map file loaded [%s].", MeerOutput->sql_sid_map_file);
     fclose(sid_map_fd);
 
 }

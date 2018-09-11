@@ -50,9 +50,9 @@ void Load_References( void )
 
     MeerCounters->ReferenceCount = 0;
 
-    if (( reference_fd = fopen(MeerOutput->mysql_reference_file, "r" )) == NULL )
+    if (( reference_fd = fopen(MeerOutput->sql_reference_file, "r" )) == NULL )
         {
-            Meer_Log(ERROR, "[%s, line %d] Cannot open '%s'", __FILE__,  __LINE__, MeerOutput->mysql_reference_file);
+            Meer_Log(ERROR, "[%s, line %d] Cannot open '%s'", __FILE__,  __LINE__, MeerOutput->sql_reference_file);
         }
 
     while(fgets(buf, sizeof(buf), reference_fd) != NULL)
@@ -96,7 +96,7 @@ void Load_References( void )
 
         }
 
-    Meer_Log(NORMAL, "References file loaded [%s].", MeerOutput->mysql_reference_file);
+    Meer_Log(NORMAL, "References file loaded [%s].", MeerOutput->sql_reference_file);
     fclose(reference_fd);
 
 }

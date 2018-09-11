@@ -65,7 +65,7 @@ void Statistics( void )
 
         }
 
-#ifdef HAVE_LIBMYSQLCLIENT
+#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
 
     Meer_Log(NORMAL, " - MySQL/MariaDB Statistics:");
     Meer_Log(NORMAL, "");
@@ -81,8 +81,5 @@ void Statistics( void )
     Meer_Log(NORMAL, "");
 
 #endif
-
-
-
 
 }

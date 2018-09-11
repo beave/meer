@@ -64,11 +64,51 @@ echo -n "installation for $host OS... "
 
 AC_C_BIGENDIAN(AC_SUBST([ENDIAN],[big]),AC_SUBST([ENDIAN],[little]))
 
+AC_ARG_ENABLE(postgresql,
+  [  --enable-postgresql    Enable PostgreSQL support.],
+  [ POSTGRES="$enableval"],
+  [ POSTGRES="no" ]
+)
+
+AC_ARG_WITH(libpostgresql_includes,
+        [  --with-postgresql-includes=DIR    PostgreSQL include directory],
+        [with_postgresql_includes="$withval"],[with_postgresql_includes="no"])
+
+AC_ARG_WITH(postgresql_libraries,
+        [  --with-postgresql-libraries=DIR   PostgreSQL library directory],
+        [with_postgresql_libraries="$withval"],[with_postgresql_libraries="no"])
+
+if test "x$with_postgresql_includes" != "xno"; then
+   CPPFLAGS="${CPPFLAGS} -I${with_postgresql_includes}"
+   fi
+
+if test "x$with_postgresql_libraries" != "xno"; then
+   LDFLAGS="${LDFLAGS}  -L${with_postgresql_libraries}"
+fi
+
+
 AC_ARG_ENABLE(mysql,
   [  --disable-mysql         Disable MySQL support.],
   [ MYSQL="$enableval"],
   [ MYSQL="yes" ]
 )
+
+AC_ARG_WITH(libmysql_includes,
+        [  --with-mysql-includes=DIR    MySQL include directory],
+        [with_mysql_includes="$withval"],[with_mysql_includes="no"])
+
+AC_ARG_WITH(mysql_libraries,
+        [  --with-mysql-libraries=DIR   MySQL library directory],
+        [with_mysql_libraries="$withval"],[with_mysql_libraries="no"])
+
+if test "x$with_mysql_includes" != "xno"; then
+   CPPFLAGS="${CPPFLAGS} -I${with_mysql_includes}"
+   fi
+
+if test "x$with_mysql_libraries" != "xno"; then
+   LDFLAGS="${LDFLAGS}  -L${with_mysql_libraries}"
+fi
+
 
 #AC_ARG_ENABLE(libfastjson,
 #  [  --disable-libfastjson         Disable libfastjson support.],
@@ -217,6 +257,14 @@ if test "$MYSQL" = "yes"; then
         AC_CHECK_LIB(mysqlclient, main,,AC_MSG_ERROR(The MySQL library libmysqlclient is missing!
         If you're not interested in MySQL support use the --disable-mysql flag.))
         fi
+
+if test "$POSTGRES" = "yes"; then
+       AC_MSG_RESULT([------- PostgreSQL support is enabled -------])
+       AC_CHECK_HEADER([libpq-fe.h])
+       AC_CHECK_LIB(pq, main,,AC_MSG_ERROR(The PostgreSQL library cannot be found.
+       If you're not interested in PostgreSQL support use the --disable-postgresql flag.))
+       fi
+
 
 
 test "x$prefix" = x. || test "x$prefix" = xNONE && prefix=/usr/local

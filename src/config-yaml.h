@@ -48,6 +48,14 @@ void Load_YAML_Config ( char *yaml_file );
 /*******************/
 
 #define         YAML_MEER_CORE_CORE     1
-#define         YAML_MEER_MYSQL	        2
+#define         YAML_MEER_SQL	        2
+
+/******************/
+/* Database types */
+/******************/
+
+#define		DB_MYSQL		1
+#define		DB_POSTGRESQL		2
+
 
 #endif
