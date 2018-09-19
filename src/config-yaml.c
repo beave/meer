@@ -65,7 +65,7 @@ void Load_YAML_Config( char *yaml_file )
     char last_pass[128] = { 0 };
 
 
-#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
     char *ptr1 = NULL;
     char *ptr2 = NULL;
@@ -360,7 +360,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
                             else if ( !strcmp(last_pass, "health" ) )
                                 {

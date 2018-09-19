@@ -54,7 +54,6 @@ void SQL_Insert_Metadata ( struct _DecodeAlert *DecodeAlert );
 void SQL_Insert_SMTP ( struct _DecodeAlert *DecodeAlert );
 void SQL_Insert_Email ( struct _DecodeAlert *DecodeAlert );
 void SQL_Insert_Header ( struct _DecodeAlert *DecodeAlert );
-void MySQL_Escape_String( char *sql, char *str, size_t size );
 void SQL_Record_Last_CID ( void );
 int SQL_Get_Class_ID ( struct _DecodeAlert *DecodeAlert );
 int SQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id );

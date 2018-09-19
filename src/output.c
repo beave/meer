@@ -58,7 +58,7 @@ struct _Classifications *MeerClass;
 void Init_Output( void )
 {
 
-#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
     if ( MeerOutput->sql_enabled )
         {
@@ -119,7 +119,7 @@ void Init_Output( void )
 bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 {
 
-#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
     char tmp[MAX_SQL_QUERY] = { 0 };
 
@@ -243,7 +243,7 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 
 #ifdef QUADRANT
 
-                    MySQL_DB_Quadrant( DecodeAlert, signature_id );
+                    SQL_DB_Quadrant( DecodeAlert, signature_id );
 
 #endif
 

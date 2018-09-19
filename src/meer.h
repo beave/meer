@@ -162,7 +162,7 @@ struct _MeerCounters
     int ReferenceCount;			/* Legacy refererence system */
     int SIDMapCount;
 
-#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
     uint64_t HealthCount;		/* Array count */
 

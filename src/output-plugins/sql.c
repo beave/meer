@@ -56,7 +56,7 @@
 #include "output-plugins/mysql.h"
 #endif
 
-#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;

@@ -34,6 +34,7 @@
 #include "decode-json-alert.h"
 #include "lockfile.h"
 #include "stats.h"
+
 #include "output-plugins/sql.h"
 
 #ifdef HAVE_LIBMYSQLCLIENT
@@ -43,6 +44,7 @@
 #ifdef HAVE_LIBPQ
 #include "output-plugins/postgresql.h"
 #endif
+
 
 struct _MeerWaldo *MeerWaldo;
 struct _MeerConfig *MeerConfig;
@@ -62,7 +64,7 @@ void Signal_Handler(int sig_num)
 //        case SIGSEGV:
 //        case SIGABRT:
 
-#if defined(HAVE_LIBMYSQLCLIENT_R) || defined(HAVE_LIBPQ)
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
             close(MeerConfig->waldo_fd);
 
