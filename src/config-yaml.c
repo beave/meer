@@ -46,8 +46,9 @@
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
-struct _MeerHealth *MeerHealth = NULL;
 struct _MeerCounters *MeerCounters;
+
+struct _MeerHealth *MeerHealth = NULL;
 
 void Load_YAML_Config( char *yaml_file )
 {
@@ -104,7 +105,7 @@ void Load_YAML_Config( char *yaml_file )
 
     memset(MeerOutput, 0, sizeof(_MeerOutput));
 
-#ifdef HAVE_LIBMYSQLCLIENT
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
     MeerOutput->sql_enabled = false;
     MeerOutput->sql_debug = false;
@@ -405,30 +406,11 @@ void Load_YAML_Config( char *yaml_file )
 
                         }
 
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
-#ifndef HAVE_LIBMYSQLCLIENT
-
-                    if ( type == YAML_TYPE_OUTPUT &&  sub_type == YAML_MEER_SQL )
+                    if ( type == YAML_TYPE_OUTPUT && sub_type == YAML_MEER_SQL )
                         {
 
-                            if ( !strcmp(last_pass, "enabled" ))
-                                {
-
-                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled") )
-                                        {
-                                            Meer_Log(ERROR, "Error.  Meer wasn't compiled with MySQL support.  Abort!");
-                                        }
-
-                                }
-                        }
-
-#endif
-
-
-#ifdef HAVE_LIBMYSQLCLIENT
-
-                    if ( type == YAML_TYPE_OUTPUT &&  sub_type == YAML_MEER_SQL )
-                        {
 
                             if ( !strcmp(last_pass, "enabled" ))
                                 {
@@ -440,7 +422,8 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-                            else if ( !strcmp(last_pass, "reference_system" ))
+
+                            if ( !strcmp(last_pass, "reference_system" ))
                                 {
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
@@ -594,15 +577,41 @@ void Load_YAML_Config( char *yaml_file )
                             else if ( !strcmp(last_pass, "driver" ) && MeerOutput->sql_enabled == true )
                                 {
 
-                                    if ( !strcasecmp(value, "mysql" ) )
+#ifdef HAVE_LIBMYSQLCLIENT
+                                    if ( !strcmp(value, "mysql" ) )
                                         {
                                             MeerOutput->sql_driver = DB_MYSQL;
                                         }
+#endif
 
-                                    else if ( !strcasecmp(value, "postgresql" ) )
+#ifndef HAVE_LIBMYSQLCLIENT
+
+                                    if ( !strcasecmp(value, "mysql" ) )
+                                        {
+                                            Meer_Log(ERROR, "[%s, line %d] Meer isn't compiled into MySQL support.  Abort!", __FILE__, __LINE__);
+                                        }
+
+#endif
+
+
+#ifdef HAVE_LIBPQ
+
+                                    if ( !strcasecmp(value, "postgresql" ) )
                                         {
                                             MeerOutput->sql_driver = DB_POSTGRESQL;
                                         }
+
+#endif
+
+#ifndef HAVE_LIBPQ
+
+                                    if ( !strcasecmp(value, "postgresql" ) )
+                                        {
+                                            Meer_Log(ERROR, "[%s, line %d] Meer isn't compiled into PostgreSQL support.  Abort!", __FILE__, __LINE__);
+                                        }
+
+#endif
+
 
                                     if ( MeerOutput->sql_driver == 0 )
                                         {
