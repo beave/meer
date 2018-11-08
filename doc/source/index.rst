@@ -1,15 +1,9 @@
-Meer User Guide
-===============
+Meer User
+=========
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   what-is-sagan
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
