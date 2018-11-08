@@ -1,9 +1,12 @@
-Meer User
-=========
+Meer User Guide
+===============
 
 .. toctree::
+   :numbered:
    :maxdepth: 2
-   :caption: Contents:
 
    what-is-sagan
+   install.rst
+   command-line-options
+   configuration
 

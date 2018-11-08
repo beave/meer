@@ -190,7 +190,7 @@ AC_ARG_WITH(libjsonc_includes,
         [  --with-libjsonc-includes=DIR  libjson-c include directory],
         [with_libjsonc_includes="$withval"],[with_libjsonc_includes=no])
 AC_ARG_WITH(libjsonc_libraries,
-        [  --with-libjscon-libraries=DIR    libjson-c library directory],
+        [  --with-libjsonc-libraries=DIR    libjson-c library directory],
         [with_libjsonc_libraries="$withval"],[with_libjsonc_libraries="no"])
 
 if test "$with_libjsonc_includes" != "no"; then
