@@ -9,4 +9,5 @@ Meer User Guide
    install.rst
    command-line-options
    configuration
+   console-output
 
