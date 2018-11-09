@@ -1,6 +1,18 @@
 Configuration
 =============
 
+
+Setting up a new database.
+--------------------------
+
+
+Using a old database
+--------------------
+
+Setting up database rights
+--------------------------
+
+
 Meer's operations are controlled by the ``meer.yaml`` file.  Confiration file is broken up into two primary sections.  The ``meer-core``,  which controls how 
 Meer processes data and the ``output-plugins``, which controls how Meer handles data.  
 
