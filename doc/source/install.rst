@@ -1,7 +1,7 @@
 Installation
 ============
 
-There are currently no binary packages of Meer avaliable.  However,  installation from source is pretty striaght forward.
+There is currently no binary packages of Meer available.  However,  installation from source is pretty straight forward.
 
 Prerequisites
 -------------
@@ -22,7 +22,7 @@ systems,  this can be installed via:
 .. option:: apt-get install libyaml-dev
 
 Meer uses `JSON-C <https://github.com/json-c/json-c>`_ to parse JSON output from Sagan and Suricata.   On Ubuntu/Debian 
-systems, this prerequistite can be installed via:
+systems, this prerequisite can be installed via:
 
 .. option:: apt-get install libjson-c-dev
 

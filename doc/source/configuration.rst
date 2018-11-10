@@ -2,19 +2,60 @@ Configuration
 =============
 
 
+Directories and rights
+----------------------
+
+Meer keeps track of its actions in the ``meer.log`` and its position in the Sagan or Suricata EVE output file
+through a "waldo" file.  This means that Meer will need an area to record data to.  The default location of these
+files are in the ``/var/log/meer`` directory.  You will need to create and assign this directory the proper rights.  
+
+Making directories & assigning rights::
+
+    sudo mkdir /var/log/meer
+    sudo chown suricata /var/log/meer # Chown to 'sagan' if using with Sagan!
+
+You will need to adjust your ``meer.yaml`` rights in the ``runas`` option to match your permissions.
+
 Setting up a new database.
 --------------------------
 
+If you do not have a database already configured to receive alerts,  the instructions below will help
+you get started.  First, you will need to create a database.   For the purpose of this document
+the target database will be known as ``example_database``.  Database schemas are stored in the ``meer/sql`` directory.
 
+Creating the ``example_database`` with MySQL/MariaDB::
+
+    mysqladmin -u root -p create example_database
+    mysql -u root -p example_database < sql/create_mysql
+
+When using PostgreSQL, use the ``meer/sql/create_postgresql`` schema file.
+    
 Using a old database
 --------------------
 
-Setting up database rights
---------------------------
+If you have a legacy database that you wish to convert, do the following with MySQL/MariaDB::
+
+    mysql -u root -p example_database < sql/extend_mysql
+
+This will create new tables (https, flows, dns, etc).
 
 
-Meer's operations are controlled by the ``meer.yaml`` file.  Confiration file is broken up into two primary sections.  The ``meer-core``,  which controls how 
-Meer processes data and the ``output-plugins``, which controls how Meer handles data.  
+Setting database rights
+-----------------------
+
+It is important to setup the proper rights when using Meer.  Meer needs only INSERT and SELECT on all tables.  
+It will need INSERT, SELECT and UPDATE on the ``example_database.sensor`` table.
+
+With MySQL/MariaDB::
+
+    GRANT INSERT,SELECT ON example_database.* to myusername@127.0.0.1 identified by 'mypassword`;
+    GRANT INSERT,SELECT,UPDATE,INSERT ON example_database.sensor to myusername@127.0.0.1 identified by 'mypassword';
+
+
+The meer.yaml configuration file
+--------------------------------
+
+Meers operations are mainly controlled by the ``meer.yaml`` file.  The configuration file is split into two sections.  The ``meer-core`` controls how Meer processes incoming data from EVE files.  The ``output-plugins`` controls how data extracted from the EVE files is transported to a database back end.
 
 meer-core
 ---------
@@ -28,7 +69,7 @@ meer-core
        hostname: "mysensor"  # Unique name for this sensor (no spaces)
        interface: "eth0"     # Can be anything.  Sagan "syslog", suricata "eth0".
 
-       runas: "suricata"     # User to "drop priviledges" too.
+       runas: "suricata"     # User to "drop privileges" too.
        #runas: "sagan"
 
        classification: "/etc/suricata/classification.config"
@@ -71,7 +112,7 @@ meer-core
                                                    # position in the 
                                                    # "follow-eve" file. 
 
-       lock-file: "/var/log/meer/meer.lck"         # To prevent dualing processes.
+       lock-file: "/var/log/meer/meer.lck"         # To prevent dueling processes.
 
        follow-eve: "/var/log/suricata/alert.json"  # The Suricata/Sagan file to monitor
        #follow-eve: "/var/log/sagan/alert.json
@@ -129,8 +170,8 @@ output-plugins
        # to store Suricata or Sagan data, you'll likely want to leave this
        # disabled. The legacy reference system isn't very efficient and there's
        # better ways to keep track of this data.  This is also a memory hog and
-       # preformance killer.  See tools/reference_handler/reference_handler.pl to
-       # build a centeralized reference table.
+       # performance killer.  See tools/reference_handler/reference_handler.pl to
+       # build a centralized reference table.
 
        reference_system: disabled
        sid_file: "/etc/suricata/rules/sid-msg.map"   # Created with "create-sidmap"
