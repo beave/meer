@@ -6,7 +6,7 @@ There is currently no binary packages of Meer available.  However,  installation
 Prerequisites
 -------------
 
-Before installing Meer,  you will need to determine where you want your data to reside.  Current,  Meer supports MariaDB, 
+Before compiling and installing Meer,  you will need to determine where you want your data to reside.  Current,  Meer supports MariaDB, 
 MySQL and PostgreSQL.  In order to build Meer, you will need one or more of these installed with all development files.  For
 example,  Ubuntu/Debian systems can install via:
 

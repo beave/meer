@@ -5,7 +5,7 @@ Meer User Guide
    :numbered:
    :maxdepth: 2
 
-   what-is-sagan
+   what-is-meer
    install.rst
    command-line-options
    starting-meer

@@ -3,7 +3,7 @@ Getting help
 
 The primary Meer site is located at:
 
-`https://github.com/beave/meer <https://github.com/beave/meer/issues>`_
+https://github.com/beave/meer <https://github.com/beave/meer>`_
 
 If you are having issues getting Meer to work,  consider posting in the Meer mailing list.  This list
 is good for general configuration,  install and usage questions.  

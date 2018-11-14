@@ -13,5 +13,5 @@ The primary Meer site is located at:
 License
 -------
 
-The Meer source code is licensed under GPLv2.
+The Meer licensed under the GNU/GPL version 2.
 
