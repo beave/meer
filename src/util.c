@@ -248,6 +248,7 @@ char *Hexify(char *xdata, int length)
 /* DEBUG: Needs a cacher */
 
 
+/*
 uint64_t Epoch_Lookup( void )
 {
 
@@ -263,6 +264,7 @@ uint64_t Epoch_Lookup( void )
     return(utime);
 
 }
+*/
 
 void DNS_Lookup( char *host, char *str, size_t size )
 {

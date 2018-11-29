@@ -31,6 +31,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "decode-json-alert.h"
 
@@ -122,6 +123,8 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
     char tmp[MAX_SQL_QUERY] = { 0 };
+    char convert_time[16] = { 0 };
+    struct tm tm_;
 
     bool health_flag = 0;
     int i = 0;
@@ -256,7 +259,12 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
             else
                 {
 
-                    snprintf(tmp, sizeof(tmp), "UPDATE sensor SET health=%" PRIu64 " WHERE sid=%d", Epoch_Lookup(), MeerOutput->sql_sensor_id);
+                    /* Convert timestamp from event to epoch */
+
+                    strptime(DecodeAlert->timestamp,"%FT%T",&tm_);
+                    strftime(convert_time, sizeof(convert_time),"%F %T",&tm_);
+
+                    snprintf(tmp, sizeof(tmp), "UPDATE sensor SET health=%d WHERE sid=%d", (int)mktime(&tm_), MeerOutput->sql_sensor_id);
 
                     SQL_DB_Query( (char*)tmp );
 
