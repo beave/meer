@@ -31,6 +31,13 @@ CREATE TABLE event  ( sid 	  INT 	   UNSIGNED NOT NULL,
                       INDEX       sig (signature),
                       INDEX       time (timestamp));
 
+CREATE TABLE event_json (
+  		      sid INT unsigned NOT NULL,
+                      cid BIGINT unsigned NOT NULL,
+		      json TEXT,
+                      KEY `event` (`sid`,`cid`));
+
+
 CREATE TABLE signature ( sig_id       INT          UNSIGNED NOT NULL AUTO_INCREMENT,
                          sig_name     VARCHAR(255) NOT NULL,
                          sig_class_id INT          UNSIGNED NOT NULL,
@@ -70,7 +77,7 @@ CREATE TABLE sensor ( sid	  INT 	   UNSIGNED NOT NULL AUTO_INCREMENT,
                       detail	  TINYINT,
                       encoding	  TINYINT,
                       last_cid    BIGINT      UNSIGNED NOT NULL,
-		      health	  INT	   UNSIGNED NOT NULL,
+		      health	  INT	   DEFAULT 0,
                       PRIMARY KEY (sid));
 
 # All of the fields of an ip header

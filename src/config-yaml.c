@@ -253,12 +253,12 @@ void Load_YAML_Config( char *yaml_file )
                                                             }
                             */
 
-                            else if ( !strcmp(last_pass, "waldo-file" ))
+                            else if ( !strcmp(last_pass, "waldo-file" ) || !strcmp(last_pass, "waldo-file" ) )
                                 {
                                     strlcpy(MeerConfig->waldo_file, value, sizeof(MeerConfig->waldo_file));
                                 }
 
-                            else if ( !strcmp(last_pass, "lock-file" ))
+                            else if ( !strcmp(last_pass, "lock-file" ) || !strcmp(last_pass, "lock_file" ) )
                                 {
                                     strlcpy(MeerConfig->lock_file, value, sizeof(MeerConfig->lock_file));
                                 }
@@ -268,7 +268,7 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerConfig->meer_log, value, sizeof(MeerConfig->meer_log));
                                 }
 
-                            else if ( !strcmp(last_pass, "follow-eve" ))
+                            else if ( !strcmp(last_pass, "follow-eve" ) || !strcmp(last_pass, "follow_eve" ) )
                                 {
                                     strlcpy(MeerConfig->follow_file, value, sizeof(MeerConfig->follow_file));
                                 }
@@ -360,6 +360,17 @@ void Load_YAML_Config( char *yaml_file )
                                         }
 
                                 }
+
+                            else if ( !strcmp(last_pass, "json" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->json = true;
+                                        }
+
+                                }
+
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
@@ -514,6 +525,17 @@ void Load_YAML_Config( char *yaml_file )
                                         }
 
                                 }
+
+                            if ( !strcmp(last_pass, "json" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->sql_json = true;
+                                        }
+
+                                }
+
 
 
                             else if ( !strcmp(last_pass, "debug" ) && MeerOutput->sql_enabled == true )

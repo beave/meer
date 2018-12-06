@@ -89,6 +89,7 @@ struct _MeerConfig
     bool email;
     bool dns_meta;	/* NOT DONE */
     bool metadata;
+    bool json;
 
 };
 
@@ -136,6 +137,7 @@ struct _MeerOutput
     bool sql_smtp;
     bool sql_email;
     bool sql_metadata;
+    bool sql_json;
 
     char sql_driver;
 
@@ -186,6 +188,7 @@ struct _MeerCounters
     uint64_t EmailCount;
     uint64_t MetadataCount;
     uint64_t SSHCount;
+    uint64_t JSONCount;
 
     uint64_t DNSCount;
     uint64_t DNSCacheCount;

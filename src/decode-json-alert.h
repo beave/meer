@@ -36,6 +36,8 @@ char src_dns[256];
     char *stream;
     char *packet;
 
+    char *json;
+
 //    bool has_extra_data;
     char *xff;
 

@@ -45,6 +45,7 @@ void Statistics( void )
     Meer_Log(NORMAL, " - Decoded Statistics:");
     Meer_Log(NORMAL, "");
     Meer_Log(NORMAL, " Waldo Postion : %"PRIu64 "", MeerWaldo->position);
+    Meer_Log(NORMAL, " JSON          : %" PRIu64 "", MeerCounters->JSONCount);
     Meer_Log(NORMAL, " Flow          : %" PRIu64 "", MeerCounters->FlowCount);
     Meer_Log(NORMAL, " HTTP          : %" PRIu64 "", MeerCounters->HTTPCount);
     Meer_Log(NORMAL, " TLS           : %" PRIu64 "", MeerCounters->TLSCount);

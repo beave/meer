@@ -26,6 +26,11 @@ CREATE TABLE dns (sid         INT      UNSIGNED NOT NULL,
 	 	  INDEX	      dst_host (dst_host), 
                   KEY `event` (sid,cid));
 
+CREATE TABLE event_json (
+                      sid INT unsigned NOT NULL,
+                      cid BIGINT unsigned NOT NULL,
+                      json TEXT,
+                      KEY `event` (`sid`,`cid`)
 
 CREATE TABLE flow (sid         INT      UNSIGNED NOT NULL,
 		   cid         BIGINT  UNSIGNED NOT NULL,

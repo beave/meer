@@ -60,13 +60,13 @@ meer-core:
     health: enabled
     health_signatures: 20000001,20000002,20000003,20000004
 
-    waldo-file: "/var/log/meer/meer.waldo"	# Where to store the last 
+    waldo_file: "/var/log/meer/meer.waldo"	# Where to store the last 
                                                 # position in the 
                                                 # "follow-eve" file. 
 
-    lock-file: "/var/log/meer/meer.lck"		# To prevent dueling processes.
+    lock_file: "/var/log/meer/meer.lck"		# To prevent dueling processes.
 
-    follow-eve: "/var/log/suricata/alert.json"	# The Suricata/Sagan file to monitor
+    follow_eve: "/var/log/suricata/alert.json"	# The Suricata/Sagan file to monitor
     #follow-eve: "/var/log/sagan/alert.json"	
 
 #############################################################################

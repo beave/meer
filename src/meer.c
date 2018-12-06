@@ -186,6 +186,7 @@ int main (int argc, char *argv[])
     Load_Classifications();
 
     Meer_Log(NORMAL, "");
+    Meer_Log(NORMAL, "Decode 'json'    : %s", MeerConfig->json ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Decode 'metadata': %s", MeerConfig->metadata ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Decode 'flow'    : %s", MeerConfig->flow ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Decode 'http'    : %s", MeerConfig->http ? "enabled" : "disabled" );

@@ -98,6 +98,7 @@ void Init_Output( void )
             MeerOutput->sql_last_cid = SQL_Get_Last_CID() + 1;
 
             Meer_Log(NORMAL, "");
+            Meer_Log(NORMAL, "Record 'json'    : %s", MeerOutput->sql_json ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Record 'metadata': %s", MeerOutput->sql_metadata ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Record 'flow'    : %s", MeerOutput->sql_flow ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Record 'http'    : %s", MeerOutput->sql_http ? "enabled" : "disabled" );
@@ -106,7 +107,6 @@ void Init_Output( void )
             Meer_Log(NORMAL, "Record 'smtp'    : %s", MeerOutput->sql_smtp ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Record 'email'   : %s", MeerOutput->sql_email ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "");
-
             Meer_Log(NORMAL, "---------------------------------------------------------------------------");
 
 
@@ -184,6 +184,11 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
                     SQL_Insert_Header( DecodeAlert );
 
                     SQL_Insert_Payload ( DecodeAlert );
+
+                    if ( MeerConfig->json == true )
+                        {
+                            SQL_Insert_JSON ( DecodeAlert );
+                        }
 
                     if ( MeerConfig->dns == true )
                         {

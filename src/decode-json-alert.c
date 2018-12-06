@@ -92,6 +92,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     memset(Alert_Return_Struct, 0, sizeof(_DecodeAlert));
 
+    Alert_Return_Struct->json = json_string;
     Alert_Return_Struct->event_type = "alert";
     Alert_Return_Struct->ip_version = 4;
 

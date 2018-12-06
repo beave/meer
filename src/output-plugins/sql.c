@@ -763,6 +763,27 @@ void SQL_Insert_Metadata ( struct _DecodeAlert *DecodeAlert )
 
 }
 
+
+void SQL_Insert_JSON ( struct _DecodeAlert *DecodeAlert )
+{
+
+    char tmp[MAX_SQL_QUERY] = { 0 };
+    char e_json[10240] = { 0 };
+
+    SQL_Escape_String( DecodeAlert->json, e_json, sizeof(e_json));
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO event_json (sid,cid,json) "
+             "VALUES (%d,%" PRIu64 ",'%s')",
+             MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid,
+             e_json);
+
+    (void)SQL_DB_Query(tmp);
+    MeerCounters->JSONCount++;
+
+}
+
+
 void SQL_Insert_SMTP ( struct _DecodeAlert *DecodeAlert )
 {
 

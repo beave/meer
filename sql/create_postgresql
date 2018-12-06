@@ -68,6 +68,11 @@ CREATE TABLE event  ( sid 	  INT4 NOT NULL,
                       flow_id     INT8, 
                       PRIMARY KEY (sid,cid));
 
+CREATE TABLE event_json ( sid		INT4 NOT NULL, 
+                          cid           INT8 NOT NULL, 
+                          json          TEXT,
+                          PRIMARY KEY (sid,cid)); 
+
 CREATE INDEX signature_idx ON event (signature);
 CREATE INDEX timestamp_idx ON event (timestamp);
 
