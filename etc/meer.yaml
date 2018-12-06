@@ -40,6 +40,7 @@ meer-core:
     ssh: enabled
     smtp: enabled
     email: enabled
+    json: enabled
 
     # If "dns" is enabled, Meer will do reverse DNS (PTR) lookups of an IP. 
     # The "dns_cache" is the amount of time Meer should "cache" a PTR record
@@ -114,6 +115,7 @@ output-plugins:
     ssh: enabled
     smtp: enabled
     email: enabled
+    json: enabled
 
     # If you would like Meer to mimic the legacy "reference" tables from
     # Snort/Barnyard2, enable it here.  If your using more than one database

@@ -87,7 +87,7 @@ Meers operations are mainly controlled by the ``meer.yaml`` file.  The configura
        ssh: enabled
        smtp: enabled
        email: enabled
-       json: enabled       # Orignal JSON from event
+       json: enabled       # Original JSON from event
 
        # If "dns" is enabled, Meer will do reverse DNS (PTR) lookups of an IP.
        # The "dns_cache" is the amount of time Meer should "cache" a PTR record
@@ -213,7 +213,7 @@ in memory for later use.  This is not to be confused with ``smtp``.  The data fr
 json
 ~~~~
 
-The ``json`` option tells Meer to store the orignal JSON/EVE event.  This is the 
+The ``json`` option tells Meer to store the original JSON/EVE event.  This is the 
 raw event that Meer has read in.
 
 dns
@@ -221,7 +221,7 @@ dns
 
 The ``dns`` option tells Meer to perform a DNS PTR (reverse) record lookup of the 
 IP addresses involved in an alert.  This option is useful because records the
-DNS record at the time the event occured. 
+DNS record at the time the event occurred. 
 
 dns_cache
 ~~~~~~~~~
@@ -253,7 +253,7 @@ waldo_file
 ~~~~~~~~~~
 
 The ``waldo_file`` is a file that Meer uses to keep track of its last location within
-a EVE/JSON file.  This keep Meer from re-reading data inbetween stop/starts.  This
+a EVE/JSON file.  This keep Meer from re-reading data in between stop/starts.  This
 option is required.
 
 lock_file
@@ -269,7 +269,7 @@ follow_eve
 The ``follow_eve`` option informs Meer what file to "follow" or "monitor" for new 
 alerts.  You'll want to point this to your Sagan or Suricata "alert" EVE output file. 
 You can think of Meer "monitoring" this file similar to how "tail -f" operates. 
-This option is requried.
+This option is required.
 
 Output Plugins
 ==============
@@ -373,7 +373,7 @@ When ``debug`` is enabled,  Meer will display SQL statements and transactions to
 username
 ~~~~~~~~
 
-The username to use during authenication with the SQL database.
+The username to use during authentication with the SQL database.
 
 password
 ~~~~~~~~
