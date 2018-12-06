@@ -274,7 +274,13 @@ This option is required.
 Output Plugins
 ==============
 
+
+output-plugins example
+----------------------
+
 Below is an example of the "output-plugins" from the ``meer.yaml``.
+
+
 
 ::
 
