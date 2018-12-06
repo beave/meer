@@ -230,7 +230,8 @@ When ``dns`` is enabled,  Meer will internally cache records to avoid repetitive
 lookups.  For example, if a 1000 alerts come in from a single IP address,  Meer
 will look the DNS PTR record one time and use the cache entire the other 999
 times.   This saves on lookup time and extra stress on internal DNS server.  If you
-do not want Meer to cache DNS data,  simply set this option to 0.
+do not want Meer to cache DNS data,  simply set this option to 0.  The ``dns_cache``
+time is in seconds.
 
 health
 ~~~~~~
@@ -338,4 +339,120 @@ Below is an example of the "output-plugins" from the ``meer.yaml``.
 
 MariaDB/MySQL/PostgreSQL
 ------------------------
+
+This section of documentation describes the ``sql`` section of the ``output-plugins``. 
+
+enabled
+~~~~~~~
+
+When this option is set to ``yes`` or ``no``, it enabled or disables the SQL section of
+the Meer output plugin.
+
+driver
+~~~~~~
+
+This controls what SQL database driver Meer will use.  Valid types are ``mysql`` (for both
+MySQL and MariaDB) and ``postgresql``.
+
+port
+~~~~
+
+The port the target SQL server is listening on.
+
+server
+~~~~~~
+
+The IP address of the SQL server.
+
+debug
+~~~~~
+
+When ``debug`` is enabled,  Meer will display SQL statements and transactions to stdout and to the
+``meer_log``.  This can be useful for debugging SQL errors and issues.  By default, this is disabled.
+
+username
+~~~~~~~~
+
+The username to use during authenication with the SQL database.
+
+password
+~~~~~~~~
+
+The password to use during authentication with the SQL database.
+
+reconnect
+~~~~~~~~~
+
+If Meer encounters an issue with connecting to the SQL database,  if this 
+option is ``enabled``,  Meer will continually try to reconnect until it is
+successful.
+
+reconnect_time
+~~~~~~~~~~~~~~
+
+This is how long to pause, in seconds,  before attempting to reconnect to the
+SQL database if the ``reconnect`` option is enabled.
+
+extra_data
+~~~~~~~~~~
+
+When the ``extra_data`` option is enabled,  Meer will record certain information
+(XFF, DNS data,  SMTP data, etc) in the legacy ``extra`` table.  
+
+metadata
+~~~~~~~~
+
+This option controls Meers ability to record decoded alert metadata to the ``metadata``
+SQL table.  If "metadata" is detected within the EVE/JSON  and the ``metadata``
+decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
+to the ``metadata`` SQL table. 
+
+flow
+~~~~
+
+This option controls Meers ability to record decoded alert flow to the ``flow``
+SQL table.  If "flow" is detected within the EVE/JSON  and the ``flow``
+decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
+to the ``flow`` SQL table.
+
+http
+~~~~
+
+This option controls Meers ability to record decoded alert http to the ``http``
+SQL table.  If "http" is detected within the EVE/JSON  and the ``http``
+decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
+to the ``http`` SQL table.
+
+tls
+~~~
+
+This option controls Meers ability to record decoded alert tls to the ``tls``
+SQL table.  If "tls" is detected within the EVE/JSON  and the ``tls``
+decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
+to the ``tls`` SQL table.
+
+ssh
+~~~
+
+This option controls Meers ability to record decoded alert ssh to the ``ssh``
+SQL table.  If "ssh" is detected within the EVE/JSON  and the ``ssh``
+decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
+to the ``ssh-client``and ``ssh-server`` SQL tables.
+
+ssh
+~~~
+
+This option controls Meers ability to record decoded alert smtp to the ``smtp``
+SQL table.  If "smtp" is detected within the EVE/JSON  and the ``smtp``
+decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
+to the ``smtp`` SQL table.
+
+email
+~~~~~
+
+This option controls Meers ability to record decoded alert email to the ``email``
+SQL table.  If "email" is detected within the EVE/JSON  and the ``email``
+decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
+to the ``email`` SQL tables.  This is not to be confused with the ``smtp`` table.
+
 
