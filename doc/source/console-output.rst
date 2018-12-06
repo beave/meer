@@ -27,6 +27,7 @@ If Meer makes to the ``Waiting of new data...``,  then Meer has successfully sta
 [*] [11/09/2018 03:24:29] - Dropping privileges! [UID: 999 GID: 999]
 [*] [11/09/2018 03:24:29] - Classifications file loaded [/etc/suricata/classification.config].
 [*] [11/09/2018 03:24:29] -
+[*] [11/09/2018 03:24:29] - Decode 'json'    : enabled
 [*] [11/09/2018 03:24:29] - Decode 'metadata': enabled
 [*] [11/09/2018 03:24:29] - Decode 'flow'    : enabled
 [*] [11/09/2018 03:24:29] - Decode 'http'    : enabled
@@ -47,6 +48,7 @@ If Meer makes to the ``Waiting of new data...``,  then Meer has successfully sta
 [*] [11/09/2018 03:24:30] - Using Database Sensor ID: 1 
 [*] [11/09/2018 03:24:30] - Last CID: 586325 
 [*] [11/09/2018 03:24:30] - 
+[*] [11/09/2018 03:24:30] - Recird 'json'    : enabled
 [*] [11/09/2018 03:24:30] - Record 'metadata': enabled 
 [*] [11/09/2018 03:24:30] - Record 'flow'    : enabled 
 [*] [11/09/2018 03:24:30] - Record 'http'    : enabled 
@@ -79,6 +81,7 @@ item to note is the ``CID``,  which is the last database position Meer left off.
 [*] [11/09/2018 03:24:29] -  - Decoded Statistics:
 [*] [11/09/2018 03:24:29] -
 [*] [11/09/2018 03:24:29] -  Waldo Postion : 191000
+[*] [11/09/2018 03:24:29] -  JSON          : 8987
 [*] [11/09/2018 03:24:29] -  Flow          : 8987
 [*] [11/09/2018 03:24:29] -  HTTP          : 8889
 [*] [11/09/2018 03:24:29] -  TLS           : 0
