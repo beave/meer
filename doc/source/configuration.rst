@@ -455,4 +455,19 @@ SQL table.  If "email" is detected within the EVE/JSON  and the ``email``
 decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
 to the ``email`` SQL tables.  This is not to be confused with the ``smtp`` table.
 
+reference_system
+~~~~~~~~~~~~~~~~
+
+The ``reference_system`` allows Meer to store alert reference data in a traditional
+"Barnyard2" format.  If you are using a single database for all events,  this 
+option might be useful to you.  If you are using UI's like Snorby,  Squeel, etc. 
+you'll likely want to enable this option.  If you are using multiple databases, 
+then consider looking at the "reference_handler.pl" script that ships with Meer. 
+
+sid_file
+~~~~~~~~
+
+The ``sid_file`` is a legacy "signature message map" file that points signature
+IDs to there references.  If you want to use the legacy ``reference_system``, 
+you'll need a "signature message map" (``sid_file``) for Meer to read.
 
