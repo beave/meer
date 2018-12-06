@@ -7,7 +7,7 @@ Meer is meant to be modular and simple. This project does not aim to replicate a
 
 The primary Meer site is located at:
 
-`https://github.com/beave/meer <https://github.com/beave/meer/issues>`_
+https://quadrantsec.com/meer
 
 
 License
