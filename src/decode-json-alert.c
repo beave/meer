@@ -256,6 +256,15 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Alert_Return_Struct->xff = (char *)json_object_get_string(tmp);
         }
 
+#ifdef QUADRANT
+
+    if (json_object_object_get_ex(json_obj, "bluedot", &tmp))
+        {
+            Alert_Return_Struct->bluedot = (char *)json_object_get_string(tmp);
+        }
+
+#endif
+
     /* Extract "alert" information */
 
     if (json_object_object_get_ex(json_obj, "alert", &tmp))

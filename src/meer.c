@@ -194,6 +194,11 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, "Decode 'ssh'     : %s", MeerConfig->ssh ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Decode 'smtp'    : %s", MeerConfig->smtp ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Decode 'email'   : %s", MeerConfig->email ? "enabled" : "disabled" );
+
+#ifdef QUADRANT
+    Meer_Log(NORMAL, "Decode 'bluedot' : %s", MeerConfig->bluedot ? "enabled" : "disabled" );
+#endif
+
     Meer_Log(NORMAL, "");
 
     Init_Waldo();

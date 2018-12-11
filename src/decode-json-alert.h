@@ -38,6 +38,10 @@ char src_dns[256];
 
     char *json;
 
+#ifdef QUADRANT
+    char *bluedot;
+#endif
+
 //    bool has_extra_data;
     char *xff;
 

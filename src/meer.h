@@ -91,6 +91,10 @@ struct _MeerConfig
     bool metadata;
     bool json;
 
+#ifdef QUADRANT
+    bool bluedot;
+#endif
+
 };
 
 typedef struct _MeerHealth _MeerHealth;
@@ -193,7 +197,9 @@ struct _MeerCounters
     uint64_t DNSCount;
     uint64_t DNSCacheCount;
 
-
+#ifdef QUADRANT
+    uint64_t BluedotCount;
+#endif
 
 };
 

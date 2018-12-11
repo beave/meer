@@ -371,6 +371,19 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+#ifdef QUADRANT
+                            else if ( !strcmp(last_pass, "bluedot" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->bluedot = true;
+                                        }
+
+                                }
+
+#endif
+
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 

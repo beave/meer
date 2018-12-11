@@ -783,6 +783,29 @@ void SQL_Insert_JSON ( struct _DecodeAlert *DecodeAlert )
 
 }
 
+#ifdef QUADRANT
+
+void SQL_Insert_Bluedot ( struct _DecodeAlert *DecodeAlert )
+{
+
+    char tmp[MAX_SQL_QUERY] = { 0 };
+    char e_bluedot[10240] = { 0 };
+
+    SQL_Escape_String( DecodeAlert->bluedot, e_bluedot, sizeof(e_bluedot));
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO bluedot (sid,cid,bluedot) "
+             "VALUES (%d,%" PRIu64 ",'%s')",
+             MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid,
+             e_bluedot);
+
+    (void)SQL_DB_Query(tmp);
+    MeerCounters->BluedotCount++;
+
+}
+
+#endif
+
 
 void SQL_Insert_SMTP ( struct _DecodeAlert *DecodeAlert )
 {

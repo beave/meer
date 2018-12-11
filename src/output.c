@@ -190,6 +190,15 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
                             SQL_Insert_JSON ( DecodeAlert );
                         }
 
+#ifdef QUADRANT
+
+                    if ( MeerConfig->bluedot == true )
+                        {
+                            SQL_Insert_Bluedot ( DecodeAlert );
+                        }
+
+#endif
+
                     if ( MeerConfig->dns == true )
                         {
                             SQL_Insert_DNS ( DecodeAlert );

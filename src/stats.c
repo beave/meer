@@ -53,6 +53,12 @@ void Statistics( void )
     Meer_Log(NORMAL, " SMTP          : %" PRIu64 "", MeerCounters->SMTPCount);
     Meer_Log(NORMAL, " Email         : %" PRIu64 "", MeerCounters->EmailCount);
     Meer_Log(NORMAL, " Metadata      : %" PRIu64 "", MeerCounters->MetadataCount);
+
+#ifdef QUADRANT
+    Meer_Log(NORMAL, " Bluedot       : %" PRIu64 "", MeerCounters->BluedotCount);
+#endif
+
+
     Meer_Log(NORMAL, "");
 
     if ( MeerConfig->dns == true )
