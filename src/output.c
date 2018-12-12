@@ -197,15 +197,6 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
                             SQL_Insert_JSON ( DecodeAlert );
                         }
 
-#ifdef QUADRANT
-
-                    if ( MeerConfig->bluedot == true )
-                        {
-                            SQL_Insert_Bluedot ( DecodeAlert );
-                        }
-
-#endif
-
                     if ( MeerConfig->dns == true )
                         {
                             SQL_Insert_DNS ( DecodeAlert );
@@ -257,6 +248,16 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
                         {
                             SQL_Insert_Email ( DecodeAlert );
                         }
+
+#ifdef QUADRANT
+
+                    if ( DecodeAlert->has_bluedot == true && MeerConfig->bluedot == true )
+                        {   
+                            SQL_Insert_Bluedot ( DecodeAlert );
+                        }
+
+#endif
+
 
 
                     /* Record CID in case of crash/disconnections */
