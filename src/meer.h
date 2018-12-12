@@ -143,6 +143,11 @@ struct _MeerOutput
     bool sql_metadata;
     bool sql_json;
 
+#ifdef QUADRANT
+    bool sql_bluedot;
+#endif
+
+
     char sql_driver;
 
     bool sql_reference_system;
