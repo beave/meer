@@ -106,6 +106,13 @@ void Init_Output( void )
             Meer_Log(NORMAL, "Record 'ssh'     : %s", MeerOutput->sql_ssh ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Record 'smtp'    : %s", MeerOutput->sql_smtp ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Record 'email'   : %s", MeerOutput->sql_email ? "enabled" : "disabled" );
+
+#ifdef QUADRANT
+
+	     Meer_Log(NORMAL, "Record 'bluedot': %s", MeerOutput->sql_bluedot ? "enabled" : "disabled" );
+
+#endif
+
             Meer_Log(NORMAL, "");
             Meer_Log(NORMAL, "---------------------------------------------------------------------------");
 
