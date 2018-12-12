@@ -549,6 +549,20 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+#ifdef QUADRANT
+                            else if ( !strcmp(last_pass, "bluedot" ) )
+                                {   
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {   
+                                            MeerOutput->sql_bluedot = true;
+                                        }
+
+                                }
+
+#endif
+
+
 
 
                             else if ( !strcmp(last_pass, "debug" ) && MeerOutput->sql_enabled == true )

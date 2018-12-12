@@ -109,7 +109,7 @@ void Init_Output( void )
 
 #ifdef QUADRANT
 
-	     Meer_Log(NORMAL, "Record 'bluedot': %s", MeerOutput->sql_bluedot ? "enabled" : "disabled" );
+	    Meer_Log(NORMAL, "Record 'bluedot' : %s", MeerOutput->sql_bluedot ? "enabled" : "disabled" );
 
 #endif
 
