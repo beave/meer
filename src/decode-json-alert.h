@@ -66,6 +66,14 @@ char src_dns[256];
     char alert_metadata[1024];
     bool alert_has_metadata;
 
+#ifdef QUADRANT
+
+    /* Bluedot data */
+
+    bool     has_bluedot;
+
+#endif
+
     /* Flow data */
 
     bool     has_flow;

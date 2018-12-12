@@ -779,7 +779,9 @@ void SQL_Insert_JSON ( struct _DecodeAlert *DecodeAlert )
              e_json);
 
     (void)SQL_DB_Query(tmp);
+
     MeerCounters->JSONCount++;
+    MeerCounters->INSERTCount++;
 
 }
 
@@ -800,7 +802,7 @@ void SQL_Insert_Bluedot ( struct _DecodeAlert *DecodeAlert )
              e_bluedot);
 
     (void)SQL_DB_Query(tmp);
-    MeerCounters->BluedotCount++;
+    MeerCounters->INSERTCount++;
 
 }
 
@@ -828,6 +830,7 @@ void SQL_Insert_SMTP ( struct _DecodeAlert *DecodeAlert )
              e_rcpt_to);
 
     (void)SQL_DB_Query(tmp);
+
     MeerCounters->INSERTCount++;
 
 }
@@ -858,6 +861,7 @@ void SQL_Insert_Email ( struct _DecodeAlert *DecodeAlert )
              e_attachment);
 
     (void)SQL_DB_Query(tmp);
+
     MeerCounters->INSERTCount++;
 
 }

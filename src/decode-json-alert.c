@@ -60,7 +60,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     struct json_object *tmp_tls = NULL;
     struct json_object *tmp_smtp = NULL;
     struct json_object *tmp_email = NULL;
-    //struct json_object *tmp_ssh = NULL;
 
     struct json_object *tmp_ssh_server = NULL;
     struct json_object *tmp_ssh_server_2 = NULL;
@@ -77,7 +76,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     struct json_object *json_obj_smtp = NULL;
     struct json_object *json_obj_email = NULL;
 
-//    struct json_object *json_obj_ssh = NULL;
     struct json_object *json_obj_ssh_server = NULL;
     struct json_object *json_obj_ssh_client = NULL;
 
@@ -258,12 +256,28 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
 #ifdef QUADRANT
 
-    if (json_object_object_get_ex(json_obj, "bluedot", &tmp))
+    if ( MeerConfig->bluedot == true )
         {
-            Alert_Return_Struct->bluedot = (char *)json_object_get_string(tmp);
+
+            if ( json_object_object_get_ex(json_obj, "bluedot", &tmp))
+                {
+                    Alert_Return_Struct->has_bluedot = true;
+
+                    if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == 0 )
+                        {
+
+                            MeerCounters->BluedotCount++;
+
+                            Alert_Return_Struct->bluedot = (char *)json_object_get_string(tmp);
+
+
+                        }
+                }
+
         }
 
 #endif
+
 
     /* Extract "alert" information */
 
