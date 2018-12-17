@@ -38,6 +38,11 @@
 #define SSH_SERVER	0
 #define SSH_CLIENT	1
 
+#define MAXIP           64              /* Max IP length */
+
+#define IPv4		4
+#define IPv6		6
+
 #define DNS_CACHE_DEFAULT	900
 #define PACKET_BUFFER_SIZE_DEFAULT 131072
 

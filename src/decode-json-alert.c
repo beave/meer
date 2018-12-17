@@ -682,15 +682,23 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
     if ( Alert_Return_Struct->src_ip == NULL )
         {
-            Meer_Log(WARN, "JSON: \"%s\" : No src_ip found in flowid %s.  Setting to NONE.", json_string, Alert_Return_Struct->flowid);
-            Alert_Return_Struct->src_ip = "None";
+            Meer_Log(ERROR, "JSON: \"%s\" : No src_ip found in flowid %s. Abort.", json_string, Alert_Return_Struct->flowid);
         }
 
     if ( Alert_Return_Struct->dest_ip == NULL )
         {
-            Meer_Log(WARN, "JSON: \"%s\" : No dest_ip found in flowid %s.  Setting to NONE.", json_string, Alert_Return_Struct->flowid);
-            Alert_Return_Struct->dest_ip = "None";
+            Meer_Log(ERROR, "JSON: \"%s\" : No dest_ip found in flowid %s. Abort.", json_string, Alert_Return_Struct->flowid);
         }
+
+    if ( !Is_IP(Alert_Return_Struct->src_ip) )
+	{
+	    Meer_Log(ERROR, "JSON: \"%s\" : Invalid src_ip found in flowid %s. Abort.", json_string, Alert_Return_Struct->flowid);
+	}
+
+    if ( !Is_IP(Alert_Return_Struct->dest_ip) )
+        {
+            Meer_Log(ERROR, "JSON: \"%s\" : Invalid dest_ip found in flowid %s. Abort.", json_string, Alert_Return_Struct->flowid);
+        }  
 
     if ( Alert_Return_Struct->proto == NULL )
         {
