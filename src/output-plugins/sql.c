@@ -645,27 +645,40 @@ void SQL_Insert_HTTP ( struct _DecodeAlert *DecodeAlert )
     char e_http_hostname[512] = { 0 };
     char e_http_url[4100] = { 0 };
     char e_http_user_agent[16384] = { 0 };
-    char e_http_refer[4100] = { 0 };
-
+    char e_http_refer[4100] = { 0 };  
+    char e_http_method[128] = { 0 };
+    char e_http_content_type[128] = { 0 };
+    char e_http_protocol[64] = { 0 }; 
+    char e_http_status[16] = { 0 };
+    char e_http_length[16] = { 0 };
+    char e_http_xff[64] = { 0 }; 
+   
     SQL_Escape_String( DecodeAlert->http_hostname, e_http_hostname, sizeof(e_http_hostname));
     SQL_Escape_String( DecodeAlert->http_url, e_http_url, sizeof(e_http_url));
     SQL_Escape_String( DecodeAlert->http_user_agent, e_http_user_agent, sizeof(e_http_user_agent));
     SQL_Escape_String( DecodeAlert->http_refer, e_http_refer, sizeof(e_http_refer));
-
+    SQL_Escape_String( DecodeAlert->http_method, e_http_method, sizeof(e_http_method));
+    SQL_Escape_String( DecodeAlert->http_content_type, e_http_content_type, sizeof(e_http_content_type));
+    SQL_Escape_String( DecodeAlert->http_protocol, e_http_protocol, sizeof(e_http_protocol));
+    SQL_Escape_String( DecodeAlert->http_xff, e_http_length, sizeof(e_http_xff));
+   
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO http (sid,cid,hostname,url,xff,http_content_type,http_method,http_user_agent,http_refer,protocol,status,length) "
              "VALUES (%d,%" PRIu64 ",'%s','%s','%s','%s','%s','%s','%s','%s',%d,%" PRIu64 ")",
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid,
              e_http_hostname,
              e_http_url,
-             DecodeAlert->http_xff,
-             DecodeAlert->http_content_type,
-             DecodeAlert->http_method,
+             e_http_xff,
+             e_http_content_type,
+             e_http_method,
              e_http_user_agent,
              e_http_refer,
-             DecodeAlert->http_protocol,
+             e_http_protocol,
+
+	     /* These are ints */
+
              DecodeAlert->http_status,
-             DecodeAlert->http_length);
+             DecodeAlert->http_length );
 
     (void)SQL_DB_Query(tmp);
     MeerCounters->INSERTCount++;
