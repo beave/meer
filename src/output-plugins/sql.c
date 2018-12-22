@@ -467,6 +467,9 @@ void SQL_Insert_DNS ( struct _DecodeAlert *DecodeAlert )
 
     char tmp[MAX_SQL_QUERY];
 
+    char e_src_host[256] = { 0 };
+    char e_dest_host[256] = { 0 }; 
+
     /* Both DNS entries are empty,  no reason to insert */
 
     if ( !strcmp(DecodeAlert->src_dns, "")  && !strcmp(DecodeAlert->dest_dns, "" ) )
@@ -474,11 +477,14 @@ void SQL_Insert_DNS ( struct _DecodeAlert *DecodeAlert )
             return;
         }
 
+    SQL_Escape_String( DecodeAlert->src_dns, e_src_host, sizeof(e_src_host));
+    SQL_Escape_String( DecodeAlert->dest_dns, e_dest_host, sizeof(e_dest_host));
+
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO dns(sid, cid, src_host, dst_host) VALUES (%d,%" PRIu64 ",'%s','%s')",
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid,
-             DecodeAlert->src_dns,
-             DecodeAlert->dest_dns );
+             e_src_host,
+             e_dest_host );
 
     (void)SQL_DB_Query(tmp);
     MeerCounters->INSERTCount++;
@@ -692,9 +698,21 @@ void SQL_Insert_TLS ( struct _DecodeAlert *DecodeAlert )
 
     char e_tls_issuerdn[256] = { 0 };
     char e_tls_subject[256] = { 0 };
+    char e_tls_fingerprint[1024] = { 0 }; 
+    char e_tls_session_resumed[16] = { 0 }; 
+    char e_tls_sni[1024] = { 0 };
+    char e_tls_version[32] = { 0 };
+    char e_tls_notbefore[32] = { 0 }; 
+    char e_tls_notafter[32] = { 0 };
 
-    SQL_Escape_String( DecodeAlert->tls_issuerdn, e_tls_issuerdn, sizeof(e_tls_issuerdn));
-    SQL_Escape_String( DecodeAlert->tls_subject, e_tls_subject, sizeof(e_tls_subject));
+    SQL_Escape_String( DecodeAlert->tls_issuerdn, e_tls_issuerdn, sizeof(e_tls_issuerdn) );
+    SQL_Escape_String( DecodeAlert->tls_subject, e_tls_subject, sizeof(e_tls_subject) );
+    SQL_Escape_String( DecodeAlert->tls_fingerprint, e_tls_fingerprint, sizeof(e_tls_fingerprint) );
+    SQL_Escape_String( DecodeAlert->tls_session_resumed, e_tls_session_resumed, sizeof(e_tls_session_resumed) );
+    SQL_Escape_String( DecodeAlert->tls_sni, e_tls_sni, sizeof(e_tls_sni) );
+    SQL_Escape_String( DecodeAlert->tls_version, e_tls_version, sizeof(e_tls_version) );
+    SQL_Escape_String( DecodeAlert->tls_notbefore, e_tls_notbefore, sizeof(e_tls_notbefore) );
+    SQL_Escape_String( DecodeAlert->tls_notafter, e_tls_notafter, sizeof(e_tls_notafter) );
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO tls (sid,cid,subject,issuerdn,serial,fingerprint,session_resumed,sni,version,notbefore,notafter) "
@@ -703,12 +721,12 @@ void SQL_Insert_TLS ( struct _DecodeAlert *DecodeAlert )
              e_tls_subject,
              e_tls_issuerdn,
              DecodeAlert->tls_serial,
-             DecodeAlert->tls_fingerprint,
-             DecodeAlert->tls_session_resumed,
-             DecodeAlert->tls_sni,
-             DecodeAlert->tls_version,
-             DecodeAlert->tls_notbefore,
-             DecodeAlert->tls_notafter );
+             e_tls_fingerprint,
+             e_tls_session_resumed,
+             e_tls_sni,
+             e_tls_version,
+             e_tls_notbefore,
+             e_tls_notafter );
 
     (void)SQL_DB_Query(tmp);
     MeerCounters->INSERTCount++;
@@ -859,17 +877,19 @@ void SQL_Insert_Email ( struct _DecodeAlert *DecodeAlert )
     char e_to[10240] = { 0 };
     char e_cc[10240] = { 0 };
     char e_attachment[10240] = { 0 };
+    char e_email_status[32] = { 0 }; 
 
     SQL_Escape_String( DecodeAlert->email_from, e_from, sizeof(e_from));
     SQL_Escape_String( DecodeAlert->email_to, e_to, sizeof(e_to));
     SQL_Escape_String( DecodeAlert->email_cc, e_cc, sizeof(e_cc));
-    SQL_Escape_String( DecodeAlert->email_attachment, e_attachment, sizeof(e_attachment));
+    SQL_Escape_String( DecodeAlert->email_attachment, e_attachment, sizeof(e_attachment) );
+    SQL_Escape_String( DecodeAlert->email_status, e_email_status, sizeof(e_email_status) );
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO email (sid,cid,status,email_from,email_to,email_cc,attachment) "
              "VALUES (%d,%" PRIu64 ",'%s','%s','%s','%s','%s')",
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid,
-             DecodeAlert->email_status,
+             e_email_status,
              e_from,
              e_to,
              e_cc,
@@ -918,6 +938,8 @@ int SQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
     int ref_id = 0;
     int sig_id = 0;
 
+    char sid_map_tmp[1024] = { 0 }; 
+
     int i = 0;
 
     for (i = 0; i <  MeerCounters->SIDMapCount; i++ )
@@ -926,11 +948,14 @@ int SQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
             if ( DecodeAlert->alert_signature_id == SID_Map[i].sid )
                 {
 
+		    SQL_Escape_String( SID_Map[i].type, sid_map_tmp, sizeof(sid_map_tmp) );
+
                     snprintf(tmp, sizeof(tmp),
                              "SELECT ref_system_id FROM reference_system WHERE ref_system_name='%s'",
-                             SID_Map[i].type);
+                             sid_map_tmp);
 
                     results=SQL_DB_Query(tmp);
+
                     MeerCounters->SELECTCount++;
 
                     if ( results == NULL )
@@ -938,7 +963,7 @@ int SQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
 
                             snprintf(tmp, sizeof(tmp),
                                      "INSERT INTO reference_system (ref_system_name) VALUES ('%s')",
-                                     SID_Map[i].type);
+                                     sid_map_tmp);
 
                             (void)SQL_DB_Query(tmp);
                             MeerCounters->INSERTCount++;
@@ -949,9 +974,11 @@ int SQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
 
                     ref_system_id = atoi(results);
 
+		    SQL_Escape_String( SID_Map[i].location, sid_map_tmp, sizeof(sid_map_tmp) );
+
                     snprintf(tmp, sizeof(tmp),
                              "SELECT ref_id FROM reference WHERE ref_system_id=%d AND ref_tag='%s'",
-                             ref_system_id, SID_Map[i].location);
+                             ref_system_id, sid_map_tmp);
 
                     results=SQL_DB_Query(tmp);
                     MeerCounters->SELECTCount++;
@@ -961,7 +988,7 @@ int SQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
 
                             snprintf(tmp, sizeof(tmp),
                                      "INSERT INTO reference (ref_system_id,ref_tag) VALUES (%d, '%s')",
-                                     ref_system_id, SID_Map[i].location);
+                                     ref_system_id, sid_map_tmp);
 
                             (void)SQL_DB_Query(tmp);
                             MeerCounters->INSERTCount++;
@@ -1010,6 +1037,7 @@ int SQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert )
     char tmp[MAX_SQL_QUERY];
     char *results = NULL;
     char class[64] = { 0 };
+    char e_class_tmp[128] = { 0 }; 
 
     int sig_class_id = 0;
     int sig_id = 0;
@@ -1018,9 +1046,11 @@ int SQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert )
 
     /* DEBUG: cache here */
 
+    SQL_Escape_String( class, e_class_tmp, sizeof(e_class_tmp) );
+
     snprintf(tmp, sizeof(tmp),
              "SELECT sig_class_id FROM sig_class WHERE sig_class_name='%s'",
-             class);
+             e_class_tmp);
 
     results=SQL_DB_Query(tmp);
     MeerCounters->SELECTCount++;
@@ -1030,7 +1060,7 @@ int SQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert )
 
             snprintf(tmp, sizeof(tmp),
                      "INSERT INTO sig_class (sig_class_name) VALUES ('%s')",
-                     class);
+                     e_class_tmp);
 
             results=SQL_DB_Query(tmp);
             MeerCounters->INSERTCount++;
@@ -1110,7 +1140,7 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
     (void)SQL_DB_Query(tmp);
 
     snprintf(tmp, sizeof(tmp),
-             "INSERT INTO tmp_events_week (sid,cid,ip_src,ip_dst,signature,timestamp) VALUES (%u,% " PRIu64 ",'%s','%s',%d,'%s')",
+             "INSERT INTO tmp_events_week (sid,cid,ip_src,ip_dst,signature,timestamp) VALUES (%u, %" PRIu64 ",'%s','%s',%d,'%s')",
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, DecodeAlert->src_ip, DecodeAlert->dest_ip, signature_id, DecodeAlert->timestamp );
 
     (void)SQL_DB_Query(tmp);
