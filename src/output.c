@@ -252,7 +252,7 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 #ifdef QUADRANT
 
                     if ( DecodeAlert->has_bluedot == true && MeerConfig->bluedot == true )
-                        {   
+                        {
                             SQL_Insert_Bluedot ( DecodeAlert );
                         }
 

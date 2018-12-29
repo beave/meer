@@ -267,7 +267,7 @@ uint64_t Epoch_Lookup( void )
 */
 
 bool Is_IP (char *ipaddr, int ver )
-{   
+{
 
     struct sockaddr_in sa;
     bool ret = false;
@@ -279,13 +279,13 @@ bool Is_IP (char *ipaddr, int ver )
      */
 
     if ( (ver = 4 ) )
-        {   
+        {
             ret = inet_pton(AF_INET, ip,  &(sa.sin_addr));
-        }   
+        }
     else
         {
             ret = inet_pton(AF_INET6, ip,  &(sa.sin_addr));
-        }   
+        }
 
     return(ret);
 
