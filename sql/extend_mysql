@@ -29,7 +29,7 @@ CREATE TABLE dns (sid         INT      UNSIGNED NOT NULL,
 CREATE TABLE event_json (
                       sid INT unsigned NOT NULL,
                       cid BIGINT unsigned NOT NULL,
-                      json TEXT,
+                      json LONGTEXT,
                       KEY `event` (`sid`,`cid`)
 
 CREATE TABLE flow (sid         INT      UNSIGNED NOT NULL,
