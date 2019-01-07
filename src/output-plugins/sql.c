@@ -468,7 +468,7 @@ void SQL_Insert_DNS ( struct _DecodeAlert *DecodeAlert )
     char tmp[MAX_SQL_QUERY];
 
     char e_src_host[256] = { 0 };
-    char e_dest_host[256] = { 0 }; 
+    char e_dest_host[256] = { 0 };
 
     /* Both DNS entries are empty,  no reason to insert */
 
@@ -651,14 +651,14 @@ void SQL_Insert_HTTP ( struct _DecodeAlert *DecodeAlert )
     char e_http_hostname[512] = { 0 };
     char e_http_url[4100] = { 0 };
     char e_http_user_agent[16384] = { 0 };
-    char e_http_refer[4100] = { 0 };  
+    char e_http_refer[4100] = { 0 };
     char e_http_method[128] = { 0 };
     char e_http_content_type[128] = { 0 };
-    char e_http_protocol[64] = { 0 }; 
+    char e_http_protocol[64] = { 0 };
     char e_http_status[16] = { 0 };
     char e_http_length[16] = { 0 };
-    char e_http_xff[64] = { 0 }; 
-   
+    char e_http_xff[64] = { 0 };
+
     SQL_Escape_String( DecodeAlert->http_hostname, e_http_hostname, sizeof(e_http_hostname));
     SQL_Escape_String( DecodeAlert->http_url, e_http_url, sizeof(e_http_url));
     SQL_Escape_String( DecodeAlert->http_user_agent, e_http_user_agent, sizeof(e_http_user_agent));
@@ -667,7 +667,7 @@ void SQL_Insert_HTTP ( struct _DecodeAlert *DecodeAlert )
     SQL_Escape_String( DecodeAlert->http_content_type, e_http_content_type, sizeof(e_http_content_type));
     SQL_Escape_String( DecodeAlert->http_protocol, e_http_protocol, sizeof(e_http_protocol));
     SQL_Escape_String( DecodeAlert->http_xff, e_http_length, sizeof(e_http_xff));
-   
+
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO http (sid,cid,hostname,url,xff,http_content_type,http_method,http_user_agent,http_refer,protocol,status,length) "
              "VALUES (%d,%" PRIu64 ",'%s','%s','%s','%s','%s','%s','%s','%s',%d,%" PRIu64 ")",
@@ -681,7 +681,7 @@ void SQL_Insert_HTTP ( struct _DecodeAlert *DecodeAlert )
              e_http_refer,
              e_http_protocol,
 
-	     /* These are ints */
+             /* These are ints */
 
              DecodeAlert->http_status,
              DecodeAlert->http_length );
@@ -698,11 +698,11 @@ void SQL_Insert_TLS ( struct _DecodeAlert *DecodeAlert )
 
     char e_tls_issuerdn[256] = { 0 };
     char e_tls_subject[256] = { 0 };
-    char e_tls_fingerprint[1024] = { 0 }; 
-    char e_tls_session_resumed[16] = { 0 }; 
+    char e_tls_fingerprint[1024] = { 0 };
+    char e_tls_session_resumed[16] = { 0 };
     char e_tls_sni[1024] = { 0 };
     char e_tls_version[32] = { 0 };
-    char e_tls_notbefore[32] = { 0 }; 
+    char e_tls_notbefore[32] = { 0 };
     char e_tls_notafter[32] = { 0 };
 
     SQL_Escape_String( DecodeAlert->tls_issuerdn, e_tls_issuerdn, sizeof(e_tls_issuerdn) );
@@ -877,7 +877,7 @@ void SQL_Insert_Email ( struct _DecodeAlert *DecodeAlert )
     char e_to[10240] = { 0 };
     char e_cc[10240] = { 0 };
     char e_attachment[10240] = { 0 };
-    char e_email_status[32] = { 0 }; 
+    char e_email_status[32] = { 0 };
 
     SQL_Escape_String( DecodeAlert->email_from, e_from, sizeof(e_from));
     SQL_Escape_String( DecodeAlert->email_to, e_to, sizeof(e_to));
@@ -938,7 +938,7 @@ int SQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
     int ref_id = 0;
     int sig_id = 0;
 
-    char sid_map_tmp[1024] = { 0 }; 
+    char sid_map_tmp[1024] = { 0 };
 
     int i = 0;
 
@@ -948,7 +948,7 @@ int SQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
             if ( DecodeAlert->alert_signature_id == SID_Map[i].sid )
                 {
 
-		    SQL_Escape_String( SID_Map[i].type, sid_map_tmp, sizeof(sid_map_tmp) );
+                    SQL_Escape_String( SID_Map[i].type, sid_map_tmp, sizeof(sid_map_tmp) );
 
                     snprintf(tmp, sizeof(tmp),
                              "SELECT ref_system_id FROM reference_system WHERE ref_system_name='%s'",
@@ -974,7 +974,7 @@ int SQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert )
 
                     ref_system_id = atoi(results);
 
-		    SQL_Escape_String( SID_Map[i].location, sid_map_tmp, sizeof(sid_map_tmp) );
+                    SQL_Escape_String( SID_Map[i].location, sid_map_tmp, sizeof(sid_map_tmp) );
 
                     snprintf(tmp, sizeof(tmp),
                              "SELECT ref_id FROM reference WHERE ref_system_id=%d AND ref_tag='%s'",
@@ -1037,7 +1037,7 @@ int SQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert )
     char tmp[MAX_SQL_QUERY];
     char *results = NULL;
     char class[64] = { 0 };
-    char e_class_tmp[128] = { 0 }; 
+    char e_class_tmp[128] = { 0 };
 
     int sig_class_id = 0;
     int sig_id = 0;

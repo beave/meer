@@ -690,12 +690,12 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Meer_Log(ERROR, "JSON: \"%s\" : No dest_ip found in flowid %s. Abort.", json_string, Alert_Return_Struct->flowid);
         }
 
-    if ( !Is_IP(Alert_Return_Struct->src_ip) )
+    if ( !Is_IP(Alert_Return_Struct->src_ip, IPv4) && !Is_IP(Alert_Return_Struct->src_ip, IPv6 ) )
         {
             Meer_Log(ERROR, "JSON: \"%s\" : Invalid src_ip found in flowid %s. Abort.", json_string, Alert_Return_Struct->flowid);
         }
 
-    if ( !Is_IP(Alert_Return_Struct->dest_ip) )
+    if ( !Is_IP(Alert_Return_Struct->dest_ip, IPv4) && !Is_IP(Alert_Return_Struct->dest_ip, IPv6 ) )
         {
             Meer_Log(ERROR, "JSON: \"%s\" : Invalid dest_ip found in flowid %s. Abort.", json_string, Alert_Return_Struct->flowid);
         }
@@ -766,7 +766,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
         }
 
-    if ( Is_IPv6(Alert_Return_Struct->src_ip) != 0 )
+    if ( Is_IP(Alert_Return_Struct->src_ip, IPv6) != 0 )
         {
             Alert_Return_Struct->ip_version = 6;
         }

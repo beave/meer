@@ -272,13 +272,14 @@ bool Is_IP (char *ipaddr, int ver )
     struct sockaddr_in sa;
     bool ret = false;
     char ip[MAXIP];
+
     strlcpy(ip, ipaddr, sizeof(ip));
 
     /* We don't use getaddrinfo().  Here's why:
      * See https://blog.powerdns.com/2014/05/21/a-surprising-discovery-on-converting-ipv6-addresses-we-no-longer-prefer-getaddrinfo/
      */
 
-    if ( (ver = 4 ) )
+    if ( (ver == 4 ) )
         {
             ret = inet_pton(AF_INET, ip,  &(sa.sin_addr));
         }
@@ -400,26 +401,6 @@ bool Validate_JSON_String( char *validate_in_string )
         }
 
     return 0;
-}
-
-
-bool Is_IPv6 (char *ipaddr)
-{
-
-    struct sockaddr_in sa;
-    bool ret = false;
-    char ip[45] = { 0 };
-
-    strlcpy(ip, ipaddr, sizeof(ip));
-
-    /* We don't use getaddrinfo().  Here's why:
-     * See https://blog.powerdns.com/2014/05/21/a-surprising-discovery-on-converting-ipv6-addresses-we-no-longer-prefer-getaddrinfo/
-     */
-
-    ret = inet_pton(AF_INET6, ip,  &(sa.sin_addr));
-
-    return(ret);
-
 }
 
 /*****************************
