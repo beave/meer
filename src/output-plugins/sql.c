@@ -822,7 +822,7 @@ void SQL_Insert_Bluedot ( struct _DecodeAlert *DecodeAlert )
 {
 
     char tmp[MAX_SQL_QUERY] = { 0 };
-    char e_bluedot[10240] = { 0 };
+    char e_bluedot[MAX_SQL_QUERY*2] = { 0 };
 
     Remove_Return( DecodeAlert->bluedot );
 
