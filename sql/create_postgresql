@@ -85,6 +85,7 @@ CREATE TABLE sensor ( sid	  SERIAL,
                       encoding	  INT2,
                       last_cid    INT8 NOT NULL,
                       health      INT4 DEFAULT '0',
+                      last_event  INT4 DEFAULT '0',
                       PRIMARY KEY (sid));
 
 -- All of the fields of an ip header

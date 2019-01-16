@@ -799,7 +799,7 @@ void SQL_Insert_JSON ( struct _DecodeAlert *DecodeAlert )
 {
 
     char tmp[MAX_SQL_QUERY] = { 0 };
-    char e_json[10240] = { 0 };
+    char e_json[MAX_SQL_QUERY*2] = { 0 };
 
     SQL_Escape_String( DecodeAlert->json, e_json, sizeof(e_json));
 

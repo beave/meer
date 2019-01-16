@@ -271,7 +271,16 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
                     SQL_DB_Quadrant( DecodeAlert, signature_id );
 
 #endif
+                    /* Convert timestamp from event to epoch */
 
+                    strptime(DecodeAlert->timestamp,"%FT%T",&tm_);
+                    strftime(convert_time, sizeof(convert_time),"%F %T",&tm_);
+
+                    snprintf(tmp, sizeof(tmp), "UPDATE sensor SET last_event=%d WHERE sid=%d", (int)mktime(&tm_), MeerOutput->sql_sensor_id);
+
+                    SQL_DB_Query( (char*)tmp );
+
+                    MeerCounters->UPDATECount++;
 
                     SQL_DB_Query("COMMIT");
 

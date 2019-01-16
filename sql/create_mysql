@@ -78,6 +78,7 @@ CREATE TABLE sensor ( sid	  INT 	   UNSIGNED NOT NULL AUTO_INCREMENT,
                       encoding	  TINYINT,
                       last_cid    BIGINT      UNSIGNED NOT NULL,
 		      health	  INT	   DEFAULT 0,
+                      last_event  INT      DEFAULT 0, 
                       PRIMARY KEY (sid));
 
 # All of the fields of an ip header
