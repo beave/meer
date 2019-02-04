@@ -253,7 +253,7 @@ void Load_YAML_Config( char *yaml_file )
                                                             }
                             */
 
-                            else if ( !strcmp(last_pass, "waldo-file" ) || !strcmp(last_pass, "waldo-file" ) )
+                            else if ( !strcmp(last_pass, "waldo-file" ) || !strcmp(last_pass, "waldo_file" ) )
                                 {
                                     strlcpy(MeerConfig->waldo_file, value, sizeof(MeerConfig->waldo_file));
                                 }

@@ -83,10 +83,9 @@ output-plugins:
 
     enabled: yes
     driver: mysql        # "mysql" or "postgresql"
-    port: 3306		 # Change to 5432 for PostgreSQL
     debug: no
     server: 127.0.0.1
-    port: 3306
+    port: 3306           # Change to 5432 for PostgreSQL 
     username: "XXXX"
     password: "XXXXXX"
     database: "snort_test"
