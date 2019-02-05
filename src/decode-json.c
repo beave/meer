@@ -49,6 +49,8 @@ libjson-c is required for Meer to function!
 
 
 struct _Classifications *MeerClass;
+struct _MeerOutput *MeerOutput;
+struct _MeerCounters *MeerCounters;
 
 bool Decode_JSON( char *json_string )
 {
@@ -56,31 +58,61 @@ bool Decode_JSON( char *json_string )
     struct json_object *json_obj = NULL;
     struct json_object *tmp = NULL;
 
+    char tmp_type[32] = { 0 };
+
     if ( json_string == NULL )
         {
+            MeerCounters->InvalidJSONCount;
             return 1;
         }
 
     json_obj = json_tokener_parse(json_string);
 
-    if (json_object_object_get_ex(json_obj, "event_type", &tmp))
+    if ( MeerOutput->sql_enabled == true )
         {
 
-            if ( !strcmp(json_object_get_string(tmp), "alert") )
+            /* To keep with the "barnyard2" like theme,  we only output 'alert' Suricata/
+             * Sagan events. */
+
+            if (json_object_object_get_ex(json_obj, "event_type", &tmp))
                 {
 
-                    struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
+                    if ( !strcmp(json_object_get_string(tmp), "alert") )
+                        {
 
-                    DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
+                            struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
 
-                    Output_Alert( DecodeAlert );
+                            DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
 
-                    /* Done with decoding */
+                            Output_Alert( DecodeAlert );
 
-                    free(DecodeAlert);
+                            /* Done with decoding */
+
+                            free(DecodeAlert);
+
+                        }
+                }
+
+        }
+
+    if ( MeerOutput->pipe_enabled == true )
+        {
+
+            if (json_object_object_get_ex(json_obj, "event_type", &tmp))
+                {
+                    strlcpy(tmp_type, json_object_get_string(tmp), sizeof(tmp_type));
+
+                    Output_Pipe(tmp_type, json_string );
 
                 }
+
         }
+    else
+        {
+
+            MeerCounters->InvalidJSONCount++;
+        }
+
 
 
     /* Delete json-c _root_ objects */

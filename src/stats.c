@@ -35,6 +35,7 @@
 struct _MeerCounters *MeerCounters;
 struct _MeerWaldo *MeerWaldo;
 struct _MeerConfig *MeerConfig;
+struct _MeerOutput *MeerOutput;
 
 void Statistics( void )
 {
@@ -44,8 +45,9 @@ void Statistics( void )
     Meer_Log(NORMAL, "");
     Meer_Log(NORMAL, " - Decoded Statistics:");
     Meer_Log(NORMAL, "");
-    Meer_Log(NORMAL, " Waldo Postion : %"PRIu64 "", MeerWaldo->position);
+    Meer_Log(NORMAL, " Waldo Postion : %" PRIu64 "", MeerWaldo->position);
     Meer_Log(NORMAL, " JSON          : %" PRIu64 "", MeerCounters->JSONCount);
+    Meer_Log(NORMAL, " Invalid JSON  : %" PRIu64 " (%.3f%%)", MeerCounters->InvalidJSONCount, CalcPct(MeerCounters->JSONCount,MeerCounters->InvalidJSONCount));
     Meer_Log(NORMAL, " Flow          : %" PRIu64 "", MeerCounters->FlowCount);
     Meer_Log(NORMAL, " HTTP          : %" PRIu64 "", MeerCounters->HTTPCount);
     Meer_Log(NORMAL, " TLS           : %" PRIu64 "", MeerCounters->TLSCount);
@@ -74,16 +76,32 @@ void Statistics( void )
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
-    Meer_Log(NORMAL, " - MySQL/MariaDB Statistics:");
-    Meer_Log(NORMAL, "");
-    Meer_Log(NORMAL, " Health Checks          : %"PRIu64 "", MeerCounters->HealthCountT);
-    Meer_Log(NORMAL, " INSERT                 : %"PRIu64 "", MeerCounters->INSERTCount);
-    Meer_Log(NORMAL, " SELECT                 : %"PRIu64 "", MeerCounters->SELECTCount);
-    Meer_Log(NORMAL, " UPDATE                 : %"PRIu64 "", MeerCounters->UPDATECount);
-    Meer_Log(NORMAL, " Class Cache Misses     : %"PRIu64 "", MeerCounters->ClassCacheMissCount);
-    Meer_Log(NORMAL, " Class Cache Hits       : %"PRIu64 " (%.3f%%)", MeerCounters->ClassCacheHitCount, CalcPct(MeerCounters->ClassCacheHitCount, MeerCounters->ClassCacheMissCount));
-    Meer_Log(NORMAL, " Signature Cache Misses : %"PRIu64 "", MeerCounters->ClassCacheMissCount);
-    Meer_Log(NORMAL, " Signature Cache Hits   : %"PRIu64 " (%.3f%%)", MeerCounters->ClassCacheHitCount, CalcPct(MeerCounters->ClassCacheHitCount, MeerCounters->ClassCacheMissCount));
+    if ( MeerOutput->sql_enabled == true )
+        {
+
+            Meer_Log(NORMAL, " - MySQL/MariaDB Statistics:");
+            Meer_Log(NORMAL, "");
+            Meer_Log(NORMAL, " Health Checks          : %"PRIu64 "", MeerCounters->HealthCountT);
+            Meer_Log(NORMAL, " INSERT                 : %"PRIu64 "", MeerCounters->INSERTCount);
+            Meer_Log(NORMAL, " SELECT                 : %"PRIu64 "", MeerCounters->SELECTCount);
+            Meer_Log(NORMAL, " UPDATE                 : %"PRIu64 "", MeerCounters->UPDATECount);
+            Meer_Log(NORMAL, " Class Cache Misses     : %"PRIu64 "", MeerCounters->ClassCacheMissCount);
+            Meer_Log(NORMAL, " Class Cache Hits       : %"PRIu64 " (%.3f%%)", MeerCounters->ClassCacheHitCount, CalcPct(MeerCounters->ClassCacheHitCount, MeerCounters->ClassCacheMissCount));
+            Meer_Log(NORMAL, " Signature Cache Misses : %"PRIu64 "", MeerCounters->ClassCacheMissCount);
+            Meer_Log(NORMAL, " Signature Cache Hits   : %"PRIu64 " (%.3f%%)", MeerCounters->ClassCacheHitCount, CalcPct(MeerCounters->ClassCacheHitCount, MeerCounters->ClassCacheMissCount));
+            Meer_Log(NORMAL, "");
+
+        }
+
+    if ( MeerOutput->pipe_enabled == true )
+        {
+
+            Meer_Log(NORMAL, " - Pipe Statistics:");
+            Meer_Log(NORMAL, "");
+            Meer_Log(NORMAL, " JSON writes        : %"PRIu64 "", MeerCounters->JSONPipeWrites);
+            Meer_Log(NORMAL, " JSON misses/errors : %"PRIu64 " (%.3f%%)", MeerCounters->JSONPipeMisses, CalcPct(MeerCounters->JSONPipeWrites, MeerCounters->JSONPipeMisses));
+
+        }
 
     Meer_Log(NORMAL, "");
 

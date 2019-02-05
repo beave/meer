@@ -76,8 +76,10 @@ meer-core:
 
 output-plugins:
 
+  ###########################################################################
   # MySQL/MariaDB output - Stores data from Suricata or Sagan into a semi-
   # traditional "Barnyard2/Snort" like database. 
+  ###########################################################################
 
   sql:
 
@@ -130,4 +132,29 @@ output-plugins:
 
     #sid_file: "/usr/local/etc/sagan-rules/sagan-sid-msg.map"
     #reference: "/usr/local/etc/sagan-rules/reference.config"
+
+  ###########################################################################
+  # The "pipe" output module - This allows Meer to send a copy of an event
+  # to a named pipe (FIFO) in its raw,  JSON form.  This allows for 
+  # third party tools, like Sagan, to do further analysis on the event. 
+  ###########################################################################
+  
+  pipe:
+
+    enabled: no
+    pipe_location: /var/sagan/fifo/sagan.fifo
+    pipe_size: 1048576                        # System must support F_GETPIPE_SZ/F_SETPIPE_SZ
+    metadata: enabled
+
+    # Below are the "event_types" from Suricata/Sagan. This tells Meer what to send
+    # to the named pipe/FIFO. 
+
+    alert: enabled
+    files: enabled
+    flow: enabled
+    dns: enabled
+    http: enabled
+    tls: enabled
+    ssh: enabled
+    smtp: enabled
 

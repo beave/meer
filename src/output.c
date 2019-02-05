@@ -32,6 +32,7 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <time.h>
+#include <string.h>
 
 #include "decode-json-alert.h"
 
@@ -44,6 +45,7 @@
 #include "config-yaml.h"
 
 #include "output-plugins/sql.h"
+#include "output-plugins/pipe.h"
 
 #ifdef HAVE_LIBMYSQLCLIENT
 #include <mysql/mysql.h>
@@ -56,8 +58,55 @@ struct _MeerCounters *MeerCounters;
 struct _MeerHealth *MeerHealth;
 struct _Classifications *MeerClass;
 
+/****************************************************************************
+ * Init_Output - Init output pluggins (if needed)
+ ****************************************************************************/
+
 void Init_Output( void )
 {
+
+    if ( MeerOutput->pipe_enabled )
+        {
+            uint32_t current_pipe_size = 0;
+            uint32_t fd_results = 0;
+
+            Meer_Log(NORMAL, "--[ PIPE information ]--------------------------------------------");
+            Meer_Log(NORMAL, "");
+            Meer_Log(NORMAL, "Pipe Location: %s", MeerOutput->pipe_location);
+            Meer_Log(NORMAL, "Pipe Size: %d bytes", MeerOutput->pipe_size);
+            Meer_Log(NORMAL, "");
+            Meer_Log(NORMAL, "Write 'dns'    : %s", MeerOutput->pipe_dns ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Write 'flow'    : %s", MeerOutput->pipe_flow ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Write 'http'    : %s", MeerOutput->pipe_http ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Write 'tls'     : %s", MeerOutput->pipe_tls ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Write 'ssh'     : %s", MeerOutput->pipe_ssh ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Write 'smtp'    : %s", MeerOutput->pipe_smtp ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Write 'files'   : %s", MeerOutput->pipe_files ? "enabled" : "disabled" );
+
+#ifdef QUADRANT
+
+            Meer_Log(NORMAL, "Write 'bluedot' : %s", MeerOutput->pipe_bluedot ? "enabled" : "disabled" );
+
+#endif
+
+            Meer_Log(NORMAL, "");
+
+            MeerOutput->pipe_fd = open(MeerOutput->pipe_location, O_RDWR);
+
+            if ( MeerOutput->pipe_fd < 0 )
+                {
+                    Meer_Log(ERROR, "Cannot open %s. Abort!", MeerOutput->pipe_location);
+                }
+
+            current_pipe_size = fcntl(MeerOutput->pipe_fd, F_GETPIPE_SZ);
+            fd_results = fcntl(MeerOutput->pipe_fd, F_SETPIPE_SZ, MeerOutput->pipe_size);
+            fcntl(MeerOutput->pipe_fd, F_SETFL, O_NONBLOCK);
+
+            Meer_Log(NORMAL, "The %s pipe (FIFO) was %d bytes. It is now set to %d bytes.", MeerOutput->pipe_location, current_pipe_size, MeerOutput->pipe_size);
+
+            Meer_Log(NORMAL, "");
+
+        }
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
@@ -123,6 +172,66 @@ void Init_Output( void )
 
 
 }
+
+/****************************************************************************
+ * Output_Pipe - Determines what data/JSON should be sent to the named pipe
+ ****************************************************************************/
+
+bool Output_Pipe ( char *type, char *json_string )
+{
+
+    if ( !strcmp(type, "flow" ) && MeerOutput->pipe_flow == true )
+        {
+            Pipe_Write( json_string );
+            return 0;
+        }
+
+    else if ( !strcmp(type, "http" ) && MeerOutput->pipe_http == true )
+        {
+            Pipe_Write( json_string );
+            return 0;
+        }
+
+    else if ( !strcmp(type, "smtp" ) && MeerOutput->pipe_smtp == true )
+        {
+            Pipe_Write( json_string );
+            return 0;
+        }
+
+    else if ( !strcmp(type, "ssh" ) && MeerOutput->pipe_ssh == true )
+        {
+            Pipe_Write( json_string );
+            return 0;
+        }
+
+    else if ( !strcmp(type, "tls" ) && MeerOutput->pipe_tls == true )
+        {
+            Pipe_Write( json_string );
+            return 0;
+        }
+
+    else if ( !strcmp(type, "dns" ) && MeerOutput->pipe_dns == true )
+        {
+            Pipe_Write( json_string );
+            return 0;
+        }
+
+    else if ( !strcmp(type, "alert" ) && MeerOutput->pipe_alert == true )
+        {
+            Pipe_Write( json_string );
+            return 0;
+        }
+
+    Meer_Log(WARN, "Unknown JSON type '%s'. JSON String: %s", type, json_string);
+    MeerCounters->JSONPipeMisses++;
+    return 1;
+
+}
+
+/****************************************************************************
+ * Output_Alert - Sends decoded data to a MySQL/PostgreSQL database using
+ * a similar format to Barnyard2 (with some extra data added in!)
+ ****************************************************************************/
 
 bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 {

@@ -120,6 +120,8 @@ void Load_YAML_Config( char *yaml_file )
 
 #endif
 
+    MeerOutput->pipe_size =  DEFAULT_PIPE_SIZE;
+
     if (stat(yaml_file, &filecheck) != false )
         {
             Meer_Log(ERROR, "[%s, line %d] Cannot open configuration file '%s'! %s", __FILE__, __LINE__, yaml_file, strerror(errno) );
@@ -206,7 +208,7 @@ void Load_YAML_Config( char *yaml_file )
                     if ( type == YAML_TYPE_MEER )
                         {
 
-                            if ( !strcmp(value, "core"))
+                            if ( !strcmp(value, "core") )
                                 {
                                     sub_type = YAML_MEER_CORE_CORE;
                                 }
@@ -215,10 +217,14 @@ void Load_YAML_Config( char *yaml_file )
 
                     else if ( type == YAML_TYPE_OUTPUT )
                         {
-
-                            if ( !strcmp(value, "sql"))
+                            if ( !strcmp(value, "sql") )
                                 {
                                     sub_type = YAML_MEER_SQL;
+                                }
+
+                            if ( !strcmp(value, "pipe") )
+                                {
+                                    sub_type = YAML_MEER_PIPE;
                                 }
 
                         }
@@ -669,6 +675,122 @@ void Load_YAML_Config( char *yaml_file )
                         }
 
 #endif
+
+                    if ( type == YAML_TYPE_OUTPUT && sub_type == YAML_MEER_PIPE )
+                        {
+
+                            if ( !strcmp(last_pass, "enabled" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_enabled = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "pipe_location") )
+                                {
+                                    strlcpy(MeerOutput->pipe_location, value, sizeof(MeerOutput->pipe_location));
+                                }
+
+                            if ( !strcmp(last_pass, "pipe_size" ) )
+                                {
+
+                                    MeerOutput->pipe_size = atoi(value);
+
+                                    if ( MeerOutput->pipe_size == 0 )
+                                        {
+                                            Meer_Log(ERROR, "Invalid configuration.  'pipe_size' is invalid");
+                                        }
+
+
+                                    if ( MeerOutput->pipe_size != 65536 &&
+                                            MeerOutput->pipe_size != 131072 &&
+                                            MeerOutput->pipe_size != 262144 &&
+                                            MeerOutput->pipe_size != 524288 &&
+                                            MeerOutput->pipe_size != 1048576 )
+                                        {
+
+                                            Meer_Log(ERROR, "Invalid configuration. 'pipe_size' must be 65536, 131072, 262144, 524288 or 1048576. Abort!");
+                                        }
+
+
+                                }
+
+                            if ( !strcmp(last_pass, "alert" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_alert = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "dns" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_dns = true;
+                                        }
+
+                                }
+
+
+                            if ( !strcmp(last_pass, "smtp" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_smtp = true;
+                                        }
+
+                                }
+
+
+                            if ( !strcmp(last_pass, "flow" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_flow = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "http" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_http = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "ssh" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_ssh = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "tls" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_tls = true;
+                                        }
+
+                                }
+
+                        }
 
                     strlcpy(last_pass, value, sizeof(last_pass));
 

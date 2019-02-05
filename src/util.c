@@ -244,9 +244,6 @@ char *Hexify(char *xdata, int length)
     return(retbuf);
 }
 
-/* Reverse lookup */
-/* DEBUG: Needs a cacher */
-
 
 /*
 uint64_t Epoch_Lookup( void )

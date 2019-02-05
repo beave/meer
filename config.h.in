@@ -39,6 +39,9 @@
 /* Define to 1 if you have the `getopt_long' function. */
 #undef HAVE_GETOPT_LONG
 
+/* F_GETPIPE_SZ is supported */
+#undef HAVE_GETPIPE_SZ
+
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
@@ -88,6 +91,9 @@
 
 /* Define to 1 if you have the `send' function. */
 #undef HAVE_SEND
+
+/* F_SETPIPE_SZ is supported */
+#undef HAVE_SETPIPE_SZ
 
 /* Define to 1 if you have the `shm_open' function. */
 #undef HAVE_SHM_OPEN

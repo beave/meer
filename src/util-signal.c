@@ -53,6 +53,8 @@ struct _MeerOutput *MeerOutput;
 void Signal_Handler(int sig_num)
 {
 
+    Meer_Log(NORMAL, "Got signal %d!", sig_num);
+
     switch( sig_num )
         {
 
@@ -63,6 +65,13 @@ void Signal_Handler(int sig_num)
         case SIGTERM:
 //        case SIGSEGV:
 //        case SIGABRT:
+
+
+            if ( MeerOutput->pipe_enabled == true )
+                {
+                    close(MeerOutput->pipe_fd);
+
+                }
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
@@ -106,8 +115,11 @@ void Signal_Handler(int sig_num)
             Remove_Lock_File();
 
             Statistics();
-            Meer_Log(NORMAL, "Last CID is : %" PRIu64 ".", MeerOutput->sql_last_cid);
 
+            if ( MeerOutput->sql_enabled == true )
+                {
+                    Meer_Log(NORMAL, "Last CID is : %" PRIu64 ".", MeerOutput->sql_last_cid);
+                }
 
             Meer_Log(NORMAL, "Shutdown complete.");
 

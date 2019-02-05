@@ -18,45 +18,37 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+/****************************************************************************
+ * This takes input data (JSON) and writes it out to a named pipe/FIFO
+ ****************************************************************************/
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"             /* From autoconf */
 #endif
 
-/* Prototypes */
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
 
-void Load_YAML_Config ( char *yaml_file );
+#include "meer.h"
+#include "meer-def.h"
 
+struct _MeerOutput *MeerOutput;
+struct _MeerCounters *MeerCounters;
 
-#ifdef HAVE_LIBYAML
+void Pipe_Write ( char *json_string )
+{
+    uint32_t ret = 0;
 
-/************************/
-/* Minimum YAML version */
-/************************/
+    ret = write(MeerOutput->pipe_fd, json_string, strlen(json_string));
 
-#define YAML_VERSION_MAJOR 1
-#define YAML_VERSION_MINOR 1
+    if ( ret < 0 )
+        {
+            Meer_Log(WARN, "Could not write pipe. Error: %s", strerror(errno));
+            return;
+        }
 
-/*****************/
-/* Primary types */
-/*****************/
+    MeerCounters->JSONPipeWrites++;
 
-#define         YAML_TYPE_MEER           1
-#define         YAML_TYPE_OUTPUT	 2
-
-/*******************/
-/* Secondary types */
-/*******************/
-
-#define         YAML_MEER_CORE_CORE     1
-#define         YAML_MEER_SQL	        2
-#define		YAML_MEER_PIPE		3
-
-/******************/
-/* Database types */
-/******************/
-
-#define		DB_MYSQL		1
-#define		DB_POSTGRESQL		2
-
-
-#endif
+}

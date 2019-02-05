@@ -147,12 +147,29 @@ struct _MeerOutput
     bool sql_bluedot;
 #endif
 
-
     char sql_driver;
 
     bool sql_reference_system;
     char sql_reference_file[256];
     char sql_sid_map_file[256];
+
+    bool pipe_enabled;
+    char pipe_location[256];
+    int  pipe_fd;
+    uint32_t pipe_size;
+    bool pipe_alert;
+    bool pipe_files;
+    bool pipe_flow;
+    bool pipe_http;
+    bool pipe_smtp;
+    bool pipe_ssh;
+    bool pipe_tls;
+    bool pipe_dns;
+
+#ifdef QUADRANT
+    bool pipe_bluedot;
+#endif
+
 
 
 };
@@ -190,6 +207,10 @@ struct _MeerCounters
 
 #endif
 
+    uint64_t JSONPipeWrites;
+    uint64_t JSONPipeMisses;
+
+    uint64_t InvalidJSONCount;
     uint64_t FlowCount;
     uint64_t HTTPCount;
     uint64_t TLSCount;

@@ -20,3 +20,4 @@
 
 void Init_Output( void );
 bool Output_Alert ( struct _DecodeAlert *DecodeAlert );
+bool Output_Pipe ( char *type, char *json );
