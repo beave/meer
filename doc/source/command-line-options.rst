@@ -5,7 +5,7 @@ The majority of controls for Meer are within the ``meer.yaml`` file.
 
 .. option:: -d, --daemon 
 
-   This option tells Meer fork into the background.
+   This option tells Meer to fork to the background.
 
 .. option:: -c, --config
 
@@ -17,5 +17,5 @@ The majority of controls for Meer are within the ``meer.yaml`` file.
 
 .. option:: -q, --quiet
 
-   This option to tells Meer to not output to the console.  Logs are still send to the /var/log/meer directory.
+   This option to tells Meer to not output to the console.  Logs are still sent to the /var/log/meer directory.
 

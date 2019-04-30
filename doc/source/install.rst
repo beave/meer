@@ -1,12 +1,12 @@
 Installation
 ============
 
-There is currently no binary packages of Meer available.  However,  installation from source is pretty straight forward.
+There are currently no binary packages of Meer available.  However,  installation from source is pretty straightforward.
 
 Prerequisites
 -------------
 
-Before compiling and installing Meer,  you will need to determine where you want your data to reside.  Current,  Meer supports MariaDB, 
+Before compiling and installing Meer,  you will need to determine where you want your data to reside.  Currently,  Meer supports MariaDB, 
 MySQL and PostgreSQL.  In order to build Meer, you will need one or more of these installed with all development files.  For
 example,  Ubuntu/Debian systems can install via:
 
@@ -61,7 +61,7 @@ Common configure options
 
 .. option:: --enable-postgresql
 
-    This flag enabled PostgreSQL support.  By default --disable-postgresql is used.
+    This flag enables PostgreSQL support.  By default --disable-postgresql is used.
 
 .. option:: --with-libjsonc-libraries
 

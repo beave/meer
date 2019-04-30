@@ -6,7 +6,7 @@ Directories and rights
 
 Meer keeps track of its actions in the ``meer.log`` and its position in the Sagan or Suricata EVE output file
 through a "waldo" file.  This means that Meer will need an area to record data to.  The default location of these
-files are in the ``/var/log/meer`` directory.  You will need to create and assign this directory the proper rights.  
+files is in the ``/var/log/meer`` directory.  You will need to create and assign this directory the proper rights.  
 
 Making directories & assigning rights::
 
@@ -15,7 +15,7 @@ Making directories & assigning rights::
 
 You will need to adjust your ``meer.yaml`` rights in the ``runas`` option to match your permissions.
 
-Setting up a new database.
+Setting up a new database
 --------------------------
 
 If you do not have a database already configured to receive alerts,  the instructions below will help
@@ -29,7 +29,7 @@ Creating the ``example_database`` with MySQL/MariaDB::
 
 When using PostgreSQL, use the ``meer/sql/create_postgresql`` schema file.
     
-Using a old database
+Using an old database
 --------------------
 
 If you have a legacy database that you wish to convert, do the following with MySQL/MariaDB::
@@ -55,7 +55,7 @@ With MySQL/MariaDB::
 Meer 'core' configuration:
 ==========================
 
-Meers operations are mainly controlled by the ``meer.yaml`` file.  The configuration file is split into two sections.  The ``meer-core`` controls how Meer processes incoming data from EVE files.  The ``output-plugins`` controls how data extracted from the EVE files is transported to a database back end.
+Meers operations are mainly controlled by the ``meer.yaml`` file.  The configuration file is split into two sections.  The ``meer-core`` controls how Meer processes incoming data from EVE files.  The ``output-plugins`` controls how data extracted from the EVE files is transported to a database backend.
 
 'meer-core' example
 -------------------
@@ -90,9 +90,9 @@ Meers operations are mainly controlled by the ``meer.yaml`` file.  The configura
        json: enabled       # Original JSON from event
 
        # If "dns" is enabled, Meer will do reverse DNS (PTR) lookups of an IP.
-       # The "dns_cache" is the amount of time Meer should "cache" a PTR record
-       # for.  The DNS cache prevents Meer from doing repeated lookups of an
-       # already looked up PTR record.  This reduces overloading DNS servers.
+       # The "dns_cache" is the amount of time Meer should "cache" a PTR record.
+       # The DNS cache prevents Meer from doing repeated lookups of an
+       # already looked-up PTR record.  This reduces over-loading DNS servers.
 
        dns: enabled
        dns_cache: 900      # Time in seconds.
@@ -104,7 +104,7 @@ Meers operations are mainly controlled by the ``meer.yaml`` file.  The configura
        # data.  For example,  with MySQL/MariaDB output enabled, they update the 
        # "sensor.health" table with the current epoch time.  Think of these
        # events like a "ping" for your sensor.  This can be useful for detecting
-       # when Meer, Suricata or Sagan have "died" unexpectedly.
+       # when Meer, Suricata, or Sagan have "died" unexpectedly.
 
        health: enabled
        health_signatures: 20000001,20000002,20000003,20000004
@@ -122,7 +122,7 @@ Meers operations are mainly controlled by the ``meer.yaml`` file.  The configura
 'meer-core' options
 -------------------
 
-Below describes the option in the `meer-core` section of the ``meer.yaml``.
+Below describes the options in the `meer-core` section of the ``meer.yaml``.
 
 hostname
 ~~~~~~~~
@@ -134,7 +134,7 @@ interface
 ~~~~~~~~~
 
 The ``interface`` is stored in the ``sensor`` table appended to the ``hostname`` and 
-``interface`` columns.  This describes what interface the data was collected.  This can 
+``interface`` columns.  This describes in what interface the data was collected.  This can 
 be any descriptive string.  For example, "eth0", "syslog", etc.   This option is required.
 
 runas
@@ -149,7 +149,7 @@ classification
 ~~~~~~~~~~~~~~
 
 The ``classification`` option tells Meer where to find classification types.  This file
-typically ships with Sagan, Suricata and Snort rules.  It defines a 'classtype' (for 
+typically ships with Sagan, Suricata, and Snort rules.  It defines a 'classtype' (for 
 example, "attempt-recon") and assigns a numeric priority to the event.  This option is
 required.
 
@@ -188,6 +188,7 @@ tls
 The ``tls`` option tells Meer to decode "tls" data from Suricata or Sagan.  If
 the "tls" JSON is present in the alert,  Meer will decode it and store its contents
 in memory for later use.
+
 ssh
 ~~~
 
@@ -220,16 +221,16 @@ dns
 ~~~
 
 The ``dns`` option tells Meer to perform a DNS PTR (reverse) record lookup of the 
-IP addresses involved in an alert.  This option is useful because records the
+IP addresses involved in an alert.  This option is useful because it records the
 DNS record at the time the event occurred. 
 
 dns_cache
 ~~~~~~~~~
 
 When ``dns`` is enabled,  Meer will internally cache records to avoid repetitive
-lookups.  For example, if a 1000 alerts come in from a single IP address,  Meer
-will look the DNS PTR record one time and use the cache entire the other 999
-times.   This saves on lookup time and extra stress on internal DNS server.  If you
+lookups.  For example, if 1000 alerts come in from a single IP address,  Meer
+will look up the DNS PTR record one time and use the cache for the other 999
+times.   This saves on lookup time and extra stress on the internal DNS server.  If you
 do not want Meer to cache DNS data,  simply set this option to 0.  The ``dns_cache``
 time is in seconds.
 
@@ -253,7 +254,7 @@ waldo_file
 ~~~~~~~~~~
 
 The ``waldo_file`` is a file that Meer uses to keep track of its last location within
-a EVE/JSON file.  This keep Meer from re-reading data in between stop/starts.  This
+a EVE/JSON file.  This keeps Meer from re-reading data in between stop/starts.  This
 option is required.
 
 lock_file
@@ -267,7 +268,7 @@ follow_eve
 ~~~~~~~~~~
 
 The ``follow_eve`` option informs Meer what file to "follow" or "monitor" for new 
-alerts.  You'll want to point this to your Sagan or Suricata "alert" EVE output file. 
+alerts.  You will want to point this to your Sagan or Suricata "alert" EVE output file. 
 You can think of Meer "monitoring" this file similar to how "tail -f" operates. 
 This option is required.
 
@@ -287,7 +288,7 @@ Below is an example of the "output-plugins" from the ``meer.yaml``.
    output-plugins:
 
      # MySQL/MariaDB output - Stores data from Suricata or Sagan into a semi-
-     # traditional "Barnyard2/Snort" like database.
+     # traditional "Barnyard2/Snort"-like database.
 
      sql:
 
@@ -313,7 +314,7 @@ Below is an example of the "output-plugins" from the ``meer.yaml``.
 
        # Store extra decoded JSON metadata from Suricata or Sagan.  This requires
        # your database to have the metadata, flow, http, etc. tables.  If all are
-       # disabled,  Meer will stored data in strictly a Barnyard2/Snort method.
+       # disabled,  Meer will store data in strictly a Barnyard2/Snort method.
        # If you want to store this decoded information,  and you likely do,  make
        # sure you have the decoders enabled in the "core" section of this Meer
        # configuration file!
@@ -328,9 +329,9 @@ Below is an example of the "output-plugins" from the ``meer.yaml``.
        json: enabled
 
        # If you would like Meer to mimic the legacy "reference" tables from
-       # Snort/Barnyard2, enable it here.  If your using more than one database
-       # to store Suricata or Sagan data, you'll likely want to leave this
-       # disabled. The legacy reference system isn't very efficient and there's
+       # Snort/Barnyard2, enable it here.  If you are using more than one database
+       # to store Suricata or Sagan data, you will likely want to leave this
+       # disabled. The legacy reference system is not very efficient and there are
        # better ways to keep track of this data.  This is also a memory hog and
        # performance killer.  See tools/reference_handler/reference_handler.pl to
        # build a centralized reference table.
@@ -351,7 +352,7 @@ This section of documentation describes the ``sql`` section of the ``output-plug
 enabled
 ~~~~~~~
 
-When this option is set to ``yes`` or ``no``, it enabled or disables the SQL section of
+When this option is set to ``yes`` or ``no``, it enables or disables the SQL section of
 the Meer output plugin.
 
 driver
@@ -408,7 +409,7 @@ When the ``extra_data`` option is enabled,  Meer will record certain information
 metadata
 ~~~~~~~~
 
-This option controls Meers ability to record decoded alert metadata to the ``metadata``
+This option controls Meer's ability to record decoded alert metadata to the ``metadata``
 SQL table.  If "metadata" is detected within the EVE/JSON  and the ``metadata``
 decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
 to the ``metadata`` SQL table. 
@@ -416,7 +417,7 @@ to the ``metadata`` SQL table.
 flow
 ~~~~
 
-This option controls Meers ability to record decoded alert flow to the ``flow``
+This option controls Meer's ability to record decoded alert flow to the ``flow``
 SQL table.  If "flow" is detected within the EVE/JSON  and the ``flow``
 decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
 to the ``flow`` SQL table.
@@ -424,7 +425,7 @@ to the ``flow`` SQL table.
 http
 ~~~~
 
-This option controls Meers ability to record decoded alert http to the ``http``
+This option controls Meer's ability to record decoded alert http to the ``http``
 SQL table.  If "http" is detected within the EVE/JSON  and the ``http``
 decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
 to the ``http`` SQL table.
@@ -432,7 +433,7 @@ to the ``http`` SQL table.
 tls
 ~~~
 
-This option controls Meers ability to record decoded alert tls to the ``tls``
+This option controls Meer's ability to record decoded alert tls to the ``tls``
 SQL table.  If "tls" is detected within the EVE/JSON  and the ``tls``
 decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
 to the ``tls`` SQL table.
@@ -440,15 +441,15 @@ to the ``tls`` SQL table.
 ssh
 ~~~
 
-This option controls Meers ability to record decoded alert ssh to the ``ssh``
+This option controls Meer's ability to record decoded alert ssh to the ``ssh``
 SQL table.  If "ssh" is detected within the EVE/JSON  and the ``ssh``
 decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
 to the ``ssh-client``and ``ssh-server`` SQL tables.
 
-ssh
+smtp
 ~~~
 
-This option controls Meers ability to record decoded alert smtp to the ``smtp``
+This option controls Meer's ability to record decoded alert smtp to the ``smtp``
 SQL table.  If "smtp" is detected within the EVE/JSON  and the ``smtp``
 decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
 to the ``smtp`` SQL table.
@@ -456,7 +457,7 @@ to the ``smtp`` SQL table.
 email
 ~~~~~
 
-This option controls Meers ability to record decoded alert email to the ``email``
+This option controls Meer's ability to record decoded alert email to the ``email``
 SQL table.  If "email" is detected within the EVE/JSON  and the ``email``
 decoder is enabled (controlled in the ``meer-core``),  then it will be recorded
 to the ``email`` SQL tables.  This is not to be confused with the ``smtp`` table.
@@ -466,14 +467,14 @@ reference_system
 
 The ``reference_system`` allows Meer to store alert reference data in a traditional
 "Barnyard2" format.  If you are using a single database for all events,  this 
-option might be useful to you.  If you are using UI's like Snorby,  Squeel, etc. 
-you'll likely want to enable this option.  If you are using multiple databases, 
+option might be useful to you.  If you are using UIs like Snorby,  Squeel, etc. 
+you will likely want to enable this option.  If you are using multiple databases, 
 then consider looking at the "reference_handler.pl" script that ships with Meer. 
 
 sid_file
 ~~~~~~~~
 
 The ``sid_file`` is a legacy "signature message map" file that points signature
-IDs to there references.  If you want to use the legacy ``reference_system``, 
-you'll need a "signature message map" (``sid_file``) for Meer to read.
+IDs to their references.  If you want to use the legacy ``reference_system``, 
+you will need a "signature message map" (``sid_file``) for Meer to read.
 

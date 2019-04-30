@@ -10,7 +10,7 @@ The Meer Github site is located at:
 https://github.com/beave/meer 
 
 If you are having issues getting Meer to work,  consider posting in the Meer mailing list.  This list
-is good for general configuration,  install and usage questions.  
+is good for general configuration,  install, and usage questions.  
 
 https://groups.google.com/forum/#!forum/meer-users
 

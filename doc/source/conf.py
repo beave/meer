@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = u'Meer User Guide'
-copyright = u'2018, Champ Clark III'
+copyright = u'2018,2019 Champ Clark III'
 author = u'Champ Clark III'
 
 # The short X.Y version

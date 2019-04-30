@@ -4,12 +4,12 @@
 # @@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    
 # @@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security
 # @!! !!@ @!@ @!!!:!   @!!!:!   @!@!!@a    https://quadrantsec.com
-# !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018
+# !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018-2019
 #  :      :   : :: ::  : :: ::   :   : :
 
 #  Meer configuration file [http://github.com/beave/meer]
 #  Champ Clark III & The Quadrant Information Security Team: https://quadrantsec.com
-#  Copyright (C) 2018 Quadrant Information Security., et al.
+#  Copyright (C) 2018-2019 Quadrant Information Security., et al.
 
 meer-core:
 

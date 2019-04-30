@@ -5,7 +5,7 @@ Console/Log Startup
 -------------------
 
 At start up,  the logs and console output give you information about the status of Meer. 
-For example,  you'll want to note the ``SQL information``,  such as the driver and if
+For example,  you will want to note the ``SQL information``,  such as the driver and whether
 a successful connection was made.  If there is a problem making a connection to your database, 
 Meer will display the error that is causing the issues. 
 
@@ -14,7 +14,7 @@ the database to store events.
 
 Common issues are database rights and directory/file permission problems. 
 
-If Meer makes to the ``Waiting of new data...``,  then Meer has successfully started. 
+If Meer makes it to the ``Waiting of new data...``,  then Meer has successfully started. 
 
 ::
 
@@ -69,7 +69,7 @@ Console/Log Shutdown
 
 Upon shutdown,  the Meer console and logs provide information about the previous execution.  For
 example,  how efficient DNS caching performed,  how much data was stored in flow, http, tls, 
-ssh, smtp and meta data tables and how efficient SQL caches performed.  It also display the last
+ssh, smtp, and meta data tables, and how efficient SQL caches performed.  It also displays the last
 ``Waldo Position``,  which indicates what position it left off in the file.   Another important 
 item to note is the ``CID``,  which is the last database position Meer left off. 
 
