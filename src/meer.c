@@ -358,6 +358,7 @@ int main (int argc, char *argv[])
 
                     old_size = 0;
                     linecount = 0;
+
                     MeerWaldo->position = 0;
 
                     Meer_Log(ERROR, "Follow JSON File '%s' disappeared [%s].", MeerConfig->follow_file, strerror(errno) );
@@ -393,6 +394,7 @@ int main (int argc, char *argv[])
                                 }
 
                             MeerWaldo->position++;
+
                         }
 
                     old_size = (uint64_t) st.st_size;
@@ -416,7 +418,9 @@ int main (int argc, char *argv[])
                     fd_int = fileno(fd_file);
                     old_size = 0;
                     linecount = 0;
+
                     MeerWaldo->position = 0;
+
                 }
 
             sleep(1);

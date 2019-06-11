@@ -251,8 +251,6 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
             int signature_id = 0;
             int class_id = 0;
 
-            class_id = SQL_Get_Class_ID( DecodeAlert );
-
             if ( MeerConfig->health == true )
                 {
 
@@ -271,6 +269,8 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 
             if ( health_flag == 0 )
                 {
+
+                    class_id = SQL_Get_Class_ID( DecodeAlert );
 
                     SQL_DB_Query("BEGIN");
 

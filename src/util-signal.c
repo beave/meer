@@ -121,10 +121,14 @@ void Signal_Handler(int sig_num)
                     Meer_Log(NORMAL, "Last CID is : %" PRIu64 ".", MeerOutput->sql_last_cid);
                 }
 
-            Meer_Log(NORMAL, "Shutdown complete.");
-
             fflush(MeerConfig->meer_log_fd);
             fclose(MeerConfig->meer_log_fd);
+
+            fsync(MeerConfig->waldo_fd);
+            munmap(MeerConfig->waldo_fd);
+            close(MeerConfig->waldo_fd);
+
+            Meer_Log(NORMAL, "Shutdown complete.");
 
             exit(0);
 
