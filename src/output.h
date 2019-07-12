@@ -20,4 +20,5 @@
 
 void Init_Output( void );
 bool Output_Alert ( struct _DecodeAlert *DecodeAlert );
-bool Output_Pipe ( char *type, char *json );
+bool Output_Pipe ( char *type, char *json_string );
+bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string );

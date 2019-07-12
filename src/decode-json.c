@@ -59,6 +59,7 @@ bool Decode_JSON( char *json_string )
     struct json_object *tmp = NULL;
 
     char tmp_type[32] = { 0 };
+    bool bad_json = false;
 
     if ( json_string == NULL )
         {
@@ -68,48 +69,92 @@ bool Decode_JSON( char *json_string )
 
     json_obj = json_tokener_parse(json_string);
 
-    if ( MeerOutput->sql_enabled == true )
+    if (!json_object_object_get_ex(json_obj, "event_type", &tmp))
+        {
+            bad_json == true;
+        }
+
+    if ( bad_json == false )
         {
 
-            /* To keep with the "barnyard2" like theme,  we only output 'alert' Suricata/
-             * Sagan events. */
-
-            if (json_object_object_get_ex(json_obj, "event_type", &tmp))
+            if ( MeerOutput->sql_enabled == true || MeerOutput->external_enabled == true)
                 {
 
                     if ( !strcmp(json_object_get_string(tmp), "alert") )
                         {
 
                             struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
-
                             DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
 
-                            Output_Alert( DecodeAlert );
+                            if ( MeerOutput->sql_enabled == true )
+                                {
+                                    Output_Alert( DecodeAlert );
+                                }
 
-                            /* Done with decoding */
+                            if ( MeerOutput->external_enabled == true )
+                                {
+                                    Output_External( DecodeAlert, json_string );
+                                }
 
                             free(DecodeAlert);
 
                         }
+
                 }
 
-        }
 
-    if ( MeerOutput->pipe_enabled == true )
-        {
+            /* To keep with the "barnyard2" like theme,  we only output 'alert' Suricata/
+             * Sagan events. */
 
-            if (json_object_object_get_ex(json_obj, "event_type", &tmp))
+//            if (json_object_object_get_ex(json_obj, "event_type", &tmp))
+//                {
+
+//                    if ( !strcmp(json_object_get_string(tmp), "alert") )
+//                        {
+
+//                            struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
+//
+//                            DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
+
+//                            Output_Alert( DecodeAlert );
+
+            /* Done with decoding */
+
+//                            free(DecodeAlert);
+
+//                        }
+//                }
+
+
+            if ( MeerOutput->pipe_enabled == true )
                 {
+
+//            if (json_object_object_get_ex(json_obj, "event_type", &tmp))
+//                {
                     strlcpy(tmp_type, json_object_get_string(tmp), sizeof(tmp_type));
 
                     Output_Pipe(tmp_type, json_string );
 
+//                }
+
                 }
+//    else
+//        {
+
+//            MeerCounters->InvalidJSONCount++;
+//        }
+
+//    if ( MeerOutput->external_enabled == true )
+//	{
+
+//		if ( json_object_object_get_ex(json_obj, "event_type", &tmp))
+
+//		Output_External(json_string);
+//	}
 
         }
     else
         {
-
             MeerCounters->InvalidJSONCount++;
         }
 

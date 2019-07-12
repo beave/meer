@@ -41,3 +41,4 @@ uint64_t Epoch_Lookup( void );
 bool Is_IPv6 (char *ipaddr);
 double CalcPct(uint64_t cnt, uint64_t total);
 bool Is_IP (char *ipaddr, int ver );
+int File_Check (char *filename);

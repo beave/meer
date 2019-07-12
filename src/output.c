@@ -33,6 +33,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "decode-json-alert.h"
 
@@ -64,6 +65,15 @@ struct _Classifications *MeerClass;
 
 void Init_Output( void )
 {
+
+    if ( MeerOutput->external_enabled )
+        {
+
+            Meer_Log(NORMAL, "--[ External information ]-----------------------------------------");
+            Meer_Log(NORMAL, "");
+            Meer_Log(NORMAL, "Calling '%s' on signature msg matches.", MeerOutput->external_program);
+            Meer_Log(NORMAL, "");
+        }
 
     if ( MeerOutput->pipe_enabled )
         {
@@ -420,3 +430,102 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 
     return 0;
 }
+
+
+/****************************************************************************
+ * Output_External - Sends certain data to an external program based on
+ * the signature triggered.
+ ****************************************************************************/
+
+bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
+{
+
+    int in[2];
+    int out[2];
+    int pid;
+    int n;
+    char buf[BUFFER_SIZE] = { 0 };
+
+    if( File_Check( MeerOutput->external_program ) != 1 )
+        {
+
+            Meer_Log(WARN, "Warning! The external program '%s' does not exsist!", MeerOutput->external_program);
+            return(1);
+
+        }
+
+    if ( strstr(DecodeAlert->alert_signature, MeerOutput->external_match) )
+        {
+
+            if ( MeerOutput->external_debug )
+                {
+                    Meer_Log(DEBUG, "DEBUG: Got 'signature_match' for external for '%s'", MeerOutput->external_match);
+                    Meer_Log(DEBUG, "DEBUG: Signature is '%s'", DecodeAlert->alert_signature);
+                }
+
+
+
+            if ( pipe(in) < 0 )
+                {
+                    Meer_Log(WARN, "[%s, line %d] Cannot create input pipe!", __FILE__, __LINE__);
+                    return(1);
+                }
+
+
+            if ( pipe(out) < 0 )
+                {
+                    Meer_Log(WARN, "[%s, line %d] Cannot create output pipe!", __FILE__, __LINE__);
+                    return(1);
+                }
+
+            pid=fork();
+            if ( pid < 0 )
+                {
+                    Meer_Log(WARN, "[%s, line %d] Cannot create external program process", __FILE__, __LINE__);
+                    return(1);
+                }
+            else if ( pid == 0 )
+                {
+                    /* Causes problems with alert.log */
+
+                    close(0);
+                    close(1);
+                    close(2);
+
+                    dup2(in[0],0);              // Stdin..
+                    dup2(out[1],1);
+                    dup2(out[1],2);
+
+                    close(in[1]);
+                    close(out[0]);
+
+                    execl(MeerOutput->external_program, MeerOutput->external_program, NULL, (char *)NULL);
+
+                    Meer_Log(WARN, "[%s, line %d] Cannot execute %s", __FILE__, __LINE__, MeerOutput->external_program);
+                }
+
+            close(in[0]);
+            close(out[1]);
+
+            /* Write to child input */
+
+            n = write(in[1], json_string, strlen(json_string));
+            close(in[1]);
+
+            n = read(out[0], buf, sizeof(buf));
+            close(out[0]);
+            buf[n] = 0;
+
+            waitpid(pid, NULL, 0);
+
+            if ( MeerOutput->external_debug )
+                {
+                    Meer_Log(DEBUG, "DEBUG: Executed '%s'", MeerOutput->external_program);
+                }
+
+        }
+
+    return(0);
+}
+
+

@@ -158,3 +158,24 @@ output-plugins:
     ssh: enabled
     smtp: enabled
 
+  ###########################################################################
+  # The "external" output module allows Meer to execute "external" programs
+  # if the signature matches (via "signature_match") criteria.  Upon the 
+  # hit of a "signature_match",  the "program" is executed.  The events 
+  # EVE data (JSON) is passed via stdin to the external program.   The 
+  # external program can be written in any language you choose (shell script, 
+  # Python, Perl, etc). 
+  #
+  # This can be useful for automatic firewalling,  building block lists, 
+  # replicating "snortsam" functionality, etc.  See the "tools/external"
+  # directory for example routines that use this feature.
+  ###########################################################################
+
+  external:
+
+    enabled: no
+    debug: no
+    signature_match: "FIREWALL"
+    program: "/tmp/external-program"
+
+

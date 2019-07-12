@@ -36,6 +36,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+
 
 #include "meer.h"
 #include "meer-def.h"
@@ -419,6 +421,13 @@ double CalcPct(uint64_t cnt, uint64_t total)
     return pct;
 }
 
+/**************************
+ * Checks if a file exsists
+ **************************/
 
-
+int File_Check (char *filename)
+{
+    struct stat   buffer;
+    return (stat (filename, &buffer) == 0);
+}
 

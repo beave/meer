@@ -227,6 +227,11 @@ void Load_YAML_Config( char *yaml_file )
                                     sub_type = YAML_MEER_PIPE;
                                 }
 
+                            if ( !strcmp(value, "external") )
+                                {
+                                    sub_type = YAML_MEER_EXTERNAL;
+                                }
+
                         }
 
                     if ( type == YAML_TYPE_MEER && sub_type == YAML_MEER_CORE_CORE )
@@ -675,6 +680,42 @@ void Load_YAML_Config( char *yaml_file )
                         }
 
 #endif
+
+                    if ( type == YAML_TYPE_OUTPUT && sub_type == YAML_MEER_EXTERNAL )
+                        {
+
+                            if ( !strcmp(last_pass, "enabled" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->external_enabled = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "debug" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->external_debug = true;
+                                        }
+
+                                }
+
+
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "program" ) )
+                                {
+                                    strlcpy(MeerOutput->external_program, value, sizeof(MeerOutput->external_program));
+                                }
+
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "signature_match" ) )
+                                {
+                                    strlcpy(MeerOutput->external_match, value, sizeof(MeerOutput->external_match));
+                                }
+
+                        }
 
                     if ( type == YAML_TYPE_OUTPUT && sub_type == YAML_MEER_PIPE )
                         {

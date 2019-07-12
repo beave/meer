@@ -153,6 +153,11 @@ struct _MeerOutput
     char sql_reference_file[256];
     char sql_sid_map_file[256];
 
+    bool external_enabled;
+    bool external_debug;
+    char external_program[256];
+    char external_match[256];
+
     bool pipe_enabled;
     char pipe_location[256];
     int  pipe_fd;

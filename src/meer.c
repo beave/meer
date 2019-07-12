@@ -20,6 +20,14 @@
 
 /* Main Meer function */
 
+/*
+ * Notes:  Fix validation in yaml (make sure the module is enabled)
+ *         Sanity checks (external_match == NULL, dont run, etc)
+ *	   port the "stat" code to Sagan for external calls.
+ *	   external stats on shutdown!
+ */
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"             /* From autoconf */
 #endif
