@@ -26,7 +26,8 @@ AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
 							      output-plugins/sql.c \
 							      output-plugins/mysql.c \
 							      output-plugins/postgresql.c \
-							      output-plugins/pipe.c
+							      output-plugins/pipe.c \
+							      output-plugins/external.c
 
 
                                                        install-data-local:

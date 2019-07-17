@@ -694,7 +694,7 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-                            if ( !strcmp(last_pass, "debug" ) )
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "debug" ) )
                                 {
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
@@ -707,12 +707,25 @@ void Load_YAML_Config( char *yaml_file )
 
                             if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "program" ) )
                                 {
+
                                     strlcpy(MeerOutput->external_program, value, sizeof(MeerOutput->external_program));
                                 }
 
-                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "signature_match" ) )
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "metadata-security-ips" ) )
                                 {
-                                    strlcpy(MeerOutput->external_match, value, sizeof(MeerOutput->external_match));
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->external_metadata_security_ips = true;
+                                        }
+                                }
+
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "metadata-max-detect-ips" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->external_metadata_max_detect_ips = true;
+                                        }
                                 }
 
                         }

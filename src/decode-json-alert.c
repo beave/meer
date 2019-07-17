@@ -208,7 +208,6 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Alert_Return_Struct->src_ip = (char *)json_object_get_string(tmp);
         }
 
-
     if (json_object_object_get_ex(json_obj, "src_port", &tmp))
         {
             Alert_Return_Struct->src_port = (char *)json_object_get_string(tmp);

@@ -24,7 +24,7 @@
  * Notes:  Fix validation in yaml (make sure the module is enabled)
  *         Sanity checks (external_match == NULL, dont run, etc)
  *	   port the "stat" code to Sagan for external calls.
- *	   external stats on shutdown!
+ *	   documentation!
  */
 
 
@@ -181,7 +181,7 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, " @@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    Meer version %s", VERSION);
     Meer_Log(NORMAL, " @@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security");
     Meer_Log(NORMAL, " @!! !!@ @!@ @!!!:!   @!!!:!   @!@!!@a    https://quadrantsec.com");
-    Meer_Log(NORMAL, " !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018");
+    Meer_Log(NORMAL, " !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018-2019");
     Meer_Log(NORMAL, "  :      :   : :: ::  : :: ::   :   : :");
     Meer_Log(NORMAL, "");
 

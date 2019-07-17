@@ -18,7 +18,4 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-void Init_Output( void );
-bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert );
-bool Output_Pipe ( char *type, char *json_string );
-bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string );
+bool External( struct _DecodeAlert *DecodeAlert, char *json_string );

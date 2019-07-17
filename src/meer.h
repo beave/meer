@@ -155,8 +155,9 @@ struct _MeerOutput
 
     bool external_enabled;
     bool external_debug;
+    bool external_metadata_security_ips;
+    bool external_metadata_max_detect_ips;
     char external_program[256];
-    char external_match[256];
 
     bool pipe_enabled;
     char pipe_location[256];
@@ -214,6 +215,9 @@ struct _MeerCounters
 
     uint64_t JSONPipeWrites;
     uint64_t JSONPipeMisses;
+
+    uint64_t ExternalHitCount;
+    uint64_t ExternalMissCount;
 
     uint64_t InvalidJSONCount;
     uint64_t FlowCount;

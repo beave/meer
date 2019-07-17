@@ -159,9 +159,8 @@ output-plugins:
     smtp: enabled
 
   ###########################################################################
-  # The "external" output module allows Meer to execute "external" programs
-  # if the signature matches (via "signature_match") criteria.  Upon the 
-  # hit of a "signature_match",  the "program" is executed.  The events 
+  # external - EXPERIMENTAL AND NOT COMPLETE!
+  #
   # EVE data (JSON) is passed via stdin to the external program.   The 
   # external program can be written in any language you choose (shell script, 
   # Python, Perl, etc). 
@@ -171,11 +170,10 @@ output-plugins:
   # directory for example routines that use this feature.
   ###########################################################################
 
-  external:
-
-    enabled: no
+  external:             
+                                                                                                        enabled: no
     debug: no
-    signature_match: "FIREWALL"
-    program: "/tmp/external-program"
-
+    metadata-security-ips: enabled
+    metadata-max-detect-ips: enabled
+    program: "/tmp/external-progra$a
 

@@ -122,7 +122,13 @@ void Signal_Handler(int sig_num)
                 }
 
             fflush(MeerConfig->meer_log_fd);
-            fclose(MeerConfig->meer_log_fd);
+
+            /* This causes a segfault when external is enabled */
+
+            if ( MeerOutput->external_enabled == false )
+                {
+                    fclose(MeerConfig->meer_log_fd);
+                }
 
             fsync(MeerConfig->waldo_fd);
             munmap(MeerConfig->waldo_fd);

@@ -103,6 +103,17 @@ void Statistics( void )
 
         }
 
+    if ( MeerOutput->external_enabled == true )
+        {
+
+            Meer_Log(NORMAL, " - External Statistics:");
+            Meer_Log(NORMAL, "");
+            Meer_Log(NORMAL, " Success       : %"PRIu64 "", MeerCounters->ExternalHitCount);
+            Meer_Log(NORMAL, " Failures      : %"PRIu64 "", MeerCounters->ExternalMissCount);
+
+        }
+
+
     Meer_Log(NORMAL, "");
 
 #endif

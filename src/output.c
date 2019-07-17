@@ -47,6 +47,7 @@
 
 #include "output-plugins/sql.h"
 #include "output-plugins/pipe.h"
+#include "output-plugins/external.h"
 
 #ifdef HAVE_LIBMYSQLCLIENT
 #include <mysql/mysql.h>
@@ -71,7 +72,9 @@ void Init_Output( void )
 
             Meer_Log(NORMAL, "--[ External information ]-----------------------------------------");
             Meer_Log(NORMAL, "");
-            Meer_Log(NORMAL, "Calling '%s' on signature msg matches.", MeerOutput->external_program);
+            Meer_Log(NORMAL, "Default external program: %s", MeerOutput->external_program);
+            Meer_Log(NORMAL, "Execute on 'security-ips' metadata: %s", MeerOutput->external_metadata_security_ips ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Execute on 'max-detect-ips' metadata: %s", MeerOutput->external_metadata_max_detect_ips ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "");
         }
 
@@ -239,11 +242,11 @@ bool Output_Pipe ( char *type, char *json_string )
 }
 
 /****************************************************************************
- * Output_Alert - Sends decoded data to a MySQL/PostgreSQL database using
+ * Output_Alert_SQL - Sends decoded data to a MySQL/PostgreSQL database using
  * a similar format to Barnyard2 (with some extra data added in!)
  ****************************************************************************/
 
-bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
+bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 {
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
@@ -440,92 +443,34 @@ bool Output_Alert ( struct _DecodeAlert *DecodeAlert )
 bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
 {
 
-    int in[2];
-    int out[2];
-    int pid;
-    int n;
-    char buf[BUFFER_SIZE] = { 0 };
+    struct json_object *json_obj = NULL;
+    struct json_object *tmp = NULL;
 
-    if( File_Check( MeerOutput->external_program ) != 1 )
+    char *policy = NULL;
+
+    if ( MeerOutput->external_metadata_security_ips == true ||
+            MeerOutput->external_metadata_max_detect_ips == true )
+
         {
 
-            Meer_Log(WARN, "Warning! The external program '%s' does not exsist!", MeerOutput->external_program);
-            return(1);
+            if ( DecodeAlert->alert_metadata[0] != '\0' )
+                {
+                    json_obj = json_tokener_parse(DecodeAlert->alert_metadata);
 
+                    if (json_object_object_get_ex(json_obj, "policy", &tmp))
+                        {
+
+                            policy = (char *)json_object_get_string(tmp);
+
+                            if ( ( strstr( policy, "security-ips drop" ) && MeerOutput->external_metadata_security_ips == true ) ||
+                                    ( strstr( policy, "max-detect-ips drop" ) && MeerOutput->external_metadata_max_detect_ips == true ) )
+                                {
+                                    External( DecodeAlert, json_string );
+                                }
+
+                        }
+
+                }
         }
-
-    if ( strstr(DecodeAlert->alert_signature, MeerOutput->external_match) )
-        {
-
-            if ( MeerOutput->external_debug )
-                {
-                    Meer_Log(DEBUG, "DEBUG: Got 'signature_match' for external for '%s'", MeerOutput->external_match);
-                    Meer_Log(DEBUG, "DEBUG: Signature is '%s'", DecodeAlert->alert_signature);
-                }
-
-
-
-            if ( pipe(in) < 0 )
-                {
-                    Meer_Log(WARN, "[%s, line %d] Cannot create input pipe!", __FILE__, __LINE__);
-                    return(1);
-                }
-
-
-            if ( pipe(out) < 0 )
-                {
-                    Meer_Log(WARN, "[%s, line %d] Cannot create output pipe!", __FILE__, __LINE__);
-                    return(1);
-                }
-
-            pid=fork();
-            if ( pid < 0 )
-                {
-                    Meer_Log(WARN, "[%s, line %d] Cannot create external program process", __FILE__, __LINE__);
-                    return(1);
-                }
-            else if ( pid == 0 )
-                {
-                    /* Causes problems with alert.log */
-
-                    close(0);
-                    close(1);
-                    close(2);
-
-                    dup2(in[0],0);              // Stdin..
-                    dup2(out[1],1);
-                    dup2(out[1],2);
-
-                    close(in[1]);
-                    close(out[0]);
-
-                    execl(MeerOutput->external_program, MeerOutput->external_program, NULL, (char *)NULL);
-
-                    Meer_Log(WARN, "[%s, line %d] Cannot execute %s", __FILE__, __LINE__, MeerOutput->external_program);
-                }
-
-            close(in[0]);
-            close(out[1]);
-
-            /* Write to child input */
-
-            n = write(in[1], json_string, strlen(json_string));
-            close(in[1]);
-
-            n = read(out[0], buf, sizeof(buf));
-            close(out[0]);
-            buf[n] = 0;
-
-            waitpid(pid, NULL, 0);
-
-            if ( MeerOutput->external_debug )
-                {
-                    Meer_Log(DEBUG, "DEBUG: Executed '%s'", MeerOutput->external_program);
-                }
-
-        }
-
-    return(0);
 }
-
 
