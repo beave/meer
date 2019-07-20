@@ -32,6 +32,7 @@ my $white_list = subnet_matcher qw(
     172.16.0.0/12
     169.254.0.0/16
     fd00::/8
+    170.203.0.0/16
 );
 
 #############################################################################
@@ -44,6 +45,8 @@ my $response;
 my $target;
 my $src_ip;
 my $dest_ip;
+my $signature;
+my $sig_id;
 
 my $ua = LWP::UserAgent->new;
 
@@ -66,6 +69,8 @@ while (<>) {
 
    $src_ip = $json_d->{src_ip}; 
    $dest_ip = $json_d->{dest_ip}; 
+   $signature = $json_d->{alert}{signature};
+   $sig_id = $json_d->{alert}{signature_id};
 
    # Do some quick sanity checks for the data comming in.
 
@@ -80,6 +85,19 @@ while (<>) {
       Log("Error.  Destination IP address is missing or couldn't be parsed."); 
       exit(1);
       }
+
+   if ( $signature eq "" ) 
+      { 
+      Log("Error.  The 'siganture'  missing or couldn't be parsed."); 
+      exit(1);
+      }
+
+   if ( $sig_id eq "" ) 
+      { 
+      Log("Error.  The 'siganture_id'  missing or couldn't be parsed."); 
+      exit(1);
+      }
+
 
    Log("Parsed $src_ip -> $dest_ip"); 
 
@@ -104,7 +122,7 @@ while (<>) {
 
    # Send block request! 
    
-   Log("Target to firewall is $target");
+   Log("Target to firewall is $target for '$signature' [Sig ID: $sig_id]");
 
    $url = $block_url . $target; 
 

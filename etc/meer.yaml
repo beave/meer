@@ -170,10 +170,11 @@ output-plugins:
   # directory for example routines that use this feature.
   ###########################################################################
 
-  external:             
-                                                                                                        enabled: no
+  external:
+
+    enabled: no
     debug: no
     metadata-security-ips: enabled
     metadata-max-detect-ips: enabled
-    program: "/tmp/external-progra$a
+    program: "/usr/local/bin/external_program"
 
