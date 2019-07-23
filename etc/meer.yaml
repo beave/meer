@@ -205,10 +205,10 @@ output-plugins:
 
     # I can't seem to find any documentation on what "max-detect-ips" is :(
 
-    metadata-security-ips: enabled
-    metadata-max-detect-ips: enabled
-    metadata-connectivity-ips: enabled
-    metadata-balanced-ips: enabled
+    policy-security-ips: enabled
+    policy-max-detect-ips: enabled
+    policy-connectivity-ips: enabled
+    policy-balanced-ips: enabled
 
     program: "/usr/local/bin/external_program"
 

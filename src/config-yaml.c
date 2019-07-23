@@ -711,7 +711,7 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerOutput->external_program, value, sizeof(MeerOutput->external_program));
                                 }
 
-                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "metadata-security-ips" ) )
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "policy-security-ips" ) )
                                 {
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
                                         {
@@ -719,7 +719,7 @@ void Load_YAML_Config( char *yaml_file )
                                         }
                                 }
 
-                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "metadata-max-detect-ips" ) )
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "policy-max-detect-ips" ) )
                                 {
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
@@ -728,8 +728,7 @@ void Load_YAML_Config( char *yaml_file )
                                         }
                                 }
 
-// HERE
-                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "balanced-ips" ) )
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "policy-balanced-ips" ) )
                                 {
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
@@ -738,7 +737,7 @@ void Load_YAML_Config( char *yaml_file )
                                         }
                                 }
 
-                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "connectivity-ips" ) )
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "policy-connectivity-ips" ) )
                                 {
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
