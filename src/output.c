@@ -73,8 +73,11 @@ void Init_Output( void )
             Meer_Log(NORMAL, "--[ External information ]-----------------------------------------");
             Meer_Log(NORMAL, "");
             Meer_Log(NORMAL, "Default external program: %s", MeerOutput->external_program);
-            Meer_Log(NORMAL, "Execute on 'security-ips' metadata: %s", MeerOutput->external_metadata_security_ips ? "enabled" : "disabled" );
-            Meer_Log(NORMAL, "Execute on 'max-detect-ips' metadata: %s", MeerOutput->external_metadata_max_detect_ips ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Execute on 'security-ips' policy: %s", MeerOutput->external_metadata_security_ips ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Execute on 'balanced-ips' policy: %s", MeerOutput->external_metadata_balanced_ips ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Execute on 'connectivity-ips' policy: %s", MeerOutput->external_metadata_connectivity_ips ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Execute on 'max-detect-ips' policy: %s", MeerOutput->external_metadata_max_detect_ips ? "enabled" : "disabled" );
+
             Meer_Log(NORMAL, "");
         }
 
@@ -463,7 +466,9 @@ bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
                             policy = (char *)json_object_get_string(tmp);
 
                             if ( ( strstr( policy, "security-ips drop" ) && MeerOutput->external_metadata_security_ips == true ) ||
-                                    ( strstr( policy, "max-detect-ips drop" ) && MeerOutput->external_metadata_max_detect_ips == true ) )
+                                    ( strstr( policy, "max-detect-ips drop" ) && MeerOutput->external_metadata_max_detect_ips == true ) ||
+                                    ( strstr( policy, "balanced-ips drop" ) && MeerOutput->external_metadata_balanced_ips == true ) ||
+                                    ( strstr( policy, "connectivity-ips" ) && MeerOutput->external_metadata_connectivity_ips == true ) )
                                 {
                                     External( DecodeAlert, json_string );
                                 }

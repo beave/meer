@@ -728,6 +728,25 @@ void Load_YAML_Config( char *yaml_file )
                                         }
                                 }
 
+// HERE
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "balanced-ips" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->external_metadata_balanced_ips = true;
+                                        }
+                                }
+
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "connectivity-ips" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->external_metadata_connectivity_ips = true;
+                                        }
+                                }
+
                         }
 
                     if ( type == YAML_TYPE_OUTPUT && sub_type == YAML_MEER_PIPE )

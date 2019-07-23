@@ -174,7 +174,41 @@ output-plugins:
 
     enabled: no
     debug: no
+
+    # Execution of an external program based on metadata "policy".  When Meer
+    # encounters a "policy" (security-ips, balanced-ips, connectivity-ips, 
+    # and max-detect-ips),  Meer will execute the specified routein.  
+    # Currently only Snort rules have these types of polices.  This can be
+    # useful when you want to execute an external script that will to "block"
+    # or "firewall" based off the policy types.  This section only applies if
+    # you are using Suricata with Snort rules.  Snort's polices are
+    # below:
+
+    # connectivity-ips  - You run a lot of real time applications (VOIP, 
+    # financial transactions, etc), and don't want to run any rules that 
+    # could affect the current performance of your sensor.  The rules in this 
+    # category make snort happy, additionally this category focuses on the high
+    # profile most likely to affect the largest number of people type of
+    # vulnerabilities.
+
+    # balanced-ips - You are normal, you run normal stuff and you want normal
+    # security protections.  This is the best policy to start from if you are 
+    # new, old, or just plain average.  If you don't have any special
+    # requirements for super high speeds or super secure networks start here.
+
+    # security-ips - You don't care about dropping your bosses email, everything
+    # in your environment is tightly regulated and you don't tolerate people 
+    # stepping outside of your security policy.  This policy hates on IM, P2P,
+    # vulnerabilities, malware, web apps that cause productivity loss, remote
+    # access, and just about anything not related to getting work done.  
+    # If you run your network with an iron fist start here.
+
+    # I can't seem to find any documentation on what "max-detect-ips" is :(
+
     metadata-security-ips: enabled
     metadata-max-detect-ips: enabled
+    metadata-connectivity-ips: enabled
+    metadata-balanced-ips: enabled
+
     program: "/usr/local/bin/external_program"
 
