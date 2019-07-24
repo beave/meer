@@ -450,15 +450,34 @@ bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
     struct json_object *tmp = NULL;
 
     char *policy = NULL;
+    char *meer = NULL;
 
-    if ( MeerOutput->external_metadata_security_ips == true ||
-            MeerOutput->external_metadata_max_detect_ips == true )
-
+    if ( DecodeAlert->alert_metadata[0] != '\0' )
         {
+            json_obj = json_tokener_parse(DecodeAlert->alert_metadata);
 
-            if ( DecodeAlert->alert_metadata[0] != '\0' )
+            if (json_object_object_get_ex(json_obj, "meer", &tmp))
                 {
-                    json_obj = json_tokener_parse(DecodeAlert->alert_metadata);
+
+                    meer = (char *)json_object_get_string(tmp);
+
+                    if ( strstr( meer, "external" ) )
+                        {
+                            External( DecodeAlert, json_string );
+
+                            /* We can return now.  We don't need to check
+                               policies, etc */
+
+                            return(0);
+                        }
+
+                }
+
+            if ( MeerOutput->external_metadata_security_ips == true ||
+                    MeerOutput->external_metadata_max_detect_ips == true ||
+                    MeerOutput->external_metadata_connectivity_ips == true ||
+                    MeerOutput->external_metadata_balanced_ips == true )
+                {
 
                     if (json_object_object_get_ex(json_obj, "policy", &tmp))
                         {
@@ -477,5 +496,8 @@ bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
 
                 }
         }
+
+    return(0);
+
 }
 
