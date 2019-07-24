@@ -168,6 +168,11 @@ output-plugins:
   # This can be useful for automatic firewalling,  building block lists, 
   # replicating "snortsam" functionality, etc.  See the "tools/external"
   # directory for example routines that use this feature.
+  #
+  # If this option is enabled, any rule that has the metadata of "meer 
+  # external" (ie - metadata:meer external) will cause the external script 
+  # to be executed.  Execution can also be controlled by Snort metadata
+  # "policies".
   ###########################################################################
 
   external:
