@@ -862,6 +862,27 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+                            if ( !strcmp(last_pass, "fileinfo" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_fileinfo = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "dhcp" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->pipe_dhcp = true;
+                                        }
+
+                                }
+
+
                         }
 
                     strlcpy(last_pass, value, sizeof(last_pass));

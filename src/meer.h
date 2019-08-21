@@ -173,6 +173,8 @@ struct _MeerOutput
     bool pipe_ssh;
     bool pipe_tls;
     bool pipe_dns;
+    bool pipe_fileinfo;
+    bool pipe_dhcp;
 
 #ifdef QUADRANT
     bool pipe_bluedot;

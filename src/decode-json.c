@@ -71,13 +71,13 @@ bool Decode_JSON( char *json_string )
 
     if (!json_object_object_get_ex(json_obj, "event_type", &tmp))
         {
-            bad_json == true;
+            bad_json = true;
         }
 
     if ( bad_json == false )
         {
 
-            if ( MeerOutput->sql_enabled == true || MeerOutput->external_enabled == true)
+            if ( tmp != NULL && ( MeerOutput->sql_enabled == true || MeerOutput->external_enabled == true) )
                 {
 
                     if ( !strcmp(json_object_get_string(tmp), "alert") )
@@ -102,7 +102,7 @@ bool Decode_JSON( char *json_string )
 
                 }
 
-            if ( MeerOutput->pipe_enabled == true )
+            if ( tmp != NULL && MeerOutput->pipe_enabled == true )
                 {
 
                     strlcpy(tmp_type, json_object_get_string(tmp), sizeof(tmp_type));

@@ -157,6 +157,8 @@ output-plugins:
     tls: enabled
     ssh: enabled
     smtp: enabled
+    fileinfo: enabled
+    dhcp: enabled
 
   ###########################################################################
   # external - EXPERIMENTAL AND NOT COMPLETE!

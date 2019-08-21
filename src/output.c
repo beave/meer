@@ -91,13 +91,16 @@ void Init_Output( void )
             Meer_Log(NORMAL, "Pipe Location: %s", MeerOutput->pipe_location);
             Meer_Log(NORMAL, "Pipe Size: %d bytes", MeerOutput->pipe_size);
             Meer_Log(NORMAL, "");
-            Meer_Log(NORMAL, "Write 'dns'    : %s", MeerOutput->pipe_dns ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Write 'dns'     : %s", MeerOutput->pipe_dns ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Write 'flow'    : %s", MeerOutput->pipe_flow ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Write 'http'    : %s", MeerOutput->pipe_http ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Write 'tls'     : %s", MeerOutput->pipe_tls ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Write 'ssh'     : %s", MeerOutput->pipe_ssh ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Write 'smtp'    : %s", MeerOutput->pipe_smtp ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Write 'files'   : %s", MeerOutput->pipe_files ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Write 'fileinfo': %s", MeerOutput->pipe_fileinfo ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Write 'dhcp'    : %s", MeerOutput->pipe_dhcp ? "enabled" : "disabled" );
+
 
 #ifdef QUADRANT
 
@@ -233,6 +236,18 @@ bool Output_Pipe ( char *type, char *json_string )
         }
 
     else if ( !strcmp(type, "alert" ) && MeerOutput->pipe_alert == true )
+        {
+            Pipe_Write( json_string );
+            return 0;
+        }
+
+    else if ( !strcmp(type, "fileinfo" ) && MeerOutput->pipe_fileinfo == true )
+        {
+            Pipe_Write( json_string );
+            return 0;
+        }
+
+    else if ( !strcmp(type, "dhcp" ) && MeerOutput->pipe_dhcp == true )
         {
             Pipe_Write( json_string );
             return 0;
