@@ -60,7 +60,6 @@
 #include "sid-map.h"
 #include "usage.h"
 
-
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
 struct _MeerWaldo *MeerWaldo;

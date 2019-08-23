@@ -22,43 +22,25 @@
 #include "config.h"             /* From autoconf */
 #endif
 
-/* Prototypes */
-
-void Load_YAML_Config ( char *yaml_file );
-
-
-#ifdef HAVE_LIBYAML
-
-/************************/
-/* Minimum YAML version */
-/************************/
-
-#define YAML_VERSION_MAJOR 1
-#define YAML_VERSION_MINOR 1
-
-/*****************/
-/* Primary types */
-/*****************/
-
-#define         YAML_TYPE_MEER           1
-#define         YAML_TYPE_OUTPUT	 2
-
-/*******************/
-/* Secondary types */
-/*******************/
-
-#define         YAML_MEER_CORE_CORE     1
-#define         YAML_MEER_SQL	        2
-#define		YAML_MEER_PIPE		3
-#define		YAML_MEER_EXTERNAL	4
-#define 	YAML_MEER_REDIS		5
-
-/******************/
-/* Database types */
-/******************/
-
-#define		DB_MYSQL		1
-#define		DB_POSTGRESQL		2
-
-
+#ifdef HAVE_LIBJSON_C
+#include <json-c/json.h>
 #endif
+
+#ifndef HAVE_LIBJSON_C
+libjson-c is required for Meer to function!
+#endif
+
+typedef struct _DecodeClientStats _DecodeClientStats;
+struct _DecodeClientStats
+{
+
+char *timestamp;
+char *ip_addresses;
+char *program;
+char *message;
+
+};
+
+
+void Decode_Output_JSON_Client_Stats ( struct json_object *json_obj, char *json_string );
+

@@ -184,7 +184,7 @@ output-plugins:
 
     # Execution of an external program based on metadata "policy".  When Meer
     # encounters a "policy" (security-ips, balanced-ips, connectivity-ips, 
-    # and max-detect-ips),  Meer will execute the specified routein.  
+    # and max-detect-ips),  Meer will execute the specified routine.  
     # Currently only Snort rules have these types of polices.  This can be
     # useful when you want to execute an external script that will to "block"
     # or "firewall" based off the policy types.  This section only applies if
@@ -218,4 +218,14 @@ output-plugins:
     policy-balanced-ips: enabled
 
     program: "/usr/local/bin/external_program"
+
+    # EXPERIMENTAL - redis server support. 
+
+  redis:
+
+    enabled: no
+    server: 127.0.0.1
+    port: 6379
+    #password: "mypassword"  # Comment out to disable authentication.
+
 

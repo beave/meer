@@ -65,7 +65,7 @@ echo -n "installation for $host OS... "
 AC_C_BIGENDIAN(AC_SUBST([ENDIAN],[big]),AC_SUBST([ENDIAN],[little]))
 
 AC_ARG_ENABLE(postgresql,
-  [  --enable-postgresql    Enable PostgreSQL support.],
+  [  --enable-postgresql     Enable PostgreSQL support.],
   [ POSTGRES="$enableval"],
   [ POSTGRES="no" ]
 )
@@ -109,6 +109,11 @@ if test "x$with_mysql_libraries" != "xno"; then
    LDFLAGS="${LDFLAGS}  -L${with_mysql_libraries}"
 fi
 
+AC_ARG_ENABLE(redis,
+  [  --enable-redis          Enable Redis support.],
+  [ REDIS="$enableval"],
+  [ REDIS="no" ]
+)
 
 #AC_ARG_ENABLE(libfastjson,
 #  [  --disable-libfastjson         Disable libfastjson support.],
@@ -297,6 +302,12 @@ if test "$POSTGRES" = "yes"; then
        If you're not interested in PostgreSQL support use the --disable-postgresql flag.))
        fi
 
+if test "$REDIS" = "yes"; then
+       AC_MSG_RESULT([------- Redis support is enabled -------])
+       AC_CHECK_HEADER([hiredis/hiredis.h])
+       AC_CHECK_LIB(hiredis, main,,AC_MSG_ERROR(The Hiredis (Redis) library cannot be found.
+       If you're not interested in Redis support use the --disable-redis flag.))
+       fi
 
 
 test "x$prefix" = x. || test "x$prefix" = xNONE && prefix=/usr/local

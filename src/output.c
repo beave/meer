@@ -54,6 +54,12 @@
 MYSQL    *mysql;
 #endif
 
+#ifdef HAVE_LIBHIREDIS
+#include <hiredis/hiredis.h>
+#include "output-plugins/redis.h"
+#endif
+
+
 struct _MeerOutput *MeerOutput;
 struct _MeerConfig *MeerConfig;
 struct _MeerCounters *MeerCounters;
@@ -80,6 +86,37 @@ void Init_Output( void )
 
             Meer_Log(NORMAL, "");
         }
+
+#ifdef HAVE_LIBHIREDIS
+
+    char redis_command[300];
+    char redis_reply[5];
+
+    if ( MeerOutput->redis_flag )
+        {
+
+            Meer_Log(NORMAL, "--[ Redis information ]--------------------------------------------");
+            Meer_Log(NORMAL, "");
+
+
+            /* Connect to redis database */
+
+            Redis_Connect();
+
+
+            strlcpy(redis_command, "PING", sizeof(redis_command));
+
+            Redis_Reader(redis_command, redis_reply, sizeof(redis_reply));
+
+            if (!strcmp(redis_reply, "PONG"))
+                {
+                    Meer_Log(NORMAL, "Got PONG from Redis at %s:%d.", MeerOutput->redis_server, MeerOutput->redis_port);
+                }
+
+            Meer_Log(NORMAL, "");
+        }
+
+#endif
 
     if ( MeerOutput->pipe_enabled )
         {
@@ -188,6 +225,9 @@ void Init_Output( void )
         }
 
 #endif
+
+    Meer_Log(NORMAL, "--[ Meer engine information ]--------------------------------------------");
+    Meer_Log(NORMAL, "");
 
 
 }

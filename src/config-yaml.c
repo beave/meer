@@ -120,6 +120,16 @@ void Load_YAML_Config( char *yaml_file )
 
 #endif
 
+#ifdef HAVE_LIBHIREDIS
+
+    MeerOutput->redis_flag = 0;
+    MeerOutput->redis_port = 6379;
+    MeerOutput->redis_password[0] = '\0';
+    strlcpy(MeerOutput->redis_server, "127.0.0.1", sizeof(MeerOutput->redis_server));
+
+#endif
+
+
     MeerOutput->pipe_size =  DEFAULT_PIPE_SIZE;
 
     if (stat(yaml_file, &filecheck) != false )
@@ -230,6 +240,11 @@ void Load_YAML_Config( char *yaml_file )
                             if ( !strcmp(value, "external") )
                                 {
                                     sub_type = YAML_MEER_EXTERNAL;
+                                }
+
+                            if ( !strcmp(value, "redis") )
+                                {
+                                    sub_type = YAML_MEER_REDIS;
                                 }
 
                         }
@@ -748,6 +763,71 @@ void Load_YAML_Config( char *yaml_file )
 
                         }
 
+
+#ifndef HAVE_LIBHIREDIS
+
+                    if ( type == YAML_TYPE_OUTPUT && sub_type == YAML_MEER_REDIS )
+                        {
+
+                            if (!strcmp(last_pass, "enabled"))
+                                {
+                                    if (!strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            Meer_Log(ERROR, "[%s, line %d] Meer was not compiled with hiredis (Redis) support!", __FILE__, __LINE__);
+                                        }
+
+                                }
+                        }
+
+#endif
+
+#ifdef HAVE_LIBHIREDIS
+
+                    if ( type == YAML_TYPE_OUTPUT && sub_type == YAML_MEER_REDIS )
+                        {
+
+                            if (!strcmp(last_pass, "enabled"))
+                                {
+                                    if (!strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_flag = true;
+                                        }
+                                }
+
+                            if (!strcmp(last_pass, "debug") && MeerOutput->redis_flag == true )
+                                {
+                                    if (!strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_debug = true;
+                                        }
+                                }
+
+                            if ( !strcmp(last_pass, "server") && MeerOutput->redis_flag == true )
+                                {
+                                    strlcpy(MeerOutput->redis_server, value, sizeof(MeerOutput->redis_server));
+                                }
+
+                            if ( !strcmp(last_pass, "password") && MeerOutput->redis_flag == true )
+                                {
+                                    strlcpy(MeerOutput->redis_password, value, sizeof(MeerOutput->redis_password));
+                                }
+
+                            if ( !strcmp(last_pass, "port" ) && MeerOutput->redis_flag == true )
+                                {
+
+                                    MeerOutput->redis_port = atoi(value);
+
+                                    if ( MeerOutput->redis_port == 0 )
+                                        {
+                                            Meer_Log(ERROR, "Invalid configuration.  redis -> port is invalid");
+                                        }
+                                }
+
+
+                        }
+
+#endif
+
                     if ( type == YAML_TYPE_OUTPUT && sub_type == YAML_MEER_PIPE )
                         {
 
@@ -761,12 +841,12 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-                            if ( !strcmp(last_pass, "pipe_location") )
+                            if ( !strcmp(last_pass, "pipe_location") && MeerOutput->pipe_enabled == true )
                                 {
                                     strlcpy(MeerOutput->pipe_location, value, sizeof(MeerOutput->pipe_location));
                                 }
 
-                            if ( !strcmp(last_pass, "pipe_size" ) )
+                            if ( !strcmp(last_pass, "pipe_size" ) && MeerOutput->pipe_enabled == true )
                                 {
 
                                     MeerOutput->pipe_size = atoi(value);

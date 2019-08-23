@@ -40,6 +40,7 @@ libjson-c is required for Meer to function!
 #include <string.h>
 
 #include "decode-json-alert.h"
+#include "decode-output-json-client-stats.h"
 
 #include "meer.h"
 #include "meer-def.h"
@@ -74,10 +75,15 @@ bool Decode_JSON( char *json_string )
             bad_json = true;
         }
 
+    if ( tmp == NULL )
+        {
+            bad_json = true;
+        }
+
     if ( bad_json == false )
         {
 
-            if ( tmp != NULL && ( MeerOutput->sql_enabled == true || MeerOutput->external_enabled == true) )
+            if ( MeerOutput->sql_enabled == true || MeerOutput->external_enabled == true )
                 {
 
                     if ( !strcmp(json_object_get_string(tmp), "alert") )
@@ -102,7 +108,16 @@ bool Decode_JSON( char *json_string )
 
                 }
 
-            if ( tmp != NULL && MeerOutput->pipe_enabled == true )
+            /* Process stats data from Sagan */
+
+            if ( !strcmp(json_object_get_string(tmp), "client_stats") )
+                {
+                    struct _DecodeClientStats *DecodeClientStats;   /* Event_type "alert" */
+                    Decode_Output_JSON_Client_Stats( json_obj, json_string );
+                }
+
+
+            if ( MeerOutput->pipe_enabled == true )
                 {
 
                     strlcpy(tmp_type, json_object_get_string(tmp), sizeof(tmp_type));

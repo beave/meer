@@ -30,6 +30,10 @@
 #include <postgresql/libpq-fe.h>
 #endif
 
+#ifdef HAVE_LIBHIREDIS
+#include <hiredis/hiredis.h>
+#endif
+
 
 #include <stdbool.h>
 #include <inttypes.h>
@@ -119,6 +123,17 @@ struct _MeerOutput
     PGresult *result;
 
 #endif
+
+#ifdef HAVE_LIBHIREDIS
+    bool redis_flag;
+    char redis_server[255];
+    int  redis_port;
+    char redis_password[255];
+    bool redis_debug;
+    bool redis_error;
+    redisContext *c_redis;
+#endif
+
 
     bool sql_enabled;
     bool sql_debug;
