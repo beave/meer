@@ -64,7 +64,7 @@ bool Decode_JSON( char *json_string )
 
     if ( json_string == NULL )
         {
-            MeerCounters->InvalidJSONCount;
+            MeerCounters->InvalidJSONCount++;
             return 1;
         }
 

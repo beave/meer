@@ -129,6 +129,7 @@ void Load_YAML_Config( char *yaml_file )
 
 #endif
 
+    MeerConfig->client_stats = false; 
 
     MeerOutput->pipe_size =  DEFAULT_PIPE_SIZE;
 
@@ -453,6 +454,41 @@ void Load_YAML_Config( char *yaml_file )
                                 }
 
 #endif
+
+
+                            else if ( !strcmp(last_pass, "client_stats" ) )
+                                {   
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {  
+                                            MeerConfig->client_stats = true;
+                                        }
+
+                                }
+
+/*
+                            else if ( !strcmp(last_pass, "client_stats_driver" ) )
+                                {   
+
+				    if( !strcmp(value, "redis"))
+					{
+					    MeerConfig->client_stats_type = DB_REDIS;
+					}
+
+
+				    else if ( !strcmp(value, "sql"))
+					{
+					    MeerConfig->client_stats_type = MeerOutput->sql_driver;
+					}
+*/
+
+//                                }
+
+
+
+
+
+
 
                         }
 

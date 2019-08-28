@@ -83,6 +83,9 @@ struct _MeerConfig
 
     bool health;
 
+    bool client_stats;
+    uint8_t client_stats_type;
+
     /* What ever to record */
 
     bool flow;

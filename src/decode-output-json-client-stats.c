@@ -70,6 +70,11 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
     struct json_object *tmp_i = NULL;
     struct json_object *tmp_ip = NULL;
 
+    struct json_object *tmp_d = NULL;
+
+
+    char dns[255] = { 0 }; 
+
     /* Encoding structs */
 
     struct json_object *encode_json = NULL;
@@ -148,6 +153,7 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
                     Meer_Log(ERROR, "[%s, line %d] 'messages' is incomplete or invalid. Abort", __FILE__, __LINE__);
                 }
 
+
             tmp_timestamp_int = atol( json_object_to_json_string(tmp_timestamp) );
 
             json_object *jtimestamp = json_object_new_int64( tmp_timestamp_int );
@@ -155,6 +161,15 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
 
             json_object *jip = json_object_new_string( json_object_get_string ( tmp_ip ));
             json_object_object_add(encode_json,"ip_address", jip);
+
+	    /* Record DNS if the main configuration has it enabled */
+
+	    if ( MeerConfig->dns )
+	    {
+	    DNS_Lookup( (char *)json_object_get_string ( tmp_ip ), dns, sizeof(dns));
+	    json_object *jdns = json_object_new_string( dns );
+	    json_object_object_add(encode_json,"dns", jdns);
+	    }
 
             json_object *jprogram = json_object_new_string( json_object_get_string ( tmp_program ) );
             json_object_object_add(encode_json,"program", jprogram);

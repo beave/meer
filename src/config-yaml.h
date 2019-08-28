@@ -59,6 +59,7 @@ void Load_YAML_Config ( char *yaml_file );
 
 #define		DB_MYSQL		1
 #define		DB_POSTGRESQL		2
+#define		DB_REDIS		3
 
 
 #endif

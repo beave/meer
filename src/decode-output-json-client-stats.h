@@ -36,6 +36,7 @@ struct _DecodeClientStats
 
 char *timestamp;
 char *ip_addresses;
+char *dns; 
 char *program;
 char *message;
 

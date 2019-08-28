@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
+#include <sys/mman.h>
 
 #include "meer.h"
 #include "meer-def.h"
@@ -131,7 +132,7 @@ void Signal_Handler(int sig_num)
                 }
 
             fsync(MeerConfig->waldo_fd);
-            munmap(MeerConfig->waldo_fd);
+            //munmap(ueerConfig->waldo_fd);
             close(MeerConfig->waldo_fd);
 
             Meer_Log(NORMAL, "Shutdown complete.");
