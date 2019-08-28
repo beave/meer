@@ -135,6 +135,18 @@ struct _MeerOutput
     bool redis_debug;
     bool redis_error;
     redisContext *c_redis;
+
+    bool redis_alert;
+    bool redis_files;
+    bool redis_flow;
+    bool redis_http;
+    bool redis_smtp;
+    bool redis_ssh;
+    bool redis_tls;
+    bool redis_dns;
+    bool redis_fileinfo;
+    bool redis_dhcp;
+
 #endif
 
 

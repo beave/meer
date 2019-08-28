@@ -466,30 +466,6 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-/*
-                            else if ( !strcmp(last_pass, "client_stats_driver" ) )
-                                {   
-
-				    if( !strcmp(value, "redis"))
-					{
-					    MeerConfig->client_stats_type = DB_REDIS;
-					}
-
-
-				    else if ( !strcmp(value, "sql"))
-					{
-					    MeerConfig->client_stats_type = MeerOutput->sql_driver;
-					}
-*/
-
-//                                }
-
-
-
-
-
-
-
                         }
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
@@ -859,6 +835,105 @@ void Load_YAML_Config( char *yaml_file )
                                         }
                                 }
 
+                            if ( !strcmp(last_pass, "flow" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_flow = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "alert" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_alert = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "files" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_files = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "dns" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_dns = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "http" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_http = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "tls" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_tls = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "ssh" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_ssh = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "smtp" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_smtp = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "fileinfo" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_fileinfo = true;
+                                        }
+
+                                }
+
+                            if ( !strcmp(last_pass, "dhcp" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_dhcp = true;
+                                        }
+
+                                }
 
                         }
 

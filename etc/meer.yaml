@@ -42,6 +42,8 @@ meer-core:
     email: enabled
     json: enabled
 
+    client_stats: enabled
+
     # If "dns" is enabled, Meer will do reverse DNS (PTR) lookups of an IP. 
     # The "dns_cache" is the amount of time Meer should "cache" a PTR record
     # for.  The DNS cache prevents Meer from doing repeated lookups of an 
@@ -227,5 +229,12 @@ output-plugins:
     server: 127.0.0.1
     port: 6379
     #password: "mypassword"  # Comment out to disable authentication.
+    mode: list ## possible values: list (default), channel
+    key: suricata ## key or channel to use (default to suricata)
+
+#    pipelining:
+#          enabled: yes ## set enable to yes to enable query pipelining
+#          batch-size: 10 ## number of entry to keep in buffer
+
 
 
