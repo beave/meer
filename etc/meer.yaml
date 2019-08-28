@@ -224,7 +224,6 @@ output-plugins:
   redis:
 
     enabled: no
-    debug: no
     server: 127.0.0.1
     port: 6379
     #password: "mypassword"  # Comment out to disable authentication.
