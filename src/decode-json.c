@@ -52,6 +52,7 @@ libjson-c is required for Meer to function!
 struct _Classifications *MeerClass;
 struct _MeerOutput *MeerOutput;
 struct _MeerCounters *MeerCounters;
+struct _MeerConfig *MeerConfig;
 
 bool Decode_JSON( char *json_string )
 {
@@ -110,19 +111,70 @@ bool Decode_JSON( char *json_string )
 
             /* Process stats data from Sagan */
 
-            if ( !strcmp(json_object_get_string(tmp), "client_stats") )
+            if ( !strcmp(json_object_get_string(tmp), "client_stats") && MeerConfig->client_stats == true )
                 {
-                    struct _DecodeClientStats *DecodeClientStats;   /* Event_type "alert" */
                     Decode_Output_JSON_Client_Stats( json_obj, json_string );
                 }
 
 
             if ( MeerOutput->pipe_enabled == true )
                 {
-
                     strlcpy(tmp_type, json_object_get_string(tmp), sizeof(tmp_type));
-
                     Output_Pipe(tmp_type, json_string );
+                }
+
+            if ( MeerOutput->redis_flag == true )
+                {
+
+                    if ( !strcmp(json_object_get_string(tmp), "flow") && MeerOutput->redis_flow == true )
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "dns") && MeerOutput->redis_dns == true )
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "alert") && MeerOutput->redis_alert == true)
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "http") && MeerOutput->redis_http == true)
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "files" ) && MeerOutput->redis_files == true )
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "tls" ) && MeerOutput->redis_tls == true)
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "ssh" ) && MeerOutput->redis_ssh == true)
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "smtp" ) && MeerOutput->redis_smtp == true)
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "fileinfo" ) && MeerOutput->redis_fileinfo == true)
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "dhcp" ) && MeerOutput->redis_dhcp == true)
+                        {
+                            JSON_To_Redis( json_string );
+                        }
 
                 }
 

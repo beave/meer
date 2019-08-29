@@ -125,11 +125,14 @@ void Load_YAML_Config( char *yaml_file )
     MeerOutput->redis_flag = 0;
     MeerOutput->redis_port = 6379;
     MeerOutput->redis_password[0] = '\0';
+    MeerOutput->redis_batch = 1;
     strlcpy(MeerOutput->redis_server, "127.0.0.1", sizeof(MeerOutput->redis_server));
+    strlcpy(MeerOutput->redis_key, DEFAULT_REDIS_KEY, sizeof(MeerOutput->redis_key));
+    strlcpy(MeerOutput->redis_command, "lpush", sizeof(MeerOutput->redis_command));
 
 #endif
 
-    MeerConfig->client_stats = false; 
+    MeerConfig->client_stats = false;
 
     MeerOutput->pipe_size =  DEFAULT_PIPE_SIZE;
 
@@ -457,10 +460,10 @@ void Load_YAML_Config( char *yaml_file )
 
 
                             else if ( !strcmp(last_pass, "client_stats" ) )
-                                {   
+                                {
 
                                     if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
-                                        {  
+                                        {
                                             MeerConfig->client_stats = true;
                                         }
 
@@ -472,7 +475,6 @@ void Load_YAML_Config( char *yaml_file )
 
                     if ( type == YAML_TYPE_OUTPUT && sub_type == YAML_MEER_SQL )
                         {
-
 
                             if ( !strcmp(last_pass, "enabled" ))
                                 {
@@ -824,6 +826,38 @@ void Load_YAML_Config( char *yaml_file )
                                     strlcpy(MeerOutput->redis_password, value, sizeof(MeerOutput->redis_password));
                                 }
 
+                            if ( !strcmp(last_pass, "key") && MeerOutput->redis_flag == true )
+                                {
+                                    strlcpy(MeerOutput->redis_key, value, sizeof(MeerOutput->redis_key));
+                                }
+
+                            if ( !strcmp(last_pass, "mode") && MeerOutput->redis_flag == true )
+                                {
+                                    if ( strcmp(value, "list") && strcmp(value, "lpush") &&
+                                            strcmp(value, "rpush" ) && strcmp(value, "channel") &&
+                                            strcmp(value, "publish" ) )
+                                        {
+                                            Meer_Log(ERROR, "Invalid 'redis' -> 'mode'.  Must be list, lpush, rpush, channel or public. Abort");
+                                        }
+
+                                    if ( !strcmp(value, "list") || !strcmp(value, "lpush" ) )
+                                        {
+                                            strlcpy( MeerOutput->redis_command, "lpush", sizeof(MeerOutput->redis_command) );
+                                        }
+
+                                    if ( !strcmp(value, "rpush"))
+                                        {
+                                            strlcpy( MeerOutput->redis_command, "rpush", sizeof(MeerOutput->redis_command) );
+                                        }
+
+                                    if ( !strcmp(value, "channel") || !strcmp(value, "publish" ) )
+                                        {
+                                            strlcpy( MeerOutput->redis_command, "publish", sizeof(MeerOutput->redis_command) );
+                                        }
+
+                                }
+
+
                             if ( !strcmp(last_pass, "port" ) && MeerOutput->redis_flag == true )
                                 {
 
@@ -832,6 +866,17 @@ void Load_YAML_Config( char *yaml_file )
                                     if ( MeerOutput->redis_port == 0 )
                                         {
                                             Meer_Log(ERROR, "Invalid configuration.  redis -> port is invalid");
+                                        }
+                                }
+
+                            if ( !strcmp(last_pass, "batch" ) && MeerOutput->redis_flag == true )
+                                {
+
+                                    MeerOutput->redis_batch = atoi(value);
+
+                                    if ( MeerOutput->redis_batch == 0 )
+                                        {
+                                            Meer_Log(ERROR, "Invalid configuration.  redis -> batch is invalid");
                                         }
                                 }
 
@@ -934,6 +979,19 @@ void Load_YAML_Config( char *yaml_file )
                                         }
 
                                 }
+
+                            if ( !strcmp(last_pass, "client_stats" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_client_stats = true;
+                                        }
+
+                                }
+
+
+
 
                         }
 

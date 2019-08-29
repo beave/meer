@@ -41,6 +41,10 @@
 
 struct _MeerOutput *MeerOutput;
 
+uint32_t redis_batch_count = 0;
+
+char redis_batch[MAX_REDIS_BATCH][10240 + PACKET_BUFFER_SIZE_DEFAULT];
+
 void Redis_Connect( void )
 {
 
@@ -182,6 +186,35 @@ bool Redis_Writer ( char *command, char *key, char *value, int expire )
             MeerOutput->redis_error = true;
 
         }
+
+}
+
+
+void JSON_To_Redis ( char *json_string )
+{
+
+    int i = 0;
+
+    if ( redis_batch_count == MeerOutput->redis_batch )
+        {
+
+            for ( i = 0; i < MeerOutput->redis_batch; i ++ )
+                {
+                    Redis_Writer ( MeerOutput->redis_command, MeerOutput->redis_key, redis_batch[i], 0 );
+                }
+
+            redis_batch_count = 0;
+
+            if ( MeerOutput->redis_debug )
+                {
+                    Meer_Log(WARN, "[%s, line %d] Wrote out Redis batch!", __FILE__, __LINE__);
+                }
+
+        }
+
+    strlcpy(redis_batch[redis_batch_count], json_string, sizeof(redis_batch[redis_batch_count]));
+
+    redis_batch_count++;
 
 }
 

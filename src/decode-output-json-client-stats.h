@@ -30,17 +30,19 @@
 libjson-c is required for Meer to function!
 #endif
 
+/*
 typedef struct _DecodeClientStats _DecodeClientStats;
 struct _DecodeClientStats
 {
 
 char *timestamp;
 char *ip_addresses;
-char *dns; 
+char *dns;
 char *program;
 char *message;
 
 };
+*/
 
 
 void Decode_Output_JSON_Client_Stats ( struct json_object *json_obj, char *json_string );

@@ -65,3 +65,6 @@
 #define		EXTRA_NORMALIZED_JAVASCRIPT		13
 
 #define 	DEFAULT_PIPE_SIZE			1048576
+
+#define 	MAX_REDIS_BATCH				100
+#define		DEFAULT_REDIS_KEY			"suricata"

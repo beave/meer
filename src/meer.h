@@ -131,9 +131,12 @@ struct _MeerOutput
     bool redis_flag;
     char redis_server[255];
     int  redis_port;
+    int  redis_batch;
     char redis_password[255];
     bool redis_debug;
     bool redis_error;
+    char redis_key[128];
+    char redis_command[16];
     redisContext *c_redis;
 
     bool redis_alert;
@@ -146,6 +149,7 @@ struct _MeerOutput
     bool redis_dns;
     bool redis_fileinfo;
     bool redis_dhcp;
+    bool redis_client_stats;
 
 #endif
 

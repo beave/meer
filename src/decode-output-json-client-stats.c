@@ -73,7 +73,7 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
     struct json_object *tmp_d = NULL;
 
 
-    char dns[255] = { 0 }; 
+    char dns[255] = { 0 };
 
     /* Encoding structs */
 
@@ -83,16 +83,16 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
 
     /* Start decoding */
 
-    struct _DecodeClientStats *ClientStats_Return_Struct = NULL;
+//    struct _DecodeClientStats *ClientStats_Return_Struct = NULL;
 
-    ClientStats_Return_Struct = (struct _DecodeClientStats *) malloc(sizeof(_DecodeClientStats));
+//    ClientStats_Return_Struct = (struct _DecodeClientStats *) malloc(sizeof(_DecodeClientStats));
 
-    if ( ClientStats_Return_Struct == NULL )
-        {
-            Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeClientStats. Abort!", __FILE__, __LINE__, json_string);
-        }
+//    if ( ClientStats_Return_Struct == NULL )
+//        {
+//            Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeClientStats. Abort!", __FILE__, __LINE__, json_string);
+//        }
 
-    memset(ClientStats_Return_Struct, 0, sizeof(_DecodeClientStats));
+//    memset(ClientStats_Return_Struct, 0, sizeof(_DecodeClientStats));
 
     json_object_object_get_ex(json_obj, "timestamp", &tmp_t);
 
@@ -162,14 +162,14 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
             json_object *jip = json_object_new_string( json_object_get_string ( tmp_ip ));
             json_object_object_add(encode_json,"ip_address", jip);
 
-	    /* Record DNS if the main configuration has it enabled */
+            /* Record DNS if the main configuration has it enabled */
 
-	    if ( MeerConfig->dns )
-	    {
-	    DNS_Lookup( (char *)json_object_get_string ( tmp_ip ), dns, sizeof(dns));
-	    json_object *jdns = json_object_new_string( dns );
-	    json_object_object_add(encode_json,"dns", jdns);
-	    }
+            if ( MeerConfig->dns )
+                {
+                    DNS_Lookup( (char *)json_object_get_string ( tmp_ip ), dns, sizeof(dns));
+                    json_object *jdns = json_object_new_string( dns );
+                    json_object_object_add(encode_json,"dns", jdns);
+                }
 
             json_object *jprogram = json_object_new_string( json_object_get_string ( tmp_program ) );
             json_object_object_add(encode_json,"program", jprogram);
@@ -186,8 +186,6 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
                     snprintf(redis_prefix, sizeof(redis_prefix), "client_stats:%s", json_object_get_string ( tmp_ip ));
                     Redis_Writer( "SET", redis_prefix, json_object_to_json_string(encode_json), 0);
                 }
-
-            /* MySQL */
 
             /* MySQL with INSERT/UPDATE */
 
