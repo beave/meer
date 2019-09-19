@@ -30,8 +30,9 @@ meer-core:
 
     meer_log: "/var/log/meer/meer.log"   # Meer log file
 
-    # Meer can decode various types of data from within an "alert".  This 
-    # section enabled/disabled various JSON decoders.  
+    # Meer can decode various types of data with an alert (ie "event_type:
+    # alert").  This section enabled/disabled the JSON decoders for the 
+    # event type of "alert". 
 
     metadata: enabled
     flow: enabled
@@ -178,7 +179,7 @@ output-plugins:
   # directory for example routines that use this feature.
   #
   # If this option is enabled, any rule that has the metadata of "meer 
-  # external" (ie - metadata:meer external) will cause the external script 
+  # external" (ie - "metadata:meer external") will cause the external script 
   # to be executed.  Execution can also be controlled by Snort metadata
   # "policies".
   ###########################################################################
