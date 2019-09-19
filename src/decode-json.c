@@ -123,6 +123,8 @@ bool Decode_JSON( char *json_string )
                     Output_Pipe(tmp_type, json_string );
                 }
 
+#ifdef HAVE_LIBHIREDIS
+
             if ( MeerOutput->redis_flag == true )
                 {
 
@@ -178,11 +180,14 @@ bool Decode_JSON( char *json_string )
 
                 }
 
+#endif
+
         }
     else
         {
             MeerCounters->InvalidJSONCount++;
         }
+
 
     /* Delete json-c _root_ objects */
 
