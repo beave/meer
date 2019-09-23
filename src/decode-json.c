@@ -62,6 +62,7 @@ bool Decode_JSON( char *json_string )
 
     char tmp_type[32] = { 0 };
     bool bad_json = false;
+    bool fingerprint_return = false;
 
     if ( json_string == NULL )
         {
@@ -93,10 +94,23 @@ bool Decode_JSON( char *json_string )
                             struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
                             DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
 
-                            if ( MeerOutput->sql_enabled == true )
+			    /* DEBUG - if MeerConfig->fingerprint == true && MeerOutput->sql_fingerprint == true we NOT 
+			       want the event to go to Output_Alert_SQL!  */
+
+			    if ( MeerOutput->sql_fingerprint == true ) 
+			       {
+				    fingerprint_return = Output_Fingerprint( DecodeAlert );
+			       }
+
+			    printf("fingerprint_return: %d\n", fingerprint_return);
+
+                            if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
                                 {
+				    printf("Write SQL\n");
                                     Output_Alert_SQL( DecodeAlert );
-                                }
+                                } else {
+				    printf("DIDNT WRITE SQL\n");
+				}
 
                             if ( MeerOutput->external_enabled == true )
                                 {

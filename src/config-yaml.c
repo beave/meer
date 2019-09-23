@@ -117,6 +117,7 @@ void Load_YAML_Config( char *yaml_file )
     MeerOutput->sql_extra_data = true;
     MeerOutput->sql_reconnect = true;
     MeerOutput->sql_reconnect_time = SQL_RECONNECT_TIME;
+    MeerOutput->sql_fingerprint = false; 
 
 #endif
 
@@ -414,6 +415,16 @@ void Load_YAML_Config( char *yaml_file )
 
 #endif
 
+                            else if ( !strcmp(last_pass, "fingerprint" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->fingerprint = true;
+                                        }
+
+                                }
+
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
@@ -645,6 +656,16 @@ void Load_YAML_Config( char *yaml_file )
                                             MeerOutput->sql_extra_data = true;
                                         }
                                 }
+
+                            else if ( !strcmp(last_pass, "fingerprint" ) && MeerOutput->sql_enabled == true )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->sql_fingerprint = true;
+                                        }
+                                }
+
 
                             else if ( !strcmp(last_pass, "reconnect" ) && MeerOutput->sql_enabled == true )
                                 {

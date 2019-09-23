@@ -82,6 +82,7 @@ struct _MeerConfig
     uint32_t dns_cache;
 
     bool health;
+    bool fingerprint;
 
     bool client_stats;
     uint8_t client_stats_type;
@@ -157,6 +158,7 @@ struct _MeerOutput
     bool sql_enabled;
     bool sql_debug;
     bool sql_extra_data;
+    bool sql_fingerprint;
     char sql_server[128];
     uint32_t sql_port;
     char sql_username[64];

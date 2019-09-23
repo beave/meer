@@ -18,38 +18,4 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-/****************************************************************************
- * This takes input data (JSON) and writes it out to a named pipe/FIFO
- ****************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"             /* From autoconf */
-#endif
-
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-
-#include "meer.h"
-#include "meer-def.h"
-#include "pipe.h"
-
-struct _MeerOutput *MeerOutput;
-struct _MeerCounters *MeerCounters;
-
-void Pipe_Write ( char *json_string )
-{
-    uint32_t ret = 0;
-
-    ret = write(MeerOutput->pipe_fd, json_string, strlen(json_string));
-
-    if ( ret < 0 )
-        {
-            Meer_Log(WARN, "Could not write pipe. Error: %s", strerror(errno));
-            return;
-        }
-
-    MeerCounters->JSONPipeWrites++;
-
-}

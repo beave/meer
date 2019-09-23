@@ -48,6 +48,7 @@
 #include "output-plugins/sql.h"
 #include "output-plugins/pipe.h"
 #include "output-plugins/external.h"
+#include "output-plugins/fingerprint.h"
 
 #ifdef HAVE_LIBMYSQLCLIENT
 #include <mysql/mysql.h>
@@ -184,10 +185,12 @@ void Init_Output( void )
                 }
 
             Meer_Log(NORMAL, "Extra data: %s", MeerOutput->sql_extra_data ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Fingerprinting: %s", MeerOutput->sql_fingerprint ? "enabled" : "disabled" );
+
 
             /* Legacy reference system */
 
-            Meer_Log(NORMAL, "Legacy Reference System': %s", MeerOutput->sql_reference_system ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Legacy Reference System: %s", MeerOutput->sql_reference_system ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "");
 
             if ( MeerOutput->sql_reference_system )
@@ -553,6 +556,92 @@ bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
         }
 
     return(0);
+
+}
+
+
+/****************************************************************************
+ * Output_External - Sends certain data to an external program based on
+ * the signature triggered.
+ ****************************************************************************/
+
+bool Output_Fingerprint ( struct _DecodeAlert *DecodeAlert )
+{
+
+    struct json_object *json_obj = NULL;
+    struct json_object *tmp = NULL;
+
+    char *fingerprint_d_os = NULL;
+    char *fingerprint_d_type = NULL; 
+
+    char *fingerprint_os = "unknown"; 
+    char *fingerprint_type = "unknown";
+
+    char *ptr1 = NULL; 
+    char *ptr2 = NULL;
+
+    bool ret = false;
+
+    if ( DecodeAlert->alert_metadata[0] != '\0' )
+	{
+
+	json_obj = json_tokener_parse(DecodeAlert->alert_metadata);
+
+
+	if ( json_object_object_get_ex(json_obj, "fingerprint_os", &tmp))
+		{
+
+		ret = true;
+		
+		fingerprint_d_os =  (char *)json_object_get_string(tmp);
+
+		strtok_r(fingerprint_d_os, "\"", &ptr1);
+
+		if ( ptr1 == NULL ) 
+			{
+			Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_os from %s", __FILE__, __LINE__, fingerprint_d_os);
+			}
+
+		fingerprint_os = strtok_r(NULL, "\"", &ptr1); 
+
+		if ( fingerprint_os == NULL )
+			{
+			Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_os from %s", __FILE__, __LINE__, fingerprint_d_os);
+			}
+		}
+
+	if ( json_object_object_get_ex(json_obj, "fingerprint_type", &tmp))
+		{
+
+		ret = true;
+
+		fingerprint_d_type =  (char *)json_object_get_string(tmp);
+
+		if ( strcasestr( fingerprint_d_type, "client") )
+		   {
+		   fingerprint_type = "client";
+		   }
+
+		 else if ( strcasestr( fingerprint_d_type, "server") )
+		   {
+		   fingerprint_type = "server";
+		   }
+
+
+		}
+
+	if ( ret == true ) 
+		{
+		Fingerprint_Write(DecodeAlert, fingerprint_os, fingerprint_type);
+		}	
+
+	} else {
+
+	return(ret);
+
+	}
+
+return(ret);
 
 }
 
