@@ -117,7 +117,7 @@ void Load_YAML_Config( char *yaml_file )
     MeerOutput->sql_extra_data = true;
     MeerOutput->sql_reconnect = true;
     MeerOutput->sql_reconnect_time = SQL_RECONNECT_TIME;
-    MeerOutput->sql_fingerprint = false; 
+    MeerOutput->sql_fingerprint = false;
 
 #endif
 

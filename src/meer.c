@@ -101,11 +101,15 @@ int main (int argc, char *argv[])
     int fd_int;
     FILE *fd_file;
 
+    char *ptr1 = NULL;
+    char *ptr2 = NULL;
+
     struct stat st;
 
     bool skip_flag = 0;
 
     char buf[BUFFER_SIZE + PACKET_BUFFER_SIZE_DEFAULT];
+    char read_buf[MAX_READ_BUFFER];
 
     uint64_t linecount = 0;
     uint64_t old_size = 0;
@@ -201,7 +205,7 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, "Decode 'ssh'           : %s", MeerConfig->ssh ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Decode 'smtp'          : %s", MeerConfig->smtp ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Decode 'email'         : %s", MeerConfig->email ? "enabled" : "disabled" );
-    Meer_Log(NORMAL, ""); 
+    Meer_Log(NORMAL, "");
     Meer_Log(NORMAL, "Fingerprint support    : %s", MeerConfig->fingerprint ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Health updates         : %s", MeerConfig->health ? "enabled" : "disabled" );
 
@@ -315,7 +319,7 @@ int main (int argc, char *argv[])
     if ( MeerWaldo->position != 0 )
         {
 
-            Meer_Log(NORMAL, "Skipping to record %" PRIu64 " in %s" , MeerWaldo->position, MeerConfig->follow_file);
+            Meer_Log(NORMAL, "Skipping to record %" PRIu64 " in %s", MeerWaldo->position, MeerConfig->follow_file);
 
             while( (fgets(buf, sizeof(buf), fd_file) != NULL ) && linecount < MeerWaldo->position )
                 {
@@ -389,22 +393,43 @@ int main (int argc, char *argv[])
 
                 }
 
-            /* Check spool file.  If it's grown,  read in the new data */
+            /* Check spool file.  If it's grown,  read in the new data.  For some reason,  around Debian 10
+               the call for fgets() stop functioning.  We've replaced that with a read() and parsing of the
+               read_buf. */
 
             if ( (uint64_t) st.st_size > old_size )
                 {
 
-                    while(fgets(buf, sizeof(buf), fd_file) != NULL)
+		    /* Read in data waiting up to MAX_READ_BUFFER */
+
+                    if ( read(fd_int, read_buf, sizeof(read_buf)) != 0  )
                         {
 
-                            skip_flag = Validate_JSON_String( (char*)buf );
+			    /* Split data by newline */
 
-                            if ( skip_flag == 0 )
+                            ptr1 = strtok_r( read_buf, "\n", &ptr2);
+
+                            while( ptr1 != NULL )
                                 {
-                                    Decode_JSON( (char*)buf);
-                                }
 
-                            MeerWaldo->position++;
+                                    skip_flag = Validate_JSON_String( ptr1 );
+
+                                    if ( skip_flag == 0 )
+                                        {
+                                            Decode_JSON( ptr1 );
+                                        }
+
+                                    MeerWaldo->position++;
+
+				    /* Get next line */
+
+                                    ptr1 = strtok_r(NULL, "\n", &ptr2);
+                                }
+                        }
+                    else
+                        {
+
+                            Meer_Log(WARN, "Unable to read() '%s' but continuing.....",  MeerConfig->follow_file );
 
                         }
 

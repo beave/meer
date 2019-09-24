@@ -23,7 +23,9 @@
 #endif
 
 #define DEFAULT_CONFIG "/usr/local/etc/meer.yaml"
+
 #define BUFFER_SIZE 10240
+
 #define MEER_LOG	"/var/log/meer.log"
 
 #define NORMAL		0
@@ -45,6 +47,7 @@
 
 #define DNS_CACHE_DEFAULT	900
 #define PACKET_BUFFER_SIZE_DEFAULT 131072
+#define MAX_READ_BUFFER 1024000
 
 #define SQL_RECONNECT_TIME 10
 

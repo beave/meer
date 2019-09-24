@@ -572,76 +572,78 @@ bool Output_Fingerprint ( struct _DecodeAlert *DecodeAlert )
     struct json_object *tmp = NULL;
 
     char *fingerprint_d_os = NULL;
-    char *fingerprint_d_type = NULL; 
+    char *fingerprint_d_type = NULL;
 
-    char *fingerprint_os = "unknown"; 
+    char *fingerprint_os = "unknown";
     char *fingerprint_type = "unknown";
 
-    char *ptr1 = NULL; 
+    char *ptr1 = NULL;
     char *ptr2 = NULL;
 
     bool ret = false;
 
     if ( DecodeAlert->alert_metadata[0] != '\0' )
-	{
+        {
 
-	json_obj = json_tokener_parse(DecodeAlert->alert_metadata);
-
-
-	if ( json_object_object_get_ex(json_obj, "fingerprint_os", &tmp))
-		{
-
-		ret = true;
-		
-		fingerprint_d_os =  (char *)json_object_get_string(tmp);
-
-		strtok_r(fingerprint_d_os, "\"", &ptr1);
-
-		if ( ptr1 == NULL ) 
-			{
-			Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_os from %s", __FILE__, __LINE__, fingerprint_d_os);
-			}
-
-		fingerprint_os = strtok_r(NULL, "\"", &ptr1); 
-
-		if ( fingerprint_os == NULL )
-			{
-			Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_os from %s", __FILE__, __LINE__, fingerprint_d_os);
-			}
-		}
-
-	if ( json_object_object_get_ex(json_obj, "fingerprint_type", &tmp))
-		{
-
-		ret = true;
-
-		fingerprint_d_type =  (char *)json_object_get_string(tmp);
-
-		if ( strcasestr( fingerprint_d_type, "client") )
-		   {
-		   fingerprint_type = "client";
-		   }
-
-		 else if ( strcasestr( fingerprint_d_type, "server") )
-		   {
-		   fingerprint_type = "server";
-		   }
+            json_obj = json_tokener_parse(DecodeAlert->alert_metadata);
 
 
-		}
+            if ( json_object_object_get_ex(json_obj, "fingerprint_os", &tmp))
+                {
 
-	if ( ret == true ) 
-		{
-		Fingerprint_Write(DecodeAlert, fingerprint_os, fingerprint_type);
-		}	
+                    ret = true;
 
-	} else {
+                    fingerprint_d_os =  (char *)json_object_get_string(tmp);
 
-	return(ret);
+                    strtok_r(fingerprint_d_os, "\"", &ptr1);
 
-	}
+                    if ( ptr1 == NULL )
+                        {
+                            Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_os from %s", __FILE__, __LINE__, fingerprint_d_os);
+                        }
 
-return(ret);
+                    fingerprint_os = strtok_r(NULL, "\"", &ptr1);
+
+                    if ( fingerprint_os == NULL )
+                        {
+                            Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_os from %s", __FILE__, __LINE__, fingerprint_d_os);
+                        }
+                }
+
+            if ( json_object_object_get_ex(json_obj, "fingerprint_type", &tmp))
+                {
+
+                    ret = true;
+
+                    fingerprint_d_type =  (char *)json_object_get_string(tmp);
+
+                    if ( strcasestr( fingerprint_d_type, "client") )
+                        {
+                            fingerprint_type = "client";
+                        }
+
+                    else if ( strcasestr( fingerprint_d_type, "server") )
+                        {
+                            fingerprint_type = "server";
+                        }
+
+
+                }
+
+            if ( ret == true )
+                {
+                    Fingerprint_Write(DecodeAlert, fingerprint_os, fingerprint_type);
+                }
+
+        }
+    else
+        {
+
+            return(ret);
+
+        }
+
+    return(ret);
 
 }
 
