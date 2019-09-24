@@ -242,7 +242,7 @@ output-plugins:
     batch: 10                # Batch/pipelining mode. Max is 100. 1 == no batching.
     key: "suricata"	     # Default 'key' or 'channel' to use. 
     mode: list               # How to publish data to Redis.  Valid types are list/lpush, 
-		             # rpush, channel|publish.
+                             # rpush, channel|publish.
 
     # This controls event_types to send to Redis. 
 

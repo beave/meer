@@ -109,7 +109,6 @@ int main (int argc, char *argv[])
     bool skip_flag = 0;
 
     char buf[BUFFER_SIZE + PACKET_BUFFER_SIZE_DEFAULT];
-    char read_buf[MAX_READ_BUFFER];
 
     uint64_t linecount = 0;
     uint64_t old_size = 0;
@@ -400,36 +399,21 @@ int main (int argc, char *argv[])
             if ( (uint64_t) st.st_size > old_size )
                 {
 
-		    /* Read in data waiting up to MAX_READ_BUFFER */
+                    /* Clear any previous EOF */
 
-                    if ( read(fd_int, read_buf, sizeof(read_buf)) != 0  )
+                    clearerr( fd_file );
+
+                    while(fgets(buf, sizeof(buf), fd_file) != NULL)
                         {
 
-			    /* Split data by newline */
+                            skip_flag = Validate_JSON_String( (char*)buf );
 
-                            ptr1 = strtok_r( read_buf, "\n", &ptr2);
-
-                            while( ptr1 != NULL )
+                            if ( skip_flag == 0 )
                                 {
-
-                                    skip_flag = Validate_JSON_String( ptr1 );
-
-                                    if ( skip_flag == 0 )
-                                        {
-                                            Decode_JSON( ptr1 );
-                                        }
-
-                                    MeerWaldo->position++;
-
-				    /* Get next line */
-
-                                    ptr1 = strtok_r(NULL, "\n", &ptr2);
+                                    Decode_JSON( (char*)buf);
                                 }
-                        }
-                    else
-                        {
 
-                            Meer_Log(WARN, "Unable to read() '%s' but continuing.....",  MeerConfig->follow_file );
+                            MeerWaldo->position++;
 
                         }
 
