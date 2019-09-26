@@ -40,6 +40,7 @@ libjson-c is required for Meer to function!
 #include <string.h>
 
 #include "decode-json-alert.h"
+#include "decode-json-dhcp.h"
 #include "decode-output-json-client-stats.h"
 
 #include "meer.h"
@@ -91,7 +92,7 @@ bool Decode_JSON( char *json_string )
                     if ( !strcmp(json_object_get_string(tmp), "alert") )
                         {
 
-                            struct _DecodeAlert *DecodeAlert;   /* Event_type "alert" */
+                            struct _DecodeAlert *DecodeAlert;   /* event_type: alert */
                             DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
 
                             /* DEBUG - if MeerConfig->fingerprint == true && MeerOutput->sql_fingerprint == true we NOT
@@ -102,16 +103,9 @@ bool Decode_JSON( char *json_string )
                                     fingerprint_return = Output_Fingerprint( DecodeAlert );
                                 }
 
-                            printf("fingerprint_return: %d\n", fingerprint_return);
-
                             if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
                                 {
-                                    printf("Write SQL\n");
                                     Output_Alert_SQL( DecodeAlert );
-                                }
-                            else
-                                {
-                                    printf("DIDNT WRITE SQL\n");
                                 }
 
                             if ( MeerOutput->external_enabled == true )
@@ -124,6 +118,12 @@ bool Decode_JSON( char *json_string )
                         }
 
                 }
+
+	    if ( !strcmp(json_object_get_string(tmp), "dhcp") && MeerConfig->fingerprint == true )  
+		{
+                struct _DecodeDHCP *DecodeDHCP;   /* event_type: dhcp */
+                DecodeDHCP = Decode_JSON_DHCP( json_obj, json_string );
+		}
 
             /* Process stats data from Sagan */
 

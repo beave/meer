@@ -23,6 +23,7 @@ AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
 							      usage.c \
 							      decode-json.c \
 							      decode-json-alert.c \
+							      decode-json-dhcp.c \
 							      decode-output-json-client-stats.c \
 							      output-plugins/sql.c \
 							      output-plugins/mysql.c \

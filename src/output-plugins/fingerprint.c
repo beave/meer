@@ -47,33 +47,30 @@ void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, 
 
     char tmp[MAX_SQL_QUERY];
 
-    char *src_port;
-    char *dest_port;
-
     uint64_t last_id;
+    uint64_t ip_id;
     char *results = NULL;
-//    char *last_id_char = NULL;
 
     unsigned char fingerprint_os_id = 0;
     unsigned char fingerprint_type_id = 0;
 
-
-    src_port = DecodeAlert->src_port;
-    dest_port = DecodeAlert->src_port;
-
-    if ( src_port == NULL )
-        {
-            src_port = "0";
-        }
-
-    if ( dest_port == NULL )
-        {
-            dest_port = "0";
-        }
-
     /* IF SQL IS ENABLED */
 
     SQL_DB_Query("BEGIN");
+
+    snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_ip WHERE ip_src = '%s'", DecodeAlert->src_ip );
+    results=SQL_DB_Query(tmp);
+    MeerCounters->SELECTCount++;  
+
+    if ( results == NULL ) 
+	{
+	snprintf(tmp, sizeof(tmp), "INSERT INTO fp_ip (ip_src) VALUES ('%s')", DecodeAlert->src_ip);
+	SQL_DB_Query(tmp);
+        ip_id = atol(SQL_Get_Last_ID());
+        MeerCounters->SELECTCount++;
+	} else { 
+	ip_id = atol(results);
+	}
 
     if ( !strcmp(fingerprint_type, "unknown" ))
         {
@@ -83,8 +80,8 @@ void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, 
         {
             snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_link_details_server_client WHERE server_client = '%s'", \
                      fingerprint_type);
-            //printf("%s\n", tmp);
             fingerprint_type_id = atoi( SQL_DB_Query(tmp) );
+	    MeerCounters->SELECTCount++;
         }
 
 
@@ -96,72 +93,41 @@ void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, 
         {
             snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_link_details_os WHERE os = '%s'", \
                      fingerprint_os);
-            //printf("%s\n", tmp);
             fingerprint_os_id = atoi ( SQL_DB_Query(tmp) );
+            MeerCounters->SELECTCount++;
         }
 
 
-    printf("%s [%d]|Type: %s [%d]\n", fingerprint_os, fingerprint_os_id,  fingerprint_type, fingerprint_type_id);
+//    printf("%s [%d]|Type: %s [%d]\n", fingerprint_os, fingerprint_os_id,  fingerprint_type, fingerprint_type_id);
 
-    snprintf(tmp, sizeof(tmp),
-             "INSERT INTO fp_event ( timestamp, os, client_server, src_ip, dst_ip, src_port, dst_port, proto, app_proto, sig_name ) VALUES \
-         ('%s', %d, %d, '%s', '%s', %s, %s, '%s', '%s', '%s')",
-             DecodeAlert->timestamp, fingerprint_os_id, fingerprint_type_id, DecodeAlert->src_ip, DecodeAlert->dest_ip, src_port, dest_port, DecodeAlert->proto,  DecodeAlert->app_proto, DecodeAlert->alert_signature);
-
+    snprintf(tmp, sizeof(tmp), "INSERT INTO fp_event (ip_src, ip_src_id, timestamp, flow_id, proto, app_proto, sig_name ) VALUES ( '%s', %llu, '%s', %s, '%s', '%s', '%s')", \
+    DecodeAlert->src_ip, ip_id, DecodeAlert->timestamp, DecodeAlert->flowid, DecodeAlert->proto, DecodeAlert->app_proto, DecodeAlert->alert_signature ); 
     SQL_DB_Query(tmp);
     MeerCounters->INSERTCount++;
 
     last_id = atol(SQL_Get_Last_ID());
 
-    snprintf(tmp, sizeof(tmp), "INSERT INTO fp_payload ( id, payload ) VALUES ( '%llu', '%s')", \
-             last_id, DecodeAlert->payload),
+    snprintf(tmp, sizeof(tmp), "INSERT INTO fp_payload ( id, payload ) VALUES ( %llu, '%s')", last_id, DecodeAlert->payload);
+                                                                                                    
+    SQL_DB_Query(tmp);                                                            
+    MeerCounters->INSERTCount++;  
 
-                      SQL_DB_Query(tmp);
+    snprintf(tmp, sizeof(tmp), "INSERT INTO fp_details (id, server_client, os) VALUES ( %llu, %d, %d)", last_id, fingerprint_type_id, fingerprint_os_id );
+    SQL_DB_Query(tmp);
     MeerCounters->INSERTCount++;
-
+ 
     if ( !strcmp(DecodeAlert->app_proto, "http" ))
         {
 
-            snprintf(tmp, sizeof(tmp), "INSERT INTO fp_http ( id, http_user_agent, hostname, url, xff, http_content_type, \
-		http_method, http_refer, protocol, status, length) VALUES \
-		( %llu, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %llu )", \
-                     last_id, DecodeAlert->http_user_agent, DecodeAlert->http_hostname, DecodeAlert->http_url, DecodeAlert->xff, \
-                     DecodeAlert->http_content_type, DecodeAlert->http_method, DecodeAlert->http_refer, \
-                     DecodeAlert->http_protocol, DecodeAlert->http_status, DecodeAlert->http_length);
+	      snprintf(tmp, sizeof(tmp), \
+              "INSERT INTO fp_http ( id, http_user_agent, hostname, xff ) VALUES ( %llu, '%s', '%s', '%s' )", \
+	      last_id, DecodeAlert->http_user_agent, DecodeAlert->http_hostname, DecodeAlert->xff );
 
             SQL_DB_Query(tmp);
             MeerCounters->INSERTCount++;
 
         }
-    /*
-
-    	if ( !strcmp(fingerprint_type, "unknown" ))
-    		{
-    		fingerprint_type_id = 0;
-    		} else {
-    		snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_link_details_server_client WHERE server_client = '%s'", \
-    		fingerprint_type);
-    		//printf("%s\n", tmp);
-    		fingerprint_type_id = atoi( SQL_DB_Query(tmp) );
-    		}
-
-
-            if ( !strcmp(fingerprint_os, "unknown" ))
-                    {
-                    fingerprint_os_id = 0;
-                    } else {
-    		snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_link_details_type WHERE type = '%s'", \
-    		fingerprint_os);
-    		//printf("%s\n", tmp);
-    		fingerprint_os_id = atoi ( SQL_DB_Query(tmp) );
-    		}
-
-
-    	printf("%s [%d]|%s [%d]\n", fingerprint_os, fingerprint_os_id,  fingerprint_type, fingerprint_type_id);
-    */
-
+    
     SQL_DB_Query("COMMIT");
-
-
 
 }
