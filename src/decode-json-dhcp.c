@@ -69,7 +69,7 @@ struct _DecodeDHCP *Decode_JSON_DHCP( struct json_object *json_obj, char *json_s
         {
             Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeDHCP.  Abort!", __FILE__, __LINE__, json_string);
         }
-        
+
     memset(DHCP_Return_Struct, 0, sizeof(_DecodeDHCP));
 
     DHCP_Return_Struct->timestamp = NULL;
@@ -84,82 +84,82 @@ struct _DecodeDHCP *Decode_JSON_DHCP( struct json_object *json_obj, char *json_s
     if (json_object_object_get_ex(json_obj, "timestamp", &tmp))
         {
             DHCP_Return_Struct->timestamp = (char *)json_object_get_string(tmp);
-        } 
+        }
 
     if (json_object_object_get_ex(json_obj, "flow_id", &tmp))
         {
             DHCP_Return_Struct->flowid = (char *)json_object_get_string(tmp);
-        } 
+        }
 
     if (json_object_object_get_ex(json_obj, "in_iface", &tmp))
         {
             DHCP_Return_Struct->in_iface = (char *)json_object_get_string(tmp);
-        } 
+        }
 
     if (json_object_object_get_ex(json_obj, "src_ip", &tmp))
         {
             DHCP_Return_Struct->src_ip = (char *)json_object_get_string(tmp);
-        } 
+        }
 
     if (json_object_object_get_ex(json_obj, "src_port", &tmp))
         {
             DHCP_Return_Struct->src_port = (char *)json_object_get_string(tmp);
-        } 
+        }
 
     if (json_object_object_get_ex(json_obj, "dest_ip", &tmp))
         {
             DHCP_Return_Struct->dest_ip = (char *)json_object_get_string(tmp);
-        } 
+        }
 
     if (json_object_object_get_ex(json_obj, "dest_port", &tmp))
         {
             DHCP_Return_Struct->dest_port = (char *)json_object_get_string(tmp);
-        } 
+        }
 
     if (json_object_object_get_ex(json_obj, "proto", &tmp))
         {
             DHCP_Return_Struct->proto = (char *)json_object_get_string(tmp);
-        } 
+        }
 
     if (json_object_object_get_ex(json_obj, "dhcp", &tmp))
-	{
+        {
 
-		dhcp = (char *)json_object_get_string(tmp);
+            dhcp = (char *)json_object_get_string(tmp);
 
-                    if ( Validate_JSON_String( dhcp ) == 0 )
-                        {   
+            if ( Validate_JSON_String( dhcp ) == 0 )
+                {
 
-                            json_obj_dhcp = json_tokener_parse(dhcp);
-    
-                            if (json_object_object_get_ex(json_obj_dhcp, "type", &tmp_dhcp))
-                                {   
-                                    strlcpy(DHCP_Return_Struct->dhcp_type, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_type));
-                                }
+                    json_obj_dhcp = json_tokener_parse(dhcp);
 
-                            if (json_object_object_get_ex(json_obj_dhcp, "id", &tmp_dhcp))
-                                {   
-                                    strlcpy(DHCP_Return_Struct->dhcp_id, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_id));
-                                }
+                    if (json_object_object_get_ex(json_obj_dhcp, "type", &tmp_dhcp))
+                        {
+                            strlcpy(DHCP_Return_Struct->dhcp_type, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_type));
+                        }
 
-                            if (json_object_object_get_ex(json_obj_dhcp, "client_mac", &tmp_dhcp))
-                                {   
-                                    strlcpy(DHCP_Return_Struct->dhcp_client_mac, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_client_mac));
-                                }
+                    if (json_object_object_get_ex(json_obj_dhcp, "id", &tmp_dhcp))
+                        {
+                            strlcpy(DHCP_Return_Struct->dhcp_id, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_id));
+                        }
 
-                            if (json_object_object_get_ex(json_obj_dhcp, "assigned_ip", &tmp_dhcp))
-                                {   
-                                    strlcpy(DHCP_Return_Struct->dhcp_assigned_ip, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_assigned_ip));
-                                }
+                    if (json_object_object_get_ex(json_obj_dhcp, "client_mac", &tmp_dhcp))
+                        {
+                            strlcpy(DHCP_Return_Struct->dhcp_client_mac, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_client_mac));
+                        }
 
-			}
+                    if (json_object_object_get_ex(json_obj_dhcp, "assigned_ip", &tmp_dhcp))
+                        {
+                            strlcpy(DHCP_Return_Struct->dhcp_assigned_ip, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_assigned_ip));
+                        }
+
+                }
 
 
-	}
+        }
 
-   if ( dhcp == NULL ) 
-	{
-	Meer_Log(WARN, "[%s, line %d] Got event_type: dhcp log without dhcp json: %s", __FILE__, __LINE__, json_string);
-	}
+    if ( dhcp == NULL )
+        {
+            Meer_Log(WARN, "[%s, line %d] Got event_type: dhcp log without dhcp json: %s", __FILE__, __LINE__, json_string);
+        }
 
     json_object_put(tmp);
 

@@ -247,8 +247,7 @@ char *Hexify(char *xdata, int length)
 }
 
 
-/*
-uint64_t Epoch_Lookup( void )
+uint64_t Current_Epoch( void )
 {
 
     time_t t;
@@ -263,7 +262,6 @@ uint64_t Epoch_Lookup( void )
     return(utime);
 
 }
-*/
 
 bool Is_IP (char *ipaddr, int ver )
 {

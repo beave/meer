@@ -37,12 +37,7 @@ struct _MeerConfig *MeerConfig;
 void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 {
 
-   char tmp[MAX_SQL_QUERY] = { 0 };
-
-    unsigned char ip_src_bit[16] = { 0 };
-    uint32_t *src_ip_u32 = (uint32_t *)&ip_src_bit[0];
-
-    IP2Bit(DecodeAlert->src_ip, ip_src_bit);
+    char tmp[MAX_SQL_QUERY] = { 0 };
 
     snprintf(tmp, sizeof(tmp),
              "UPDATE sensor SET events_count = events_count+1 WHERE sid = %d",
@@ -56,16 +51,6 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 
     (void)SQL_DB_Query(tmp);
 
-
-    /*   
-
-         snprintf(tmp, sizeof(tmp),
-         "INSERT INTO events_ip6src_sig_year (ip_src,ip_src_char,sid,cid,sig_id,timestamp) VALUES (%lu,'%s',%d,%" PRIu64 ", %" PRIu64 ", '%s')",
-         src_ip_u32, DecodeAlert->src_ip, MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, signature_id, DecodeAlert->timestamp );
-
-         (void)SQL_DB_Query(tmp);
-
-    */
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO tmp_events_24 (sid,cid,ip_src,ip_dst,signature,timestamp) VALUES (%u,%" PRIu64 ",'%s','%s',%d,'%s')",
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, DecodeAlert->src_ip, DecodeAlert->dest_ip, signature_id, DecodeAlert->timestamp );
@@ -89,7 +74,7 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, DecodeAlert->src_ip, DecodeAlert->dest_ip, signature_id, DecodeAlert->timestamp );
 
     (void)SQL_DB_Query(tmp);
-                                                     
+
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO tmp_events_month (sid,cid,ip_src,ip_dst,signature,timestamp) VALUES (%u, %" PRIu64 ",'%s','%s',%d,'%s')",
@@ -111,6 +96,55 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 
 }
 
+void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
+{
+
+
+    struct json_object *jobj;
+
+    char key[64] = { 0 };
+
+    jobj = json_object_new_object();
+
+    json_object *jdate = json_object_new_string(DecodeAlert->timestamp);
+    json_object_object_add(jobj,"timestamp", jdate);
+
+    json_object *jsid = json_object_new_int(MeerOutput->sql_sensor_id);
+    json_object_object_add(jobj,"sid", jsid);
+
+    json_object *jcid = json_object_new_int64(MeerOutput->sql_last_cid);
+    json_object_object_add(jobj,"cid", jcid);
+
+    json_object *jflow_id = json_object_new_int64( atol(DecodeAlert->flowid) );
+    json_object_object_add(jobj,"flow_id", jflow_id);
+
+    json_object *jsrc_ip = json_object_new_string(DecodeAlert->src_ip);
+    json_object_object_add(jobj,"src_ip", jsrc_ip);
+
+    json_object *jdest_ip = json_object_new_string(DecodeAlert->dest_ip);
+    json_object_object_add(jobj,"dest_ip", jdest_ip);
+
+    json_object *jsignature_id = json_object_new_int(signature_id);
+    json_object_object_add(jobj,"signature_id", jsignature_id);
+
+    /* Insert into Redis with times */
+
+    snprintf(key, sizeof(key), "tmp_event_24:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 ) );
+
+    snprintf(key, sizeof(key), "tmp_event_month:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 30 ) );
+
+    snprintf(key, sizeof(key), "tmp_event_quarter:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 90 ) );
+
+    snprintf(key, sizeof(key), "tmp_event_year:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 365 ) );
+
+    json_object_put(jobj);
+
+}
+
 #endif
-   
+
 

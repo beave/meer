@@ -39,15 +39,16 @@ libjson-c is required for Meer to function!
 #include <stdbool.h>
 #include <string.h>
 
+#include "decode-json.h"
 #include "decode-json-alert.h"
 #include "decode-json-dhcp.h"
+
 #include "decode-output-json-client-stats.h"
 
 #include "meer.h"
 #include "meer-def.h"
 
 #include "output.h"
-#include "decode-json.h"
 
 
 struct _Classifications *MeerClass;
@@ -119,11 +120,14 @@ bool Decode_JSON( char *json_string )
 
                 }
 
-	    if ( !strcmp(json_object_get_string(tmp), "dhcp") && MeerConfig->fingerprint == true )  
-		{
-                struct _DecodeDHCP *DecodeDHCP;   /* event_type: dhcp */
-                DecodeDHCP = Decode_JSON_DHCP( json_obj, json_string );
-		}
+            if ( !strcmp(json_object_get_string(tmp), "dhcp") && MeerConfig->fingerprint == true )
+                {
+                    struct _DecodeDHCP *DecodeDHCP;   /* event_type: dhcp */
+                    DecodeDHCP = Decode_JSON_DHCP( json_obj, json_string );
+
+                    Output_Fingerprint_DHCP ( DecodeDHCP );
+
+                }
 
             /* Process stats data from Sagan */
 

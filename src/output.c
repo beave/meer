@@ -456,7 +456,22 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
 #ifdef QUADRANT
 
-                    SQL_DB_Quadrant( DecodeAlert, signature_id );
+                    snprintf(tmp, sizeof(tmp),
+                             "UPDATE sensor SET events_count = events_count+1 WHERE sid = %d",
+                             MeerOutput->sql_sensor_id);
+
+                    (void)SQL_DB_Query(tmp);
+
+                    snprintf(tmp, sizeof(tmp),
+                             "UPDATE signature SET events_count = events_count+1 WHERE sig_id = %u",
+                             signature_id );
+
+                    (void)SQL_DB_Query(tmp);
+
+                    Redis_Quadrant ( DecodeAlert, signature_id );
+                    SQL_DB_Quadrant ( DecodeAlert, signature_id );
+
+//                    SQL_DB_Quadrant( DecodeAlert, signature_id );
 
 #endif
 

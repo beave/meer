@@ -18,4 +18,6 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, char *fingerprint_type );
+bool Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP );
 
