@@ -50,6 +50,10 @@
 #include "output-plugins/external.h"
 #include "output-plugins/fingerprint.h"
 
+#ifdef QUADRANT
+#include "output-plugins/quadrant.h"
+#endif
+
 #ifdef HAVE_LIBMYSQLCLIENT
 #include <mysql/mysql.h>
 MYSQL    *mysql;
@@ -449,11 +453,13 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
                     /* These are very Quadrant specific queries.  You likely don't want them. */
 
+
 #ifdef QUADRANT
 
                     SQL_DB_Quadrant( DecodeAlert, signature_id );
 
 #endif
+
                     /* Convert timestamp from event to epoch */
 
                     strptime(DecodeAlert->timestamp,"%FT%T",&tm_);
