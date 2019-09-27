@@ -42,6 +42,8 @@ meer-core:
     smtp: enabled
     email: enabled
     json: enabled
+  
+    fingerprint: enabled
 
     # "client_stats" are specific to Sagan and allow Sagan/Meer to record
     # informatin about systems sending Sagan data.  This has no affect on 
@@ -124,6 +126,8 @@ output-plugins:
     smtp: enabled
     email: enabled
     json: enabled
+
+    fingerprint: enabled
 
     # If you would like Meer to mimic the legacy "reference" tables from
     # Snort/Barnyard2, enable it here.  If your using more than one database
@@ -256,6 +260,8 @@ output-plugins:
     smtp: enabled
     fileinfo: enabled
     dhcp: enabled
+
+    fingerprint: enabled
 
     # This controls sending Sagan client tracking data to Redis.  This has no affect 
     # on Suricata systems. 
