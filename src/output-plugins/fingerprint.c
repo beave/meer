@@ -86,7 +86,18 @@ void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, 
         {
             snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_link_details_server_client WHERE server_client = '%s'", \
                      fingerprint_type);
-            fingerprint_type_id = atoi( SQL_DB_Query(tmp) );
+
+            results = SQL_DB_Query(tmp);
+
+            if ( results != NULL )
+                {
+                    fingerprint_type_id = atoi( results);
+                }
+            else
+                {
+                    fingerprint_type_id = 0;
+                }
+
             MeerCounters->SELECTCount++;
         }
 
@@ -99,7 +110,18 @@ void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, 
         {
             snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_link_details_os WHERE os = '%s'", \
                      fingerprint_os);
-            fingerprint_os_id = atoi ( SQL_DB_Query(tmp) );
+
+            results = SQL_DB_Query(tmp);
+
+            if ( results != NULL )
+                {
+                    fingerprint_os_id = atoi(results);
+                }
+            else
+                {
+                    fingerprint_os_id = 0;
+                }
+
             MeerCounters->SELECTCount++;
         }
 
