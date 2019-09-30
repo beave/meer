@@ -580,12 +580,7 @@ bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
 
 }
 
-
-/****************************************************************************
- * Output_External - Sends certain data to an external program based on
- * the signature triggered.
- ****************************************************************************/
-
+/*
 bool Output_Fingerprint ( struct _DecodeAlert *DecodeAlert )
 {
 
@@ -667,4 +662,5 @@ bool Output_Fingerprint ( struct _DecodeAlert *DecodeAlert )
     return(ret);
 
 }
+*/
 

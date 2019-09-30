@@ -52,6 +52,7 @@ char src_dns[256];
     char payload[131072];
     char *stream;
     char *packet;
+    char *host;
 
     char *json;
 
@@ -64,6 +65,9 @@ char src_dns[256];
 
     char *icmp_type;
     char *icmp_code;
+
+//    char *fingerprint_os;
+//    char *fingerprint_type;
 
     unsigned char ip_version;
 

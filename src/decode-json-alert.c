@@ -99,6 +99,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     Alert_Return_Struct->dest_ip = NULL;
     Alert_Return_Struct->flowid = NULL;
     Alert_Return_Struct->proto = NULL;
+    Alert_Return_Struct->host = NULL;
     Alert_Return_Struct->app_proto[0] = '\0';
 
     /* Extra data */
@@ -226,6 +227,11 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     if (json_object_object_get_ex(json_obj, "proto", &tmp))
         {
             Alert_Return_Struct->proto = (char *)json_object_get_string(tmp);
+        }
+
+    if (json_object_object_get_ex(json_obj, "host", &tmp))
+        {
+            Alert_Return_Struct->host = (char *)json_object_get_string(tmp);
         }
 
     if (json_object_object_get_ex(json_obj, "payload", &tmp))

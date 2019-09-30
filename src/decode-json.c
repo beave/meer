@@ -43,6 +43,8 @@ libjson-c is required for Meer to function!
 #include "decode-json-alert.h"
 #include "decode-json-dhcp.h"
 
+#include "fingerprint.h"
+
 #include "decode-output-json-client-stats.h"
 
 #include "meer.h"
@@ -66,6 +68,14 @@ bool Decode_JSON( char *json_string )
     bool bad_json = false;
     bool fingerprint_return = false;
 
+    char fingerprint_IP_JSON[1024] = { 0 };
+    char fingerprint_EVENT_JSON[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
+    char fingerprint_DHCP_JSON[2048] = { 0 }; 
+
+    char *fingerprint_os = NULL;
+    char *fingerprint_type = NULL;
+
+
     if ( json_string == NULL )
         {
             MeerCounters->InvalidJSONCount++;
@@ -87,8 +97,8 @@ bool Decode_JSON( char *json_string )
     if ( bad_json == false )
         {
 
-            if ( MeerOutput->sql_enabled == true || MeerOutput->external_enabled == true )
-                {
+//            if ( MeerOutput->sql_enabled == true || MeerOutput->external_enabled == true )
+//                {
 
                     if ( !strcmp(json_object_get_string(tmp), "alert") )
                         {
@@ -99,12 +109,35 @@ bool Decode_JSON( char *json_string )
                             /* DEBUG - if MeerConfig->fingerprint == true && MeerOutput->sql_fingerprint == true we NOT
                                want the event to go to Output_Alert_SQL!  */
 
-                            if ( MeerOutput->sql_fingerprint == true )
+
+                            if ( MeerConfig->fingerprint == true )
                                 {
-                                    fingerprint_return = Output_Fingerprint( DecodeAlert );
+
+				    /* Is this a "fingerprint" signature? */
+
+				    struct _FingerprintData *FingerprintData; 
+				    FingerprintData = Parse_Fingerprint( DecodeAlert );
+
+                                    //fingerprint_return = Parse_Fingerprint( DecodeAlert );
+	
+					if ( FingerprintData->fingerprint_return == true )
+						{
+
+//						printf("OS: %s, Type: %s\n", FingerprintData->fingerprint_os, FingerprintData->fingerprint_type);
+
+						Fingerprint_IP_JSON( DecodeAlert, fingerprint_IP_JSON, sizeof(fingerprint_IP_JSON));
+
+						Fingerprint_EVENT_JSON( DecodeAlert, FingerprintData, fingerprint_EVENT_JSON, sizeof(fingerprint_EVENT_JSON));
+
+						//Meer_Log(DEBUG, "EVENT: %s\n", fingerprint_EVENT_JSON);
+						}
+
+					
+
                                 }
 
-                            if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
+
+                            if ( MeerOutput->sql_enabled == true ) // && fingerprint_return == false )
                                 {
                                     Output_Alert_SQL( DecodeAlert );
                                 }
@@ -114,19 +147,21 @@ bool Decode_JSON( char *json_string )
                                     Output_External( DecodeAlert, json_string );
                                 }
 
+//			    free(FingerprintData);
                             free(DecodeAlert);
 
                         }
 
-                }
+//                }
+
 
             if ( !strcmp(json_object_get_string(tmp), "dhcp") && MeerConfig->fingerprint == true )
                 {
                     struct _DecodeDHCP *DecodeDHCP;   /* event_type: dhcp */
                     DecodeDHCP = Decode_JSON_DHCP( json_obj, json_string );
 
+		    Fingerprint_DHCP_JSON( DecodeDHCP, fingerprint_DHCP_JSON, sizeof(fingerprint_DHCP_JSON));
                     Output_Fingerprint_DHCP ( DecodeDHCP );
-
                 }
 
             /* Process stats data from Sagan */

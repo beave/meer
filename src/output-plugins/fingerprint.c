@@ -48,6 +48,8 @@ struct _MeerCounters *MeerCounters;
 void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, char *fingerprint_type )
 {
 
+/*
+
 
     char tmp[MAX_SQL_QUERY];
 
@@ -60,6 +62,7 @@ void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, 
 
     /* IF SQL IS ENABLED */
 
+/*
     SQL_DB_Query("BEGIN");
 
     snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_ip WHERE ip_src = '%s'", DecodeAlert->src_ip );
@@ -157,6 +160,7 @@ void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, 
         }
 
     SQL_DB_Query("COMMIT");
+*/
 
 }
 
@@ -164,6 +168,8 @@ void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, 
 bool Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP )
 {
 
+
+/*
     char *results = NULL;
     char tmp[MAX_SQL_QUERY];
     uint64_t ip_id;
@@ -197,7 +203,7 @@ bool Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP )
 
         }
 
-
+*/
 }
 
 

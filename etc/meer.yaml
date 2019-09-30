@@ -44,6 +44,7 @@ meer-core:
     json: enabled
   
     fingerprint: enabled
+    fingerprint_log: "/tmp/fingerprint.eve"
 
     # "client_stats" are specific to Sagan and allow Sagan/Meer to record
     # informatin about systems sending Sagan data.  This has no affect on 
