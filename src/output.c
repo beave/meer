@@ -226,10 +226,23 @@ void Init_Output( void )
 #endif
 
             Meer_Log(NORMAL, "");
-            Meer_Log(NORMAL, "---------------------------------------------------------------------------");
-
+//            Meer_Log(NORMAL, "---------------------------------------------------------------------------");
 
         }
+
+    if ( MeerConfig->fingerprint == true )
+	{
+            Meer_Log(NORMAL, "Fingerprinting : %s", MeerConfig->fingerprint ? "enabled" : "disabled" );
+            Meer_Log(NORMAL, "Fingerprint log file : %s", MeerConfig->fingerprint_log );
+	    Meer_Log(NORMAL, "");
+
+	    if (( MeerConfig->fingerprint_log_fd  = fopen(MeerConfig->fingerprint_log, "a" )) == NULL )
+	    {
+		Meer_Log(ERROR, "Cannot open Meer fingerprint log file %s! [%s]. Abort!", MeerConfig->fingerprint_log, strerror(errno));
+	    }
+
+	}
+
 
 #endif
 

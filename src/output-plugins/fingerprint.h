@@ -19,5 +19,8 @@
 */
 
 void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, char *fingerprint_type );
-bool Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP );
+void Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP, char *fingerprint_DHCP_JSON );
+void Output_Fingerprint_IP( struct _DecodeAlert *DecodeAlert, char *fingerprint_IP_JSON );
+void Output_Fingerprint_EVENT( struct _DecodeAlert *DecodeAlert, char *fingerprint_EVENT_JSON );
+
 

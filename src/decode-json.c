@@ -70,7 +70,7 @@ bool Decode_JSON( char *json_string )
 
     char fingerprint_IP_JSON[1024] = { 0 };
     char fingerprint_EVENT_JSON[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
-    char fingerprint_DHCP_JSON[2048] = { 0 }; 
+    char fingerprint_DHCP_JSON[2048] = { 0 };
 
     char *fingerprint_os = NULL;
     char *fingerprint_type = NULL;
@@ -97,62 +97,59 @@ bool Decode_JSON( char *json_string )
     if ( bad_json == false )
         {
 
-//            if ( MeerOutput->sql_enabled == true || MeerOutput->external_enabled == true )
-//                {
 
-                    if ( !strcmp(json_object_get_string(tmp), "alert") )
+            if ( !strcmp(json_object_get_string(tmp), "alert") )
+                {
+
+                    struct _DecodeAlert *DecodeAlert;   /* event_type: alert */
+                    DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
+
+                    /* DEBUG - if MeerConfig->fingerprint == true && MeerOutput->sql_fingerprint == true we NOT
+                       want the event to go to Output_Alert_SQL!  */
+
+
+                    if ( MeerConfig->fingerprint == true )
                         {
 
-                            struct _DecodeAlert *DecodeAlert;   /* event_type: alert */
-                            DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
+                            /* Is this a "fingerprint" signature? */
 
-                            /* DEBUG - if MeerConfig->fingerprint == true && MeerOutput->sql_fingerprint == true we NOT
-                               want the event to go to Output_Alert_SQL!  */
+                            struct _FingerprintData *FingerprintData;
+                            FingerprintData = Parse_Fingerprint( DecodeAlert );
 
-
-                            if ( MeerConfig->fingerprint == true )
+                            if ( FingerprintData->ret == true )
                                 {
 
-				    /* Is this a "fingerprint" signature? */
+				    fingerprint_return = FingerprintData->ret;
 
-				    struct _FingerprintData *FingerprintData; 
-				    FingerprintData = Parse_Fingerprint( DecodeAlert );
+                                    Fingerprint_IP_JSON( DecodeAlert, fingerprint_IP_JSON, sizeof(fingerprint_IP_JSON));
+                                    Output_Fingerprint_IP( DecodeAlert, fingerprint_IP_JSON);
 
-                                    //fingerprint_return = Parse_Fingerprint( DecodeAlert );
-	
-					if ( FingerprintData->fingerprint_return == true )
-						{
+				    //printf("%s\n", FingerprintData->os);
+                                    Fingerprint_EVENT_JSON( DecodeAlert, FingerprintData, fingerprint_EVENT_JSON, sizeof(fingerprint_EVENT_JSON));
+                                    Output_Fingerprint_EVENT( DecodeAlert, fingerprint_EVENT_JSON );
 
-//						printf("OS: %s, Type: %s\n", FingerprintData->fingerprint_os, FingerprintData->fingerprint_type);
-
-						Fingerprint_IP_JSON( DecodeAlert, fingerprint_IP_JSON, sizeof(fingerprint_IP_JSON));
-
-						Fingerprint_EVENT_JSON( DecodeAlert, FingerprintData, fingerprint_EVENT_JSON, sizeof(fingerprint_EVENT_JSON));
-
-						//Meer_Log(DEBUG, "EVENT: %s\n", fingerprint_EVENT_JSON);
-						}
-
-					
 
                                 }
 
-
-                            if ( MeerOutput->sql_enabled == true ) // && fingerprint_return == false )
-                                {
-                                    Output_Alert_SQL( DecodeAlert );
-                                }
-
-                            if ( MeerOutput->external_enabled == true )
-                                {
-                                    Output_External( DecodeAlert, json_string );
-                                }
-
-//			    free(FingerprintData);
-                            free(DecodeAlert);
+                            free(FingerprintData);
 
                         }
 
-//                }
+
+                    if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
+                        {
+                            Output_Alert_SQL( DecodeAlert );
+                        }
+
+                    if ( MeerOutput->external_enabled == true )
+                        {
+                            Output_External( DecodeAlert, json_string );
+                        }
+
+                    free(DecodeAlert);
+
+                }
+
 
 
             if ( !strcmp(json_object_get_string(tmp), "dhcp") && MeerConfig->fingerprint == true )
@@ -160,8 +157,10 @@ bool Decode_JSON( char *json_string )
                     struct _DecodeDHCP *DecodeDHCP;   /* event_type: dhcp */
                     DecodeDHCP = Decode_JSON_DHCP( json_obj, json_string );
 
-		    Fingerprint_DHCP_JSON( DecodeDHCP, fingerprint_DHCP_JSON, sizeof(fingerprint_DHCP_JSON));
-                    Output_Fingerprint_DHCP ( DecodeDHCP );
+                    Fingerprint_DHCP_JSON( DecodeDHCP, fingerprint_DHCP_JSON, sizeof(fingerprint_DHCP_JSON));
+                    Output_Fingerprint_DHCP ( DecodeDHCP, fingerprint_DHCP_JSON );
+
+                    free(DecodeDHCP);
                 }
 
             /* Process stats data from Sagan */

@@ -83,6 +83,8 @@ struct _MeerConfig
 
     bool health;
     bool fingerprint;
+    char fingerprint_log[256];
+    FILE *fingerprint_log_fd;
 
     bool client_stats;
     uint8_t client_stats_type;

@@ -93,6 +93,8 @@ void Load_YAML_Config( char *yaml_file )
     MeerConfig->waldo_file[0] = '\0';
     MeerConfig->follow_file[0] = '\0';
     MeerConfig->lock_file[0] = '\0';
+    MeerConfig->fingerprint_log[0] = '\0'; 
+    MeerConfig->fingerprint = false; 
 
     strlcpy(MeerConfig->meer_log, MEER_LOG, sizeof(MeerConfig->meer_log));
 
@@ -117,7 +119,7 @@ void Load_YAML_Config( char *yaml_file )
     MeerOutput->sql_extra_data = true;
     MeerOutput->sql_reconnect = true;
     MeerOutput->sql_reconnect_time = SQL_RECONNECT_TIME;
-    MeerOutput->sql_fingerprint = false;
+//    MeerOutput->sql_fingerprint = false;
 
 #endif
 
@@ -424,6 +426,14 @@ void Load_YAML_Config( char *yaml_file )
                                         }
 
                                 }
+
+                            else if ( !strcmp(last_pass, "fingerprint_log" ) )
+                                {
+
+				strlcpy(MeerConfig->fingerprint_log, value, sizeof(MeerConfig->fingerprint_log));
+
+                                }
+
 
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)

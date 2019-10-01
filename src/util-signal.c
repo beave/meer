@@ -131,8 +131,13 @@ void Signal_Handler(int sig_num)
                     fclose(MeerConfig->meer_log_fd);
                 }
 
+            if ( MeerConfig->fingerprint == true && MeerConfig->fingerprint_log[0] != '\0' )
+		{
+		fflush(MeerConfig->fingerprint_log_fd);
+		fclose(MeerConfig->fingerprint_log_fd);
+		}
+
             fsync(MeerConfig->waldo_fd);
-            //munmap(ueerConfig->waldo_fd);
             close(MeerConfig->waldo_fd);
 
             Meer_Log(NORMAL, "Shutdown complete.");

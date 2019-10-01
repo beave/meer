@@ -43,6 +43,8 @@
 
 struct _MeerOutput *MeerOutput;
 struct _MeerCounters *MeerCounters;
+struct _MeerConfig *MeerConfig;
+
 
 
 void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, char *fingerprint_type )
@@ -165,45 +167,37 @@ void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, 
 }
 
 
-bool Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP )
-{
+void Output_Fingerprint_IP ( struct _DecodeAlert *DecodeAlert, char *fingerprint_IP_JSON )
+{   
 
+    char key[512] = { 0 };
+    snprintf(key, sizeof(key), "%s:ip:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
+    Redis_Writer( "SET", key, fingerprint_IP_JSON, 86400);
 
-/*
-    char *results = NULL;
-    char tmp[MAX_SQL_QUERY];
-    uint64_t ip_id;
-
-
-
-//	    SQL_DB_Query("BEGIN");
-
-
-    snprintf(tmp, sizeof(tmp), "SELECT ip_src_id FROM fp_mac WHERE assigned_ip = '%s' AND client_mac='%s'", DecodeDHCP->dhcp_assigned_ip, DecodeDHCP->dhcp_client_mac );
-
-    results=SQL_DB_Query(tmp);
-    MeerCounters->SELECTCount++;
-
-    if ( results == NULL )
-        {
-
-            //SQL_DB_Query("BEGIN");
-
-            snprintf(tmp, sizeof(tmp), "INSERT INTO fp_ip (ip_src) VALUES ('%s')", DecodeDHCP->src_ip);
-            SQL_DB_Query(tmp);
-            ip_id = atol(SQL_Get_Last_ID());
-            MeerCounters->SELECTCount++;
-
-            snprintf(tmp, sizeof(tmp), "INSERT INTO fp_mac (ip_src_id, timestamp, assigned_ip, client_mac) VALUES (%d, '%s', '%s', '%s')", ip_id, DecodeDHCP->timestamp, DecodeDHCP->dhcp_assigned_ip, DecodeDHCP->dhcp_client_mac);
-            SQL_DB_Query(tmp);
-            MeerCounters->INSERTCount++;
-
-            //SQL_DB_Query("COMMIT");
-
-
-        }
-
-*/
 }
 
+void Output_Fingerprint_EVENT ( struct _DecodeAlert *DecodeAlert, char *fingerprint_EVENT_JSON )
+{
+
+    char key[512] = { 0 };
+
+    snprintf(key, sizeof(key), "%s:event:%s:%" PRIu64 "", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip, DecodeAlert->alert_signature_id);
+    Redis_Writer( "SET", key, fingerprint_EVENT_JSON, 86400);
+
+    if ( MeerConfig->fingerprint_log[0] != '\0' ) 
+    {
+    fprintf(MeerConfig->fingerprint_log_fd, "%s\n", fingerprint_EVENT_JSON);
+    fflush(MeerConfig->fingerprint_log_fd);
+    }
+
+}
+
+void Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP, char *fingerprint_DHCP_JSON )
+{
+
+    char key[512] = { 0 };
+    snprintf(key, sizeof(key), "%s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeDHCP->dhcp_assigned_ip);
+    Redis_Writer( "SET", key, fingerprint_DHCP_JSON, 86400);
+
+}
 

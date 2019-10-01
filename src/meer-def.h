@@ -70,3 +70,5 @@
 
 #define 	MAX_REDIS_BATCH				100
 #define		DEFAULT_REDIS_KEY			"suricata"
+
+#define 	FINGERPRINT_REDIS_KEY			"fingerprint"

@@ -54,12 +54,8 @@ struct _DecodeDHCP *Decode_JSON_DHCP( struct json_object *json_obj, char *json_s
     struct _DecodeDHCP *DHCP_Return_Struct = NULL;
 
     struct json_object *tmp = NULL;
-
     struct json_object *json_obj_dhcp = NULL;
-
     struct json_object *tmp_dhcp = NULL;
-
-
 
     char *dhcp = NULL;
 
@@ -162,6 +158,8 @@ struct _DecodeDHCP *Decode_JSON_DHCP( struct json_object *json_obj, char *json_s
         }
 
     json_object_put(tmp);
+    json_object_put(json_obj_dhcp);
+    json_object_put(tmp_dhcp);
 
     return(DHCP_Return_Struct);
 }
