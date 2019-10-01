@@ -96,18 +96,18 @@ struct _FingerprintData *Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert )
 
                     if ( strcasestr( fingerprint_d_type, "client") )
                         {
-			    strlcpy(FingerprintData_Return->type, fingerprint_d_type, sizeof(FingerprintData_Return->type));
+                            strlcpy(FingerprintData_Return->type, "client", sizeof(FingerprintData_Return->type));
                         }
 
                     else if ( strcasestr( fingerprint_d_type, "server") )
                         {
-			    strlcpy(FingerprintData_Return->type, fingerprint_d_type, sizeof(FingerprintData_Return->type));
+                            strlcpy(FingerprintData_Return->type, "server", sizeof(FingerprintData_Return->type));
                         }
 
 
                 }
 
-	} 
+        }
 
 
     json_object_put(json_obj);

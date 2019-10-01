@@ -209,6 +209,28 @@ bool IP2Bit(char *ipaddr, unsigned char *out)
     return ret;
 }
 
+
+bool Mask2Bit(int mask, unsigned char *out)
+{
+    int i;
+    bool ret = false;
+
+    if (mask < 1 || mask > 128)
+        {
+            return false;
+        }
+
+    ret = true;
+
+    for (i=0; i<mask; i+=8)
+        {
+            out[i/8] = i+8 <= mask ? 0xff : ~((1 << (8 - mask%8)) - 1);
+        }
+    return ret;
+
+}
+
+
 bool Check_Endian()
 {
     int i = 1;
@@ -427,5 +449,29 @@ int File_Check (char *filename)
 {
     struct stat   buffer;
     return (stat (filename, &buffer) == 0);
+}
+
+bool Is_Inrange ( unsigned char *ip, unsigned char *tests, int count)
+{
+    int i,j,k;
+    bool inrange = false;
+    for (i=0; i<count*MAXIPBIT*2; i+=MAXIPBIT*2)
+        {
+            inrange = true;
+            // We can stop if the mask is 0.  We only handle wellformed masks.
+            for(j=0,k=16; j<16 && tests[i+k] != 0x00; j++,k++)
+                {
+                    if((tests[i+j] & tests[i+k]) != (ip[j] & tests[i+k]))
+                        {
+                            inrange = false;
+                            break;
+                        }
+                }
+            if (inrange)
+                {
+                    break;
+                }
+        }
+    return inrange;
 }
 

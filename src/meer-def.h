@@ -41,6 +41,7 @@
 #define SSH_CLIENT	1
 
 #define MAXIP           64              /* Max IP length */
+#define MAXIPBIT        16              /* Max IP length in bytes */
 
 #define IPv4		4
 #define IPv6		6

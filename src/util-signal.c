@@ -132,10 +132,10 @@ void Signal_Handler(int sig_num)
                 }
 
             if ( MeerConfig->fingerprint == true && MeerConfig->fingerprint_log[0] != '\0' )
-		{
-		fflush(MeerConfig->fingerprint_log_fd);
-		fclose(MeerConfig->fingerprint_log_fd);
-		}
+                {
+                    fflush(MeerConfig->fingerprint_log_fd);
+                    fclose(MeerConfig->fingerprint_log_fd);
+                }
 
             fsync(MeerConfig->waldo_fd);
             close(MeerConfig->waldo_fd);

@@ -47,8 +47,9 @@
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
 struct _MeerCounters *MeerCounters;
-
 struct _MeerHealth *MeerHealth = NULL;
+
+struct _Fingerprint_Networks *Fingerprint_Networks;
 
 void Load_YAML_Config( char *yaml_file )
 {
@@ -75,6 +76,20 @@ void Load_YAML_Config( char *yaml_file )
 
 #endif
 
+    /* For fingerprint */
+
+    char *fp_ptr = NULL;
+    char *fp_range = NULL;
+    char *fp2_tok = NULL;
+    char *tok = NULL;
+    char *fp_ipblock = NULL;
+
+    unsigned char fp_ipbits[MAXIPBIT] = { 0 };
+    unsigned char fp_maskbits[MAXIPBIT]= { 0 };
+
+    int fp_mask;
+
+
     MeerHealth = (struct _MeerHealth *) malloc(sizeof(_MeerHealth));
 
     if ( MeerHealth == NULL )
@@ -93,8 +108,8 @@ void Load_YAML_Config( char *yaml_file )
     MeerConfig->waldo_file[0] = '\0';
     MeerConfig->follow_file[0] = '\0';
     MeerConfig->lock_file[0] = '\0';
-    MeerConfig->fingerprint_log[0] = '\0'; 
-    MeerConfig->fingerprint = false; 
+    MeerConfig->fingerprint_log[0] = '\0';
+    MeerConfig->fingerprint = false;
 
     strlcpy(MeerConfig->meer_log, MEER_LOG, sizeof(MeerConfig->meer_log));
 
@@ -427,10 +442,80 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-                            else if ( !strcmp(last_pass, "fingerprint_log" ) )
+                            else if ( !strcmp(last_pass, "fingerprint_log" ) && MeerConfig->fingerprint == true )
                                 {
 
-				strlcpy(MeerConfig->fingerprint_log, value, sizeof(MeerConfig->fingerprint_log));
+                                    strlcpy(MeerConfig->fingerprint_log, value, sizeof(MeerConfig->fingerprint_log));
+
+                                }
+
+
+                            else if ( !strcmp(last_pass, "fingerprint_networks" )  && MeerConfig->fingerprint == true )
+                                {
+
+                                    char *fp_ptr = NULL;
+                                    char *fp_range = NULL;
+                                    char *fp2_tok = NULL;
+                                    char *tok = NULL;
+                                    char *fp_ipblock = NULL;
+
+                                    unsigned char fp_ipbits[MAXIPBIT] = { 0 };
+                                    unsigned char fp_maskbits[MAXIPBIT]= { 0 };
+
+
+                                    int fp_mask;
+
+
+                                    Remove_Spaces(value);
+
+                                    fp_ptr = strtok_r(value, ",", &tok);
+
+                                    while ( fp_ptr != NULL )
+                                        {
+
+                                            //printf("%s\n", fp_ptr);
+
+                                            fp_ipblock = strtok_r(fp_ptr, "/", &fp_range);
+
+                                            //printf("%s %s\n", fp_ipblock, fp_range);
+
+                                            if ( fp_ipblock == NULL )
+                                                {
+                                                    Meer_Log(ERROR, "Fingerprint ip block %s is invalid.  Abort", fp_ptr);
+                                                }
+
+                                            if (!IP2Bit(fp_ipblock, fp_ipbits))
+                                                {
+                                                    Meer_Log(ERROR, "[%s, line %d] Invalid address %s in 'fingerprint_networks'. Abort", __FILE__, __LINE__, fp_ptr );
+                                                }
+
+                                            Fingerprint_Networks = (_Fingerprint_Networks *) realloc(Fingerprint_Networks, (MeerCounters->fingerprint_network_count+1) * sizeof(_Fingerprint_Networks));
+
+                                            if ( Fingerprint_Networks == NULL )
+                                                {
+                                                    Meer_Log(ERROR, "[%s, line %d] Failed to reallocate memory for _Fingerprint_Networks Abort!", __FILE__, __LINE__);
+                                                }
+
+                                            memset(&Fingerprint_Networks[MeerCounters->fingerprint_network_count], 0, sizeof(_Fingerprint_Networks));
+
+                                            fp_mask = atoi(fp_range);
+
+
+                                            if ( fp_mask == 0 || !Mask2Bit(fp_mask, fp_maskbits))
+                                                {
+                                                    Meer_Log(ERROR, "[%s, line %d] Invalid mask for GeoIP 'skip_networks'. Abort", __FILE__, __LINE__);
+                                                }
+
+
+
+                                            memcpy(Fingerprint_Networks[MeerCounters->fingerprint_network_count].range.ipbits, fp_ipbits, sizeof(fp_ipbits));
+                                            memcpy(Fingerprint_Networks[MeerCounters->fingerprint_network_count].range.maskbits, fp_maskbits, sizeof(fp_maskbits));
+                                            MeerCounters->fingerprint_network_count++;
+
+
+                                            fp_ptr = strtok_r(NULL, ",", &tok);
+
+                                        }
 
                                 }
 

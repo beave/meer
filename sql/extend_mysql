@@ -110,3 +110,28 @@ CREATE TABLE email (sid         INT         UNSIGNED NOT NULL,
                     KEY `event` (sid,cid));
 
 
+CREATE TABLE fingerprint_src (
+                      sid INT unsigned NOT NULL,
+                      cid BIGINT unsigned NOT NULL,
+                      json LONGTEXT,
+                      KEY `event` (`sid`,`cid`) );
+
+CREATE TABLE fingerprint_dhcp_src (
+                      sid INT unsigned NOT NULL,
+                      cid BIGINT unsigned NOT NULL,
+                      json TEXT,
+                      KEY `event` (`sid`,`cid`) );
+
+CREATE TABLE fingerprint_dest (
+                      sid INT unsigned NOT NULL,
+                      cid BIGINT unsigned NOT NULL,
+                      json LONGTEXT,
+                      KEY `event` (`sid`,`cid`) );
+
+CREATE TABLE fingerprint_dhcp_dest (
+                      sid INT unsigned NOT NULL,
+                      cid BIGINT unsigned NOT NULL,
+                      json TEXT,
+                      KEY `event` (`sid`,`cid`) );
+
+

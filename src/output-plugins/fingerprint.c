@@ -31,6 +31,7 @@
 
 #include "meer.h"
 #include "meer-def.h"
+#include "util.h"
 
 #include "decode-json-alert.h"
 #include "decode-json-dhcp.h"
@@ -45,130 +46,10 @@ struct _MeerOutput *MeerOutput;
 struct _MeerCounters *MeerCounters;
 struct _MeerConfig *MeerConfig;
 
-
-
-void Fingerprint_Write( struct _DecodeAlert *DecodeAlert, char *fingerprint_os, char *fingerprint_type )
-{
-
-/*
-
-
-    char tmp[MAX_SQL_QUERY];
-
-    uint64_t last_id;
-    uint64_t ip_id;
-    char *results = NULL;
-
-    unsigned char fingerprint_os_id = 0;
-    unsigned char fingerprint_type_id = 0;
-
-    /* IF SQL IS ENABLED */
-
-/*
-    SQL_DB_Query("BEGIN");
-
-    snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_ip WHERE ip_src = '%s'", DecodeAlert->src_ip );
-    results=SQL_DB_Query(tmp);
-    MeerCounters->SELECTCount++;
-
-    if ( results == NULL )
-        {
-            snprintf(tmp, sizeof(tmp), "INSERT INTO fp_ip (ip_src) VALUES ('%s')", DecodeAlert->src_ip);
-            SQL_DB_Query(tmp);
-            ip_id = atol(SQL_Get_Last_ID());
-            MeerCounters->SELECTCount++;
-        }
-    else
-        {
-            ip_id = atol(results);
-        }
-
-    if ( !strcmp(fingerprint_type, "unknown" ))
-        {
-            fingerprint_type_id = 0;
-        }
-    else
-        {
-            snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_link_details_server_client WHERE server_client = '%s'", \
-                     fingerprint_type);
-
-            results = SQL_DB_Query(tmp);
-
-            if ( results != NULL )
-                {
-                    fingerprint_type_id = atoi( results);
-                }
-            else
-                {
-                    fingerprint_type_id = 0;
-                }
-
-            MeerCounters->SELECTCount++;
-        }
-
-
-    if ( !strcmp(fingerprint_os, "unknown" ))
-        {
-            fingerprint_os_id = 0;
-        }
-    else
-        {
-            snprintf(tmp, sizeof(tmp), "SELECT id FROM fp_link_details_os WHERE os = '%s'", \
-                     fingerprint_os);
-
-            results = SQL_DB_Query(tmp);
-
-            if ( results != NULL )
-                {
-                    fingerprint_os_id = atoi(results);
-                }
-            else
-                {
-                    fingerprint_os_id = 0;
-                }
-
-            MeerCounters->SELECTCount++;
-        }
-
-
-//    printf("%s [%d]|Type: %s [%d]\n", fingerprint_os, fingerprint_os_id,  fingerprint_type, fingerprint_type_id);
-
-    snprintf(tmp, sizeof(tmp), "INSERT INTO fp_event (ip_src, ip_src_id, timestamp, flow_id, proto, app_proto, sig_name ) VALUES ( '%s', %llu, '%s', %s, '%s', '%s', '%s')", \
-             DecodeAlert->src_ip, ip_id, DecodeAlert->timestamp, DecodeAlert->flowid, DecodeAlert->proto, DecodeAlert->app_proto, DecodeAlert->alert_signature );
-    SQL_DB_Query(tmp);
-    MeerCounters->INSERTCount++;
-
-    last_id = atol(SQL_Get_Last_ID());
-
-    snprintf(tmp, sizeof(tmp), "INSERT INTO fp_payload ( id, payload ) VALUES ( %llu, '%s')", last_id, DecodeAlert->payload);
-
-    SQL_DB_Query(tmp);
-    MeerCounters->INSERTCount++;
-
-    snprintf(tmp, sizeof(tmp), "INSERT INTO fp_details (id, server_client, os) VALUES ( %llu, %d, %d)", last_id, fingerprint_type_id, fingerprint_os_id );
-    SQL_DB_Query(tmp);
-    MeerCounters->INSERTCount++;
-
-    if ( !strcmp(DecodeAlert->app_proto, "http" ))
-        {
-
-            snprintf(tmp, sizeof(tmp), \
-                     "INSERT INTO fp_http ( id, http_user_agent, hostname, xff ) VALUES ( %llu, '%s', '%s', '%s' )", \
-                     last_id, DecodeAlert->http_user_agent, DecodeAlert->http_hostname, DecodeAlert->xff );
-
-            SQL_DB_Query(tmp);
-            MeerCounters->INSERTCount++;
-
-        }
-
-    SQL_DB_Query("COMMIT");
-*/
-
-}
-
+struct _Fingerprint_Networks *Fingerprint_Networks;
 
 void Output_Fingerprint_IP ( struct _DecodeAlert *DecodeAlert, char *fingerprint_IP_JSON )
-{   
+{
 
     char key[512] = { 0 };
     snprintf(key, sizeof(key), "%s:ip:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
@@ -184,11 +65,11 @@ void Output_Fingerprint_EVENT ( struct _DecodeAlert *DecodeAlert, char *fingerpr
     snprintf(key, sizeof(key), "%s:event:%s:%" PRIu64 "", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip, DecodeAlert->alert_signature_id);
     Redis_Writer( "SET", key, fingerprint_EVENT_JSON, 86400);
 
-    if ( MeerConfig->fingerprint_log[0] != '\0' ) 
-    {
-    fprintf(MeerConfig->fingerprint_log_fd, "%s\n", fingerprint_EVENT_JSON);
-    fflush(MeerConfig->fingerprint_log_fd);
-    }
+    if ( MeerConfig->fingerprint_log[0] != '\0' )
+        {
+            fprintf(MeerConfig->fingerprint_log_fd, "%s\n", fingerprint_EVENT_JSON);
+            fflush(MeerConfig->fingerprint_log_fd);
+        }
 
 }
 
@@ -201,3 +82,117 @@ void Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP, char *fingerprint
 
 }
 
+
+void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
+{
+
+    int i=0;
+    redisReply *reply;
+    int key_count=0;
+    char fingerprint_tmp[10240] = { 0 };
+    char fingerprint_sql[10240*2] = { 0 };
+
+    char fingerprint_dhcp_tmp[1024] = { 0 };
+    char fingerprint_dhcp[1024*2] = { 0 };
+
+
+    char tmp_command[ 10240 + (10240*2) ] = { 0 };
+
+    unsigned char ip[MAXIPBIT] = { 0 };
+
+    /* Lookup ip source from fingerprinting data */
+
+    IP2Bit(DecodeAlert->src_ip, ip);
+
+    for ( i=0; i < MeerCounters->fingerprint_network_count; i++ )
+        {
+
+
+
+            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[i].range, 1) )
+                {
+
+
+                    snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
+                    Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
+
+                    if ( fingerprint_dhcp_tmp[0] != '\0' )
+                        {
+
+                            mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_dhcp, fingerprint_dhcp_tmp, strlen(fingerprint_dhcp_tmp));
+
+                            snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_dhcp_src (sid, cid, json) VALUES \
+(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_dhcp);
+                            (void)SQL_DB_Query(tmp_command);
+
+                        }
+
+                    reply = redisCommand(MeerOutput->c_redis, "SCAN 0 MATCH %s:event:%s:* count 1000", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
+
+                    key_count = reply->element[1]->elements;
+
+                    for ( i = 0; i < key_count; i++)
+                        {
+
+                            redisReply *kr = reply->element[1]->element[i];
+                            snprintf(tmp_command, sizeof(tmp_command), "GET %s", kr->str);
+                            Redis_Reader(tmp_command, fingerprint_tmp, sizeof(fingerprint_tmp));
+
+                            mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_sql, fingerprint_tmp, strlen(fingerprint_tmp));
+
+                            snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_src (sid, cid, json) VALUES \
+(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_sql);
+                            (void)SQL_DB_Query(tmp_command);
+
+
+                        }
+                }
+        }
+
+    IP2Bit(DecodeAlert->dest_ip, ip);
+
+    for ( i=0; i < MeerCounters->fingerprint_network_count; i++ )
+        {
+
+            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[i].range, 1) )
+                {
+
+                    snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->dest_ip);
+                    Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
+
+                    if ( fingerprint_dhcp_tmp[0] != '\0' )
+                        {
+
+                            mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_dhcp, fingerprint_dhcp_tmp, strlen(fingerprint_dhcp_tmp));
+
+                            snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_dhcp_dest (sid, cid, json) VALUES \
+(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_dhcp);
+                            (void)SQL_DB_Query(tmp_command);
+
+                        }
+
+
+                    reply = redisCommand(MeerOutput->c_redis, "SCAN 0 MATCH %s:event:%s:* COUNT 1000", FINGERPRINT_REDIS_KEY,  DecodeAlert->dest_ip);
+
+                    key_count = reply->element[1]->elements;
+
+                    for ( i = 0; i < key_count; i++)
+                        {
+
+                            redisReply *kr = reply->element[1]->element[i];
+                            snprintf(tmp_command, sizeof(tmp_command), "GET %s", kr->str);
+                            Redis_Reader(tmp_command, fingerprint_tmp, sizeof(fingerprint_tmp));
+
+                            mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_sql, fingerprint_tmp, strlen(fingerprint_tmp));
+
+                            snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_dest (sid, cid, json) VALUES \
+(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_sql);
+                            (void)SQL_DB_Query(tmp_command);
+
+
+                        }
+                }
+        }
+
+
+}

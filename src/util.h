@@ -19,6 +19,7 @@
 */
 
 #include <stdbool.h>
+#include "meer-def.h"
 
 typedef struct _DnsCache _DnsCache;
 struct _DnsCache
@@ -29,12 +30,26 @@ struct _DnsCache
 
 };
 
+typedef struct _Fingerprint_Networks _Fingerprint_Networks;
+struct _Fingerprint_Networks
+{
+
+    struct
+    {
+        unsigned char ipbits[MAXIPBIT];
+        unsigned char maskbits[MAXIPBIT];
+    } range;
+
+};
+
+
 void Drop_Priv(void);
 bool Check_Endian(void);
 char *Hexify(char *xdata, int length);
 void DNS_Lookup( char *host, char *str, size_t size );
 bool Validate_JSON_String( char *buf );
 bool IP2Bit(char *ipaddr, unsigned char *out);
+bool Mask2Bit(int mask, unsigned char *out);
 void Remove_Spaces(char *s);
 void Remove_Return(char *s);
 uint64_t Current_Epoch( void );
@@ -42,3 +57,5 @@ bool Is_IPv6 (char *ipaddr);
 double CalcPct(uint64_t cnt, uint64_t total);
 bool Is_IP (char *ipaddr, int ver );
 int File_Check (char *filename);
+bool Is_Inrange ( unsigned char *ip, unsigned char *tests, int count);
+

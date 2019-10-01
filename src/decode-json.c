@@ -119,12 +119,11 @@ bool Decode_JSON( char *json_string )
                             if ( FingerprintData->ret == true )
                                 {
 
-				    fingerprint_return = FingerprintData->ret;
+                                    fingerprint_return = FingerprintData->ret;
 
                                     Fingerprint_IP_JSON( DecodeAlert, fingerprint_IP_JSON, sizeof(fingerprint_IP_JSON));
                                     Output_Fingerprint_IP( DecodeAlert, fingerprint_IP_JSON);
 
-				    //printf("%s\n", FingerprintData->os);
                                     Fingerprint_EVENT_JSON( DecodeAlert, FingerprintData, fingerprint_EVENT_JSON, sizeof(fingerprint_EVENT_JSON));
                                     Output_Fingerprint_EVENT( DecodeAlert, fingerprint_EVENT_JSON );
 
@@ -139,6 +138,7 @@ bool Decode_JSON( char *json_string )
                     if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
                         {
                             Output_Alert_SQL( DecodeAlert );
+
                         }
 
                     if ( MeerOutput->external_enabled == true )

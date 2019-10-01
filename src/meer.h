@@ -238,6 +238,8 @@ struct _MeerCounters
     int ReferenceCount;			/* Legacy refererence system */
     int SIDMapCount;
 
+    int fingerprint_network_count;
+
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
     uint64_t HealthCount;		/* Array count */
