@@ -85,11 +85,11 @@ bool Decode_JSON( char *json_string )
     json_obj = json_tokener_parse(json_string);
 
     if ( json_obj == NULL )
-	{
-	   MeerCounters->InvalidJSONCount++; 
-	   Meer_Log(WARN, "Unable t json_tokener_parse: %s", json_string);
-	   return 1;
-	}
+        {
+            MeerCounters->InvalidJSONCount++;
+            Meer_Log(WARN, "Unable t json_tokener_parse: %s", json_string);
+            return 1;
+        }
 
     if (!json_object_object_get_ex(json_obj, "event_type", &tmp))
         {
@@ -165,10 +165,11 @@ bool Decode_JSON( char *json_string )
                     DecodeDHCP = Decode_JSON_DHCP( json_obj, json_string );
 
                     Fingerprint_DHCP_JSON( DecodeDHCP, fingerprint_DHCP_JSON, sizeof(fingerprint_DHCP_JSON));
-                    Output_Fingerprint_DHCP ( DecodeDHCP, fingerprint_DHCP_JSON );
+//                    Output_Fingerprint_DHCP ( DecodeDHCP, fingerprint_DHCP_JSON );
 
                     free(DecodeDHCP);
                 }
+
 
             /* Process stats data from Sagan */
 
