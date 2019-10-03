@@ -165,7 +165,7 @@ bool Decode_JSON( char *json_string )
                     DecodeDHCP = Decode_JSON_DHCP( json_obj, json_string );
 
                     Fingerprint_DHCP_JSON( DecodeDHCP, fingerprint_DHCP_JSON, sizeof(fingerprint_DHCP_JSON));
-//                    Output_Fingerprint_DHCP ( DecodeDHCP, fingerprint_DHCP_JSON );
+                    Output_Fingerprint_DHCP ( DecodeDHCP, fingerprint_DHCP_JSON );
 
                     free(DecodeDHCP);
                 }
