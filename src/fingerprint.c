@@ -293,8 +293,8 @@ void Fingerprint_EVENT_JSON ( struct _DecodeAlert *DecodeAlert, struct _Fingerpr
 
 
     json_object_put(encode_json);
-    json_object_put(encode_json_fp);
-    json_object_put(encode_json_http);
+//    json_object_put(encode_json_fp);
+//    json_object_put(encode_json_http);
 
 }
 
