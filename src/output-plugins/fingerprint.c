@@ -40,6 +40,7 @@
 
 #include "output-plugins/sql.h"
 
+#ifdef HAVE_LIBHIREDIS
 
 
 struct _MeerOutput *MeerOutput;
@@ -235,5 +236,6 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
                 }
         }
 
-
 }
+
+#endif

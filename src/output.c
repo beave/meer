@@ -171,6 +171,8 @@ void Init_Output( void )
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
+    MeerOutput->sql_transaction = false ;
+
     if ( MeerOutput->sql_enabled )
         {
 
@@ -364,6 +366,7 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                     class_id = SQL_Get_Class_ID( DecodeAlert );
 
                     SQL_DB_Query("START TRANSACTION");
+		    MeerOutput->sql_transaction = true;
 
                     if ( MeerOutput->sql_reference_system == true )
                         {
@@ -449,10 +452,14 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                             SQL_Insert_Email ( DecodeAlert );
                         }
 
+#ifdef HAVE_LIBHIREDIS
+
                     if ( MeerConfig->fingerprint == true )
                         {
                             Output_Fingerprint_Alert( DecodeAlert );
                         }
+
+#endif
 
 
 #ifdef QUADRANT
@@ -468,8 +475,6 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
                     /* Record CID in case of crash/disconnections */
 
-                    SQL_Record_Last_CID();
-
                     /* These are very Quadrant specific queries.  You likely don't want them. */
 
 
@@ -478,14 +483,15 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                     snprintf(tmp, sizeof(tmp),
                              "UPDATE sensor SET events_count = events_count+1 WHERE sid = %d",
                              MeerOutput->sql_sensor_id);
-
                     (void)SQL_DB_Query(tmp);
+		    MeerCounters->UPDATECount++;
 
                     snprintf(tmp, sizeof(tmp),
                              "UPDATE signature SET events_count = events_count+1 WHERE sig_id = %u",
                              signature_id );
 
                     (void)SQL_DB_Query(tmp);
+		    MeerCounters->UPDATECount++;
 
                     Redis_Quadrant ( DecodeAlert, signature_id );
                     //SQL_DB_Quadrant( DecodeAlert, signature_id );
@@ -501,9 +507,12 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
                     SQL_DB_Query( (char*)tmp );
 
+		    SQL_Record_Last_CID();
+
                     MeerCounters->UPDATECount++;
 
                     SQL_DB_Query("COMMIT");
+		    MeerOutput->sql_transaction=false;
 
                     MeerOutput->sql_last_cid++;
 

@@ -119,7 +119,6 @@ char *MySQL_DB_Query( char *sql )
     MYSQL_RES *res;
     MYSQL_ROW row;
 
-
     char tmp[MAX_SQL_QUERY] = { 0 };
 
     char *re = NULL;

@@ -117,6 +117,8 @@ typedef struct _MeerOutput _MeerOutput;
 struct _MeerOutput
 {
 
+    bool sql_transaction;
+
 #ifdef HAVE_LIBMYSQLCLIENT
 
     MYSQL *mysql_dbh;

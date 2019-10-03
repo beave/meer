@@ -26,6 +26,8 @@
 #include "sid-map.h"
 #include "config-yaml.h"
 
+#ifdef HAVE_LIBHIREDIS
+
 struct _FingerprintData *Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert )
 {
 
@@ -323,3 +325,4 @@ void Fingerprint_DHCP_JSON ( struct _DecodeDHCP *DecodeDHCP, char *str, size_t s
 }
 
 
+#endif

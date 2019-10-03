@@ -111,9 +111,7 @@ bool Decode_JSON( char *json_string )
                     struct _DecodeAlert *DecodeAlert;   /* event_type: alert */
                     DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
 
-                    /* DEBUG - if MeerConfig->fingerprint == true && MeerOutput->sql_fingerprint == true we NOT
-                       want the event to go to Output_Alert_SQL!  */
-
+#ifdef HAVE_LIBHIREDIS
 
                     if ( MeerConfig->fingerprint == true )
                         {
@@ -141,6 +139,8 @@ bool Decode_JSON( char *json_string )
 
                         }
 
+#endif
+
 
                     if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
                         {
@@ -157,7 +157,7 @@ bool Decode_JSON( char *json_string )
 
                 }
 
-
+#ifdef HAVE_LIBHIREDIS
 
             if ( !strcmp(json_object_get_string(tmp), "dhcp") && MeerConfig->fingerprint == true )
                 {
@@ -170,6 +170,7 @@ bool Decode_JSON( char *json_string )
                     free(DecodeDHCP);
                 }
 
+#endif
 
             /* Process stats data from Sagan */
 
