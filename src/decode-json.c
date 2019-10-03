@@ -43,7 +43,7 @@ libjson-c is required for Meer to function!
 #include "decode-json-alert.h"
 #include "decode-json-dhcp.h"
 
-#include "fingerprint.h"
+#include "fingerprints.h"
 
 #include "decode-output-json-client-stats.h"
 
@@ -130,7 +130,7 @@ bool Decode_JSON( char *json_string )
                                     Output_Fingerprint_IP( DecodeAlert, fingerprint_IP_JSON);
 
                                     Fingerprint_EVENT_JSON( DecodeAlert, FingerprintData, fingerprint_EVENT_JSON, sizeof(fingerprint_EVENT_JSON));
-                                    Output_Fingerprint_EVENT( DecodeAlert, fingerprint_EVENT_JSON );
+                                    Output_Fingerprint_EVENT( DecodeAlert, FingerprintData, fingerprint_EVENT_JSON );
 
 
                                 }

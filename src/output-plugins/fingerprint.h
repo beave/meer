@@ -20,7 +20,7 @@
 
 void Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP, char *fingerprint_DHCP_JSON );
 void Output_Fingerprint_IP( struct _DecodeAlert *DecodeAlert, char *fingerprint_IP_JSON );
-void Output_Fingerprint_EVENT( struct _DecodeAlert *DecodeAlert, char *fingerprint_EVENT_JSON );
+void Output_Fingerprint_EVENT( struct _DecodeAlert *DecodeAlert, struct _FingerprintData *FingerprintData, char *fingerprint_EVENT_JSON );
 void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert );
 
 

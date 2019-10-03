@@ -36,6 +36,8 @@
 #include <unistd.h>
 
 #include "decode-json-alert.h"
+#include "decode-json-dhcp.h"
+#include "fingerprints.h"
 
 #include "meer.h"
 #include "meer-def.h"

@@ -35,8 +35,9 @@
 
 #include "decode-json-alert.h"
 #include "decode-json-dhcp.h"
-#include "fingerprint.h"
 
+#include "fingerprints.h"
+#include "output-plugins/fingerprint.h"
 
 #include "output-plugins/sql.h"
 
@@ -58,13 +59,13 @@ void Output_Fingerprint_IP ( struct _DecodeAlert *DecodeAlert, char *fingerprint
 
 }
 
-void Output_Fingerprint_EVENT ( struct _DecodeAlert *DecodeAlert, char *fingerprint_EVENT_JSON )
+void Output_Fingerprint_EVENT( struct _DecodeAlert *DecodeAlert, struct _FingerprintData *FingerprintData, char *fingerprint_EVENT_JSON )
 {
 
     char key[512] = { 0 };
 
     snprintf(key, sizeof(key), "%s:event:%s:%" PRIu64 "", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip, DecodeAlert->alert_signature_id);
-    Redis_Writer( "SET", key, fingerprint_EVENT_JSON, 86400);
+    Redis_Writer( "SET", key, fingerprint_EVENT_JSON, FingerprintData->expire );
 
     if ( MeerConfig->fingerprint_log[0] != '\0' )
         {
