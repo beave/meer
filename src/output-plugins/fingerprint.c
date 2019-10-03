@@ -55,7 +55,7 @@ void Output_Fingerprint_IP ( struct _DecodeAlert *DecodeAlert, char *fingerprint
 
     char key[512] = { 0 };
     snprintf(key, sizeof(key), "%s:ip:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
-    Redis_Writer( "SET", key, fingerprint_IP_JSON, 86400);
+    Redis_Writer( "SET", key, fingerprint_IP_JSON, FINGERPRINT_IP_REDIS_EXPIRE);
 
 }
 
@@ -80,7 +80,7 @@ void Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP, char *fingerprint
 
     char key[512] = { 0 };
     snprintf(key, sizeof(key), "%s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeDHCP->dhcp_assigned_ip);
-    Redis_Writer( "SET", key, fingerprint_DHCP_JSON, 86400);
+    Redis_Writer( "SET", key, fingerprint_DHCP_JSON, FINGERPRINT_DHCP_REDIS_EXPIRE );
 
 }
 
