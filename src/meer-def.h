@@ -73,3 +73,4 @@
 #define		DEFAULT_REDIS_KEY			"suricata"
 
 #define 	FINGERPRINT_REDIS_KEY			"fingerprint"
+#define		FINGERPRINT_REDIS_EXPIRE		3600

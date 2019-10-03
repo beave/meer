@@ -488,9 +488,7 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                     (void)SQL_DB_Query(tmp);
 
                     Redis_Quadrant ( DecodeAlert, signature_id );
-                    SQL_DB_Quadrant ( DecodeAlert, signature_id );
-
-//                    SQL_DB_Quadrant( DecodeAlert, signature_id );
+                    //SQL_DB_Quadrant( DecodeAlert, signature_id );
 
 #endif
 

@@ -87,6 +87,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
 {
 
     int i=0;
+    int j=0;
     redisReply *reply;
     int key_count=0;
     char fingerprint_tmp[10240] = { 0 };
@@ -104,14 +105,8 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
 
     IP2Bit(DecodeAlert->src_ip, ip);
 
-    for ( i=0; i < MeerCounters->fingerprint_network_count; i++ )
-        {
-
-
-
-            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[i].range, 1) )
-                {
-
+//            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[i].range, 1) )
+//                {
 
                     snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
                     Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
@@ -126,6 +121,33 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
                             (void)SQL_DB_Query(tmp_command);
 
                         }
+
+//		}
+
+
+
+    for ( j=0; j < MeerCounters->fingerprint_network_count; j++ )
+        {
+		printf("COUNT: %d < %d\n", j, MeerCounters->fingerprint_network_count);
+
+            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[j].range, 1) )
+                {
+
+/*
+                    snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
+                    Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
+
+                    if ( fingerprint_dhcp_tmp[0] != '\0' )
+                        {
+
+                            mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_dhcp, fingerprint_dhcp_tmp, strlen(fingerprint_dhcp_tmp));
+
+                            snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_dhcp_src (sid, cid, json) VALUES \
+(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_dhcp);
+                            (void)SQL_DB_Query(tmp_command);
+
+                        }
+*/
 
                     reply = redisCommand(MeerOutput->c_redis, "SCAN 0 MATCH %s:event:%s:* count 1000", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
 
@@ -151,11 +173,8 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
 
     IP2Bit(DecodeAlert->dest_ip, ip);
 
-    for ( i=0; i < MeerCounters->fingerprint_network_count; i++ )
-        {
-
-            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[i].range, 1) )
-                {
+//            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[i].range, 1) )
+//                {
 
                     snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->dest_ip);
                     Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
@@ -170,7 +189,29 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
                             (void)SQL_DB_Query(tmp_command);
 
                         }
+//		}
 
+
+    for ( j=0; j < MeerCounters->fingerprint_network_count; j++ )
+        {
+
+            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[j].range, 1) )
+                {
+/*
+                    snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->dest_ip);
+                    Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
+
+                    if ( fingerprint_dhcp_tmp[0] != '\0' )
+                        {
+
+                            mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_dhcp, fingerprint_dhcp_tmp, strlen(fingerprint_dhcp_tmp));
+
+                            snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_dhcp_dest (sid, cid, json) VALUES \
+(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_dhcp);
+                            (void)SQL_DB_Query(tmp_command);
+
+                        }
+*/
 
                     reply = redisCommand(MeerOutput->c_redis, "SCAN 0 MATCH %s:event:%s:* COUNT 1000", FINGERPRINT_REDIS_KEY,  DecodeAlert->dest_ip);
 

@@ -6,6 +6,7 @@ struct _FingerprintData
     bool ret;
     char os[32];
     char type[8];
+    uint64_t expire;
 
 };
 
