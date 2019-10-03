@@ -363,7 +363,7 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
                     class_id = SQL_Get_Class_ID( DecodeAlert );
 
-                    SQL_DB_Query("BEGIN");
+                    SQL_DB_Query("START TRANSACTION");
 
                     if ( MeerOutput->sql_reference_system == true )
                         {

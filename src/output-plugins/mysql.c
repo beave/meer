@@ -64,6 +64,8 @@ void MySQL_Connect( void )
 
         }
 
+    mysql_autocommit(MeerOutput->mysql_dbh, false);	/* Turn off autocommit! */
+
     Meer_Log(NORMAL, "Successfully connected to MySQL/MariaDB database.");
 }
 
