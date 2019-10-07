@@ -27,10 +27,10 @@
 
 #ifdef HAVE_LIBHIREDIS
 
-struct _FingerprintData *Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert )
+void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintData *FingerprintData )
 {
 
-    struct _FingerprintData *FingerprintData_Return = NULL;
+//    struct _FingerprintData *FingerprintData = NULL;
 
     struct json_object *json_obj = NULL;
     struct json_object *tmp = NULL;
@@ -46,16 +46,18 @@ struct _FingerprintData *Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert )
     char *ptr1 = NULL;
     char *ptr2 = NULL;
 
-    FingerprintData_Return = (struct _FingerprintData *) malloc(sizeof(_FingerprintData));
+/*
+    FingerprintData = (struct _FingerprintData *) malloc(sizeof(_FingerprintData));
 
-    if ( FingerprintData_Return == NULL )
+    if ( FingerprintData == NULL )
         {
             Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _FingerprintData. Abort!", __FILE__, __LINE__);
         }
 
-    memset(FingerprintData_Return, 0, sizeof(_FingerprintData));
+    memset(FingerprintData, 0, sizeof(_FingerprintData));
+*/
 
-    FingerprintData_Return->expire = FINGERPRINT_REDIS_EXPIRE;
+    FingerprintData->expire = FINGERPRINT_REDIS_EXPIRE;
 
     if ( DecodeAlert->alert_metadata[0] != '\0' )
         {
@@ -65,7 +67,7 @@ struct _FingerprintData *Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert )
             if ( json_object_object_get_ex(json_obj, "fingerprint_os", &tmp))
                 {
 
-                    FingerprintData_Return->ret = true;
+                    FingerprintData->ret = true;
 
                     fingerprint_d_os =  (char *)json_object_get_string(tmp);
 
@@ -83,13 +85,13 @@ struct _FingerprintData *Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert )
                             Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_os from %s", __FILE__, __LINE__, fingerprint_d_os);
                         }
 
-                    strlcpy(FingerprintData_Return->os, fingerprint_os, sizeof(FingerprintData_Return->os));
+                    strlcpy(FingerprintData->os, fingerprint_os, sizeof(FingerprintData->os));
                 }
 
             if ( json_object_object_get_ex(json_obj, "fingerprint_expire", &tmp))
                 {
 
-                    FingerprintData_Return->ret = true;
+                    FingerprintData->ret = true;
 
                     fingerprint_d_expire =  (char *)json_object_get_string(tmp);
 
@@ -107,30 +109,30 @@ struct _FingerprintData *Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert )
                             Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_expire from %s", __FILE__, __LINE__, fingerprint_d_expire);
                         }
 
-                    FingerprintData_Return->expire = atoi( fingerprint_expire );
+                    FingerprintData->expire = atoi( fingerprint_expire );
                 }
 
             if ( json_object_object_get_ex(json_obj, "fingerprint_type", &tmp))
                 {
 
-                    FingerprintData_Return->ret = true;
+                    FingerprintData->ret = true;
 
                     fingerprint_d_type =  (char *)json_object_get_string(tmp);
 
                     if ( strcasestr( fingerprint_d_type, "client") )
                         {
-                            strlcpy(FingerprintData_Return->type, "client", sizeof(FingerprintData_Return->type));
+                            strlcpy(FingerprintData->type, "client", sizeof(FingerprintData->type));
                         }
 
                     else if ( strcasestr( fingerprint_d_type, "server") )
                         {
-                            strlcpy(FingerprintData_Return->type, "server", sizeof(FingerprintData_Return->type));
+                            strlcpy(FingerprintData->type, "server", sizeof(FingerprintData->type));
                         }
                 }
         }
 
     json_object_put(json_obj);
-    return(FingerprintData_Return);
+//    return(FingerprintData);
 
 }
 

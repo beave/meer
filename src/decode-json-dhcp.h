@@ -53,5 +53,5 @@ char dhcp_type[16];
 };
 
 
-struct _DecodeDHCP *Decode_JSON_DHCP( struct json_object *json_obj, char *json_string );
+void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _DecodeDHCP *DecodeDHCP );
 

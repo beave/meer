@@ -132,6 +132,9 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
     snprintf(key, sizeof(key), "tmp_event_24:%s", DecodeAlert->flowid);
     Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 ) );
 
+    snprintf(key, sizeof(key), "tmp_event_week:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 7) );
+
     snprintf(key, sizeof(key), "tmp_event_month:%s", DecodeAlert->flowid);
     Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 30 ) );
 

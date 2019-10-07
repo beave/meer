@@ -48,10 +48,10 @@ libjson-c is required for Meer to function!
 struct _MeerCounters *MeerCounters;
 struct _MeerConfig *MeerConfig;
 
-struct _DecodeDHCP *Decode_JSON_DHCP( struct json_object *json_obj, char *json_string )
+void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _DecodeDHCP *DecodeDHCP )
 {
 
-    struct _DecodeDHCP *DHCP_Return_Struct = NULL;
+//    struct _DecodeDHCP *DecodeDHCP = NULL;
 
     struct json_object *tmp = NULL;
     struct json_object *json_obj_dhcp = NULL;
@@ -59,62 +59,64 @@ struct _DecodeDHCP *Decode_JSON_DHCP( struct json_object *json_obj, char *json_s
 
     char *dhcp = NULL;
 
-    DHCP_Return_Struct = (struct _DecodeDHCP *) malloc(sizeof(_DecodeDHCP));
+/*
+    DecodeDHCP = (struct _DecodeDHCP *) malloc(sizeof(_DecodeDHCP));
 
-    if ( DHCP_Return_Struct == NULL )
+    if ( DecodeDHCP == NULL )
         {
             Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeDHCP.  Abort!", __FILE__, __LINE__, json_string);
         }
 
-    memset(DHCP_Return_Struct, 0, sizeof(_DecodeDHCP));
+    memset(DecodeDHCP, 0, sizeof(_DecodeDHCP));
+*/
 
-    DHCP_Return_Struct->timestamp = NULL;
-    DHCP_Return_Struct->flowid = NULL;
-    DHCP_Return_Struct->in_iface = NULL;
-    DHCP_Return_Struct->src_ip = NULL;
-    DHCP_Return_Struct->src_port = NULL;
-    DHCP_Return_Struct->dest_ip = NULL;
-    DHCP_Return_Struct->dest_port = NULL;
-    DHCP_Return_Struct->proto = NULL;
+    DecodeDHCP->timestamp = NULL;
+    DecodeDHCP->flowid = NULL;
+    DecodeDHCP->in_iface = NULL;
+    DecodeDHCP->src_ip = NULL;
+    DecodeDHCP->src_port = NULL;
+    DecodeDHCP->dest_ip = NULL;
+    DecodeDHCP->dest_port = NULL;
+    DecodeDHCP->proto = NULL;
 
     if (json_object_object_get_ex(json_obj, "timestamp", &tmp))
         {
-            DHCP_Return_Struct->timestamp = (char *)json_object_get_string(tmp);
+            DecodeDHCP->timestamp = (char *)json_object_get_string(tmp);
         }
 
     if (json_object_object_get_ex(json_obj, "flow_id", &tmp))
         {
-            DHCP_Return_Struct->flowid = (char *)json_object_get_string(tmp);
+            DecodeDHCP->flowid = (char *)json_object_get_string(tmp);
         }
 
     if (json_object_object_get_ex(json_obj, "in_iface", &tmp))
         {
-            DHCP_Return_Struct->in_iface = (char *)json_object_get_string(tmp);
+            DecodeDHCP->in_iface = (char *)json_object_get_string(tmp);
         }
 
     if (json_object_object_get_ex(json_obj, "src_ip", &tmp))
         {
-            DHCP_Return_Struct->src_ip = (char *)json_object_get_string(tmp);
+            DecodeDHCP->src_ip = (char *)json_object_get_string(tmp);
         }
 
     if (json_object_object_get_ex(json_obj, "src_port", &tmp))
         {
-            DHCP_Return_Struct->src_port = (char *)json_object_get_string(tmp);
+            DecodeDHCP->src_port = (char *)json_object_get_string(tmp);
         }
 
     if (json_object_object_get_ex(json_obj, "dest_ip", &tmp))
         {
-            DHCP_Return_Struct->dest_ip = (char *)json_object_get_string(tmp);
+            DecodeDHCP->dest_ip = (char *)json_object_get_string(tmp);
         }
 
     if (json_object_object_get_ex(json_obj, "dest_port", &tmp))
         {
-            DHCP_Return_Struct->dest_port = (char *)json_object_get_string(tmp);
+            DecodeDHCP->dest_port = (char *)json_object_get_string(tmp);
         }
 
     if (json_object_object_get_ex(json_obj, "proto", &tmp))
         {
-            DHCP_Return_Struct->proto = (char *)json_object_get_string(tmp);
+            DecodeDHCP->proto = (char *)json_object_get_string(tmp);
         }
 
     if (json_object_object_get_ex(json_obj, "dhcp", &tmp))
@@ -129,22 +131,22 @@ struct _DecodeDHCP *Decode_JSON_DHCP( struct json_object *json_obj, char *json_s
 
                     if (json_object_object_get_ex(json_obj_dhcp, "type", &tmp_dhcp))
                         {
-                            strlcpy(DHCP_Return_Struct->dhcp_type, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_type));
+                            strlcpy(DecodeDHCP->dhcp_type, (char *)json_object_get_string(tmp_dhcp), sizeof(DecodeDHCP->dhcp_type));
                         }
 
                     if (json_object_object_get_ex(json_obj_dhcp, "id", &tmp_dhcp))
                         {
-                            strlcpy(DHCP_Return_Struct->dhcp_id, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_id));
+                            strlcpy(DecodeDHCP->dhcp_id, (char *)json_object_get_string(tmp_dhcp), sizeof(DecodeDHCP->dhcp_id));
                         }
 
                     if (json_object_object_get_ex(json_obj_dhcp, "client_mac", &tmp_dhcp))
                         {
-                            strlcpy(DHCP_Return_Struct->dhcp_client_mac, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_client_mac));
+                            strlcpy(DecodeDHCP->dhcp_client_mac, (char *)json_object_get_string(tmp_dhcp), sizeof(DecodeDHCP->dhcp_client_mac));
                         }
 
                     if (json_object_object_get_ex(json_obj_dhcp, "assigned_ip", &tmp_dhcp))
                         {
-                            strlcpy(DHCP_Return_Struct->dhcp_assigned_ip, (char *)json_object_get_string(tmp_dhcp), sizeof(DHCP_Return_Struct->dhcp_assigned_ip));
+                            strlcpy(DecodeDHCP->dhcp_assigned_ip, (char *)json_object_get_string(tmp_dhcp), sizeof(DecodeDHCP->dhcp_assigned_ip));
                         }
 
                 }
@@ -161,5 +163,5 @@ struct _DecodeDHCP *Decode_JSON_DHCP( struct json_object *json_obj, char *json_s
     json_object_put(tmp);
 //    json_object_put(json_obj_dhcp);	/* This causes fault on json-c git */
 
-    return(DHCP_Return_Struct);
+//    return(DecodeDHCP);
 }
