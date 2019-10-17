@@ -99,10 +99,16 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 {
 
-
     struct json_object *jobj;
 
-    char key[64] = { 0 };
+    char key[128] = { 0 };
+
+    /* Insert "alert" to be picked up by runner */
+
+    snprintf(key, sizeof(key), "alert:%d:%" PRIu64 "", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid);
+    Redis_Writer( "SET", key, DecodeAlert->json, 0 ); 
+
+    /* Insert stat data */
 
     jobj = json_object_new_object();
 

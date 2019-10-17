@@ -67,6 +67,8 @@ void Output_Fingerprint_EVENT( struct _DecodeAlert *DecodeAlert, struct _Fingerp
     snprintf(key, sizeof(key), "%s:event:%s:%" PRIu64 "", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip, DecodeAlert->alert_signature_id);
     Redis_Writer( "SET", key, fingerprint_EVENT_JSON, FingerprintData->expire );
 
+    printf("key : %s\n", key);
+
     if ( MeerConfig->fingerprint_log[0] != '\0' )
         {
             fprintf(MeerConfig->fingerprint_log_fd, "%s\n", fingerprint_EVENT_JSON);
