@@ -57,9 +57,10 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
 
     /* Decoding structs */
 
+    uint64_t tmp_timestamp_int;
+
     struct json_object *tmp_t = NULL;
     struct json_object *tmp_timestamp = NULL;
-    uint64_t tmp_timestamp_int;
 
     struct json_object *tmp_p = NULL;
     struct json_object *tmp_program = NULL;
@@ -70,29 +71,16 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
     struct json_object *tmp_i = NULL;
     struct json_object *tmp_ip = NULL;
 
-    struct json_object *tmp_d = NULL;
-
+    struct json_object *tmp_s = NULL;
 
     char dns[255] = { 0 };
+    char sensor_name[255] = { 0 }; 
 
     /* Encoding structs */
 
     struct json_object *encode_json = NULL;
 
     encode_json = json_object_new_object();
-
-    /* Start decoding */
-
-//    struct _DecodeClientStats *ClientStats_Return_Struct = NULL;
-
-//    ClientStats_Return_Struct = (struct _DecodeClientStats *) malloc(sizeof(_DecodeClientStats));
-
-//    if ( ClientStats_Return_Struct == NULL )
-//        {
-//            Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeClientStats. Abort!", __FILE__, __LINE__, json_string);
-//        }
-
-//    memset(ClientStats_Return_Struct, 0, sizeof(_DecodeClientStats));
 
     json_object_object_get_ex(json_obj, "timestamp", &tmp_t);
 
@@ -122,6 +110,14 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
             Meer_Log(ERROR, "[%s, line %d] 'message' appears incomplete or invalid. Abort", __FILE__, __LINE__);
         }
 
+    json_object_object_get_ex(json_obj, "sensor_name", &tmp_s);
+
+    if ( tmp_s == NULL )
+        {
+            Meer_Log(ERROR, "[%s, line %d] 'sensor_name' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+        }
+
+    strlcpy(sensor_name, json_object_get_string ( tmp_s ), sizeof(sensor_name));
 
     for (i = 0; i < json_object_array_length(tmp_t); i++)
         {
@@ -177,6 +173,10 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
             json_object *jmessage = json_object_new_string( json_object_get_string ( tmp_message ) );
             json_object_object_add(encode_json,"message", jmessage);
 
+            json_object *jsensor = json_object_new_string( sensor_name );
+            json_object_object_add(encode_json,"sensor_name", jsensor);
+
+
             /* We put output here because of its limited scope. */
 
             /* Redis */
@@ -190,7 +190,6 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
                 }
 
 #endif
-
 
             /* MySQL with INSERT/UPDATE */
 
