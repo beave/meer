@@ -133,6 +133,9 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
     json_object *jsignature_id = json_object_new_int(signature_id);
     json_object_object_add(jobj,"signature_id", jsignature_id);
 
+    json_object *jsignature_name = json_object_new_string(DecodeAlert->alert_signature);
+    json_object_object_add(jobj,"signature_name", jsignature_name);
+
     /* Insert into Redis with times */
 
     snprintf(key, sizeof(key), "tmp_event_24:%s", DecodeAlert->flowid);
