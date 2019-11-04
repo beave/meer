@@ -135,7 +135,7 @@ bool Decode_JSON( char *json_string )
                                     fingerprint_return = FingerprintData->ret;
 
                                     Fingerprint_IP_JSON( DecodeAlert, fingerprint_IP_JSON, sizeof(fingerprint_IP_JSON));
-                                    Output_Fingerprint_IP( DecodeAlert, fingerprint_IP_JSON);
+//                                    Output_Fingerprint_IP( DecodeAlert, fingerprint_IP_JSON);
 
                                     Fingerprint_EVENT_JSON( DecodeAlert, FingerprintData, fingerprint_EVENT_JSON, sizeof(fingerprint_EVENT_JSON));
                                     Output_Fingerprint_EVENT( DecodeAlert, FingerprintData, fingerprint_EVENT_JSON );
