@@ -79,8 +79,8 @@ Common configure options
 
    This option points Meer to where the libyaml header files reside.
 
+.. option:: --enable-redis
 
-
-
+   This option enables redis output support.  It requires "hiredis" to be installed on the target.
 
 

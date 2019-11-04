@@ -42,6 +42,12 @@ meer-core:
     smtp: enabled
     email: enabled
     json: enabled
+
+    # This enables the "fingerprint" option.  When used in conjunction with the 
+    # "fingerprint.rules" (https://github.com/quadrantsec/fingerprint-rules), 
+    # this will record things like operating system type,  type of system it is
+    # (client/server), etc.  This data get routed differently and does not 
+    # generate "alerts". 
   
     fingerprint: enabled
     fingerprint_log: "/tmp/fingerprint.eve"
@@ -127,8 +133,6 @@ output-plugins:
     smtp: enabled
     email: enabled
     json: enabled
-
-    fingerprint: enabled
 
     # If you would like Meer to mimic the legacy "reference" tables from
     # Snort/Barnyard2, enable it here.  If your using more than one database
@@ -261,6 +265,12 @@ output-plugins:
     smtp: enabled
     fileinfo: enabled
     dhcp: enabled
+
+    # Fingerprint data can be temporarily stored in a Redis database.  When an alert
+    # fires, this information can be used to determine the targets operating system, 
+    # type (client/server), etc.  This can be useful in determining the validity of
+    # an event. If used in conjunction with the SQL output,  the fingerprint data for
+    # the targeted system is stored in the 'fingerprint' table.
 
     fingerprint: enabled
 
