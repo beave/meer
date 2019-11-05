@@ -24,6 +24,13 @@ Meer is meant to be modular and simple. This project does not aim to replicate a
 
 * PostreSQL - Works exactly the same as the MySQL/MariaDB output but for PostgreSQL
 
+* Redis - This works the same as Suricata + Redis output support. 
+
+* "external" support - This allows you to call your own program.  When an event happens and if the signature specifies the option,  Meer will 'call' your program.  The EVE/JSON is handed to your program via stdin.  This can be useful to build custom firewall routines, customer reactions to events,  custom ways to store data, etc. 
+
+* "pipe" support - This allows Meer to write EVE/JSON data to a Unix "named pipe" or FIFO.  Meer acts as a pipe "writer" and you can have a consumer (reader) on the other side of the "pipe".  For example,  you might use a program like "Sagan" (https://sagan.io) to analyze the data received via a named pipe.
+
+
 # Current Features:
 
 
@@ -34,6 +41,8 @@ Meer is meant to be modular and simple. This project does not aim to replicate a
 * Meer can do reverse DNS/PTR record lookups.   Meer has an internal DNS cache system so to not overburden DNS servers with repeated queries. 
 * MySQL/MariaDB output is backward compatible with legacy Snort/Barnyard2 database.
 * MySQL/MariaDB internal SQL “caching” makes Meer interactions with databases more efficients. 
+* Supports "fingerprint" rule set.  These are special Suricata & Sagan signatures that allow you to collect data about devices in your network and store them in a Redis database.  See https://github.com/quadrant/fingerprint-rules for more information.
+* Supports "client stats" for Meer when injecting Sagan EVE/JSON data.  This allows give you statistics about who and what is sending Sagan data within an enviornment. 
 
 # Future "output" support: 
 
@@ -42,15 +51,13 @@ you have any ideas or requests,  please let us know via our "issues" page (https
 
 * Syslog support (JSON, decoded, etc). 
 * Elasticsearch
-* Snortsam (??)
-* Generic MySQL/MariaDB template driven writer (for building block lists, etc)
 * Unified2 <b> ** THIS IS A JOKE. ** </b>
 
 # Support:
 
 * Need help getting started or looking for documentation? Go to https://meer.readthedocs.org !
 
-* Have a question or comment about Meer?  Please post to the Meer mailing at https://groups.google.com/forum/#!forum/meer-users 
+* Have a question or comment about Meer?  Please post to the Meer mailing at https://groups.google.com/forum/#!forum/meer-users. You can also visit the Sagan/Meer "chat" channel (Mattermost) by going to https://m.telephreak.org/sagan/channels/town-square.
 
 * If you need to report a bug,  please post that in our Github "issues" page.  That is at https://github.com/beave/meer/issues
 
