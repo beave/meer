@@ -495,8 +495,15 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                     (void)SQL_DB_Query(tmp);
 		    MeerCounters->UPDATECount++;
 
+#ifdef HAVE_LIBHIREDIS
+
+		    if ( MeerOutput->redis_flag == true )
+		    {
                     Redis_Quadrant ( DecodeAlert, signature_id );
-                    //SQL_DB_Quadrant( DecodeAlert, signature_id );
+		    }
+#endif 
+
+                    SQL_DB_Quadrant( DecodeAlert, signature_id );
 
 #endif
 

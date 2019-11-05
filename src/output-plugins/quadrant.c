@@ -96,6 +96,8 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 
 }
 
+#ifdef HAVE_LIBHIREDIS
+
 void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 {
 
@@ -156,6 +158,8 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
     json_object_put(jobj);
 
 }
+
+#endif
 
 #endif
 

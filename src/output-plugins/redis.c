@@ -163,6 +163,8 @@ bool Redis_Writer ( char *command, char *key, char *value, int expire )
 
     if ( expire == 0 )
         {
+	    printf("|%s|%s|%s|\n", command, key, value);
+
             reply = redisCommand(MeerOutput->c_redis, "%s %s %s", command, key, value);
         }
     else
