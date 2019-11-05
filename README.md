@@ -40,13 +40,13 @@ Meer is meant to be modular and simple. This project does not aim to replicate a
 * Out of the box IPv6 support. 
 * Meer can do reverse DNS/PTR record lookups.   Meer has an internal DNS cache system so to not overburden DNS servers with repeated queries. 
 * MySQL/MariaDB output is backward compatible with legacy Snort/Barnyard2 database.
-* MySQL/MariaDB internal SQL “caching” makes Meer interactions with databases more efficients. 
+* MySQL/MariaDB internal SQL “caching” makes Meer interactions with databases more efficient. 
 * Supports "fingerprint" rule set.  These are special Suricata & Sagan signatures that allow you to collect data about devices in your network and store them in a Redis database.  See https://github.com/quadrant/fingerprint-rules for more information.
-* Supports "client stats" for Meer when injecting Sagan EVE/JSON data.  This allows give you statistics about who and what is sending Sagan data within an enviornment. 
+* Supports "client stats" for Meer when injecting Sagan EVE/JSON data.  This allows give you statistics about who and what is sending Sagan data within an environment. 
 
 # Future "output" support: 
 
-Meer is under development.  This is our brief "roadmap" of what we would like to see Meer do.  If
+Meer is under development.  This is our brief "road-map" of what we would like to see Meer do.  If
 you have any ideas or requests,  please let us know via our "issues" page (https://github.com/beave/meer/issues).
 
 * Syslog support (JSON, decoded, etc). 
