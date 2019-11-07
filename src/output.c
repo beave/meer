@@ -461,7 +461,7 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
 #ifdef HAVE_LIBHIREDIS
 
-                    if ( MeerConfig->fingerprint == true )
+                    if ( MeerOutput->redis_flag == true && MeerConfig->fingerprint == true )
                         {
                             Output_Fingerprint_Alert( DecodeAlert );
                         }
