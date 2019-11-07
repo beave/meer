@@ -264,7 +264,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     if ( json_object_object_get_ex(json_obj, "normalize", &tmp))
         {
 
-            if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == 0 )
+            if ( (char *)json_object_get_string(tmp) != NULL && Validate_JSON_String( (char *)json_object_get_string(tmp) ) == 0 )
                 {
                     Alert_Return_Struct->has_normalize = true;
                     Alert_Return_Struct->normalize = (char *)json_object_get_string(tmp);
