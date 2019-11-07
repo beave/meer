@@ -113,7 +113,7 @@ CREATE TABLE email (sid         INT         UNSIGNED NOT NULL,
 CREATE TABLE fingerprint_src (
                       sid INT unsigned NOT NULL,
                       cid BIGINT unsigned NOT NULL,
-                      json LONGTEXT,
+                      json TEXT,
                       KEY `event` (`sid`,`cid`) );
 
 CREATE TABLE fingerprint_dhcp_src (
@@ -125,7 +125,7 @@ CREATE TABLE fingerprint_dhcp_src (
 CREATE TABLE fingerprint_dest (
                       sid INT unsigned NOT NULL,
                       cid BIGINT unsigned NOT NULL,
-                      json LONGTEXT,
+                      json TEXT,
                       KEY `event` (`sid`,`cid`) );
 
 CREATE TABLE fingerprint_dhcp_dest (
@@ -134,4 +134,18 @@ CREATE TABLE fingerprint_dhcp_dest (
                       json TEXT,
                       KEY `event` (`sid`,`cid`) );
 
+CREATE TABLE normalize (
+                      sid INT unsigned NOT NULL,
+                      cid BIGINT unsigned NOT NULL,
+                      json TEXT,
+                      KEY `event` (`sid`,`cid`) );
+
+CREATE TABLE `bluedot` (
+  `sid` int(10) unsigned NOT NULL,
+  `cid` bigint(20) unsigned NOT NULL,
+  `src_json` text,
+  `dst_json` text,
+  `bluedot` text,
+  KEY `bluedot` (`sid`,`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

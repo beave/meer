@@ -119,15 +119,15 @@ bool Decode_JSON( char *json_string )
                             /* Is this a "fingerprint" signature? */
 
                             struct _FingerprintData *FingerprintData;
-			    FingerprintData = (struct _FingerprintData *) malloc(sizeof(_FingerprintData));
+                            FingerprintData = (struct _FingerprintData *) malloc(sizeof(_FingerprintData));
 
-                    if ( FingerprintData == NULL )
-                        {
-                        Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _FingerprintData.  Abort!", __FILE__, __LINE__, json_string);
-                        }
+                            if ( FingerprintData == NULL )
+                                {
+                                    Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _FingerprintData.  Abort!", __FILE__, __LINE__, json_string);
+                                }
 
-			    memset(FingerprintData, 0, sizeof(_FingerprintData));
-			    Parse_Fingerprint( DecodeAlert, FingerprintData);
+                            memset(FingerprintData, 0, sizeof(_FingerprintData));
+                            Parse_Fingerprint( DecodeAlert, FingerprintData);
 
                             if ( FingerprintData->ret == true )
                                 {
@@ -170,16 +170,16 @@ bool Decode_JSON( char *json_string )
                 {
 
                     struct _DecodeDHCP *DecodeDHCP;   /* event_type: dhcp */
-		    DecodeDHCP = (struct _DecodeDHCP *) malloc(sizeof(_DecodeDHCP));
+                    DecodeDHCP = (struct _DecodeDHCP *) malloc(sizeof(_DecodeDHCP));
 
-		    if ( DecodeDHCP == NULL )
-        		{   
-	                Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeDHCP.  Abort!", __FILE__, __LINE__, json_string); 
-        		}
+                    if ( DecodeDHCP == NULL )
+                        {
+                            Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeDHCP.  Abort!", __FILE__, __LINE__, json_string);
+                        }
 
-		    memset(DecodeDHCP, 0, sizeof(_DecodeDHCP));
+                    memset(DecodeDHCP, 0, sizeof(_DecodeDHCP));
 
-		    Decode_JSON_DHCP( json_obj, json_string, DecodeDHCP );
+                    Decode_JSON_DHCP( json_obj, json_string, DecodeDHCP );
 
                     Fingerprint_DHCP_JSON( DecodeDHCP, fingerprint_DHCP_JSON, sizeof(fingerprint_DHCP_JSON));
                     Output_Fingerprint_DHCP ( DecodeDHCP, fingerprint_DHCP_JSON );

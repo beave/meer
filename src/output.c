@@ -368,7 +368,7 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                     class_id = SQL_Get_Class_ID( DecodeAlert );
 
                     SQL_DB_Query("START TRANSACTION");
-		    MeerOutput->sql_transaction = true;
+                    MeerOutput->sql_transaction = true;
 
                     if ( MeerOutput->sql_reference_system == true )
                         {
@@ -412,6 +412,11 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                     if ( MeerOutput->sql_extra_data == true )
                         {
                             SQL_Insert_Extra_Data ( DecodeAlert );
+                        }
+
+                    if ( DecodeAlert->has_normalize == true )
+                        {
+                            SQL_Insert_Normalize ( DecodeAlert );
                         }
 
                     if ( DecodeAlert->has_flow == true && MeerOutput->sql_flow == true )
@@ -486,22 +491,22 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                              "UPDATE sensor SET events_count = events_count+1 WHERE sid = %d",
                              MeerOutput->sql_sensor_id);
                     (void)SQL_DB_Query(tmp);
-		    MeerCounters->UPDATECount++;
+                    MeerCounters->UPDATECount++;
 
                     snprintf(tmp, sizeof(tmp),
                              "UPDATE signature SET events_count = events_count+1 WHERE sig_id = %u",
                              signature_id );
 
                     (void)SQL_DB_Query(tmp);
-		    MeerCounters->UPDATECount++;
+                    MeerCounters->UPDATECount++;
 
 #ifdef HAVE_LIBHIREDIS
 
-		    if ( MeerOutput->redis_flag == true )
-		    {
-                    Redis_Quadrant ( DecodeAlert, signature_id );
-		    }
-#endif 
+                    if ( MeerOutput->redis_flag == true )
+                        {
+                            Redis_Quadrant ( DecodeAlert, signature_id );
+                        }
+#endif
 
                     SQL_DB_Quadrant( DecodeAlert, signature_id );
 
@@ -516,12 +521,12 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
                     SQL_DB_Query( (char*)tmp );
 
-		    SQL_Record_Last_CID();
+                    SQL_Record_Last_CID();
 
                     MeerCounters->UPDATECount++;
 
                     SQL_DB_Query("COMMIT");
-		    MeerOutput->sql_transaction=false;
+                    MeerOutput->sql_transaction=false;
 
                     MeerOutput->sql_last_cid++;
 

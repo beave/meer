@@ -261,6 +261,17 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Alert_Return_Struct->xff = (char *)json_object_get_string(tmp);
         }
 
+    if ( json_object_object_get_ex(json_obj, "normalize", &tmp))
+        {
+
+            if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == 0 )
+                {
+                    Alert_Return_Struct->has_normalize = true;
+                    Alert_Return_Struct->normalize = (char *)json_object_get_string(tmp);
+                }
+
+        }
+
 #ifdef QUADRANT
 
     if ( MeerConfig->bluedot == true )
@@ -268,13 +279,13 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
             if ( json_object_object_get_ex(json_obj, "bluedot", &tmp))
                 {
-                    Alert_Return_Struct->has_bluedot = true;
 
                     if ( Validate_JSON_String( (char *)json_object_get_string(tmp) ) == 0 )
                         {
 
                             MeerCounters->BluedotCount++;
 
+                            Alert_Return_Struct->has_bluedot = true;
                             Alert_Return_Struct->bluedot = (char *)json_object_get_string(tmp);
 
 

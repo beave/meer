@@ -59,16 +59,16 @@ void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _
 
     char *dhcp = NULL;
 
-/*
-    DecodeDHCP = (struct _DecodeDHCP *) malloc(sizeof(_DecodeDHCP));
+    /*
+        DecodeDHCP = (struct _DecodeDHCP *) malloc(sizeof(_DecodeDHCP));
 
-    if ( DecodeDHCP == NULL )
-        {
-            Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeDHCP.  Abort!", __FILE__, __LINE__, json_string);
-        }
+        if ( DecodeDHCP == NULL )
+            {
+                Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeDHCP.  Abort!", __FILE__, __LINE__, json_string);
+            }
 
-    memset(DecodeDHCP, 0, sizeof(_DecodeDHCP));
-*/
+        memset(DecodeDHCP, 0, sizeof(_DecodeDHCP));
+    */
 
     DecodeDHCP->timestamp = NULL;
     DecodeDHCP->flowid = NULL;

@@ -85,14 +85,14 @@ void Signal_Handler(int sig_num)
 
                     if ( MeerOutput->sql_driver == DB_MYSQL )
                         {
-		
-			    /* If we're in the middle of a transaction,  commit/rollback */
 
-			    if ( MeerOutput->sql_transaction == true )
-				{
-				MySQL_DB_Query("COMMIT");
-                                MySQL_DB_Query("ROLLBACK");
-				}
+                            /* If we're in the middle of a transaction,  commit/rollback */
+
+                            if ( MeerOutput->sql_transaction == true )
+                                {
+                                    MySQL_DB_Query("COMMIT");
+                                    MySQL_DB_Query("ROLLBACK");
+                                }
 
                             MeerOutput->sql_last_cid++;
                             SQL_Record_Last_CID();
@@ -108,13 +108,13 @@ void Signal_Handler(int sig_num)
                     if ( MeerOutput->sql_driver == DB_POSTGRESQL )
                         {
 
-		  	    /* If we're in the middle of a transaction,  commit/rollback */
+                            /* If we're in the middle of a transaction,  commit/rollback */
 
-			    if ( MeerOutput->sql_transaction == true )
-				{
-                                PG_DB_Query("COMMIT");
-                                PG_DB_Query("ROLLBACK");
-				}
+                            if ( MeerOutput->sql_transaction == true )
+                                {
+                                    PG_DB_Query("COMMIT");
+                                    PG_DB_Query("ROLLBACK");
+                                }
 
                             MeerOutput->sql_last_cid++;
                             SQL_Record_Last_CID();

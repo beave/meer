@@ -46,16 +46,16 @@ void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintDa
     char *ptr1 = NULL;
     char *ptr2 = NULL;
 
-/*
-    FingerprintData = (struct _FingerprintData *) malloc(sizeof(_FingerprintData));
+    /*
+        FingerprintData = (struct _FingerprintData *) malloc(sizeof(_FingerprintData));
 
-    if ( FingerprintData == NULL )
-        {
-            Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _FingerprintData. Abort!", __FILE__, __LINE__);
-        }
+        if ( FingerprintData == NULL )
+            {
+                Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _FingerprintData. Abort!", __FILE__, __LINE__);
+            }
 
-    memset(FingerprintData, 0, sizeof(_FingerprintData));
-*/
+        memset(FingerprintData, 0, sizeof(_FingerprintData));
+    */
 
     FingerprintData->expire = FINGERPRINT_REDIS_EXPIRE;
 

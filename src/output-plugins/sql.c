@@ -816,6 +816,28 @@ void SQL_Insert_JSON ( struct _DecodeAlert *DecodeAlert )
 
 }
 
+void SQL_Insert_Normalize ( struct _DecodeAlert *DecodeAlert )
+{
+
+    char tmp[MAX_SQL_QUERY] = { 0 };
+    char e_normalize[MAX_SQL_QUERY*2] = { 0 };
+
+    SQL_Escape_String( DecodeAlert->normalize, e_normalize, sizeof(e_normalize));
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO normalize (sid,cid,json) "
+             "VALUES (%d,%" PRIu64 ",'%s')",
+             MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid,
+             e_normalize);
+
+    (void)SQL_DB_Query(tmp);
+
+    MeerCounters->JSONCount++;
+    MeerCounters->INSERTCount++;
+
+}
+
+
 #ifdef QUADRANT
 
 void SQL_Insert_Bluedot ( struct _DecodeAlert *DecodeAlert )

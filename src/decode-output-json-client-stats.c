@@ -74,7 +74,7 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
     struct json_object *tmp_s = NULL;
 
     char dns[255] = { 0 };
-    char sensor_name[255] = { 0 }; 
+    char sensor_name[255] = { 0 };
 
     /* Encoding structs */
 

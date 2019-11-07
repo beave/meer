@@ -56,6 +56,9 @@ char src_dns[256];
 
     char *json;
 
+    char *normalize;
+    bool has_normalize;
+
 #ifdef QUADRANT
     char *bluedot;
 #endif
