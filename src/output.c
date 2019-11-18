@@ -504,7 +504,7 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
                     if ( MeerOutput->redis_flag == true )
                         {
-                            Redis_Quadrant ( DecodeAlert, signature_id );
+                            Redis_Quadrant ( DecodeAlert, signature_id, class_id );
                         }
 #endif
 

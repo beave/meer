@@ -98,7 +98,7 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 
 #ifdef HAVE_LIBHIREDIS
 
-void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
+void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id, int class_id )
 {
 
     struct json_object *jobj;
@@ -120,6 +120,9 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
     json_object *jsid = json_object_new_int(MeerOutput->sql_sensor_id);
     json_object_object_add(jobj,"sid", jsid);
 
+    json_object *jclass = json_object_new_int(class_id);
+    json_object_object_add(jobj,"class_id", jclass);
+
     json_object *jcid = json_object_new_int64(MeerOutput->sql_last_cid);
     json_object_object_add(jobj,"cid", jcid);
 
@@ -137,6 +140,10 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 
     json_object *jsignature_name = json_object_new_string(DecodeAlert->alert_signature);
     json_object_object_add(jobj,"signature_name", jsignature_name);
+
+    json_object *jproto = json_object_new_string(DecodeAlert->proto);
+    json_object_object_add(jobj,"proto", jproto);
+
 
     /* Insert into Redis with times */
 
