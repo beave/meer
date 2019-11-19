@@ -96,7 +96,7 @@ void Signal_Handler(int sig_num)
 
                             MeerOutput->sql_last_cid++;
                             SQL_Record_Last_CID();
-//                            sleep(1);
+                            sleep(1);
                             mysql_close(MeerOutput->mysql_dbh);
                         }
 
@@ -118,7 +118,7 @@ void Signal_Handler(int sig_num)
 
                             MeerOutput->sql_last_cid++;
                             SQL_Record_Last_CID();
-//                            sleep(1);
+                            sleep(1);
                             PQfinish(MeerOutput->psql);
                         }
 

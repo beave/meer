@@ -141,16 +141,6 @@ void Load_SID_Map ( void )
                     strlcpy(SID_Map[MeerCounters->SIDMapCount].type, type, sizeof(SID_Map[MeerCounters->SIDMapCount].type));
 
                     strlcpy(SID_Map[MeerCounters->SIDMapCount].location, location, sizeof(SID_Map[MeerCounters->SIDMapCount].location));
-
-                    /*
-                                          printf("SID:%llu\nMSG:%s\nTYPE:%s\nLOCATION:%s\n",
-                                                 SID_Map[MeerCounters->SIDMapCount].sid,
-                                                 SID_Map[MeerCounters->SIDMapCount].msg,
-                                                 SID_Map[MeerCounters->SIDMapCount].type,
-                                                 SID_Map[MeerCounters->SIDMapCount].location);
-
-                    */
-
                     ref_ptr = strtok(NULL, "||");
 
                     MeerCounters->SIDMapCount++;
