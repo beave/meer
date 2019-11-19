@@ -145,7 +145,7 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id, int cla
     json_object_object_add(jobj,"proto", jproto);
 
     json_object *jseverity = json_object_new_int( atoi( DecodeAlert->alert_severity ) );
-    json_object_object_add(jobj,"priority", jseverity);
+    json_object_object_add(jobj,"signature_priority", jseverity);
 
     /* Insert into Redis with times */
 
