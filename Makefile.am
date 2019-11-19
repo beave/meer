@@ -7,8 +7,8 @@ SUBDIRS = src
 install-data-local:
 	test -z "$(DESTDIR)$(sysconfdir)" || /bin/mkdir -p "$(DESTDIR)$(sysconfdir)"
 	test -f "$(DESTDIR)$(sysconfdir)/meer.yaml" || $(INSTALL_DATA) etc/meer.yaml "$(DESTDIR)$(sysconfdir)/meer.yaml"
-	test -z "$(DESTDIR)$(sbindir)" || /bin/mkdir -p "$(DESTDIR)$(sbindir)"
-	$(INSTALL) -m 755 src/meer "$(DESTDIR)$(sbindir)/meer"
+	test -z "$(DESTDIR)$(bindir)" || /bin/mkdir -p "$(DESTDIR)$(bindir)"
+	$(INSTALL) -m 755 src/meer "$(DESTDIR)$(bindir)/meer"
 	@echo ""
 	@echo "------------------------------------------------------------------------------"
 	@echo "Meer has been installed!"
