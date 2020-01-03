@@ -51,6 +51,7 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 
     (void)SQL_DB_Query(tmp);
 
+/*
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO tmp_events_24 (sid,cid,ip_src,ip_dst,signature,timestamp) VALUES (%u,%" PRIu64 ",'%s','%s',%d,'%s')",
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, DecodeAlert->src_ip, DecodeAlert->dest_ip, signature_id, DecodeAlert->timestamp );
@@ -87,6 +88,7 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, DecodeAlert->src_ip, DecodeAlert->dest_ip, signature_id, DecodeAlert->timestamp );
 
     (void)SQL_DB_Query(tmp);
+*/
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO tmp_events_year (sid,cid,ip_src,ip_dst,signature,timestamp) VALUES (%u,%" PRIu64",'%s','%s',%d,'%s')",
@@ -112,6 +114,7 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id, int cla
 
     /* Insert stat data */
 
+/*
     jobj = json_object_new_object();
 
     json_object *jdate = json_object_new_string(DecodeAlert->timestamp);
@@ -146,9 +149,11 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id, int cla
 
     json_object *jseverity = json_object_new_int( atoi( DecodeAlert->alert_severity ) );
     json_object_object_add(jobj,"signature_priority", jseverity);
+*/
 
     /* Insert into Redis with times */
 
+/*
     snprintf(key, sizeof(key), "tmp_event_24:%s", DecodeAlert->flowid);
     Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 ) );
 
@@ -165,6 +170,7 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id, int cla
     Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 365 ) );
 
     json_object_put(jobj);
+*/
 
 }
 
