@@ -51,7 +51,7 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 
     (void)SQL_DB_Query(tmp);
 
-/*
+
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO tmp_events_24 (sid,cid,ip_src,ip_dst,signature,timestamp) VALUES (%u,%" PRIu64 ",'%s','%s',%d,'%s')",
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, DecodeAlert->src_ip, DecodeAlert->dest_ip, signature_id, DecodeAlert->timestamp );
@@ -88,7 +88,7 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, DecodeAlert->src_ip, DecodeAlert->dest_ip, signature_id, DecodeAlert->timestamp );
 
     (void)SQL_DB_Query(tmp);
-*/
+
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO tmp_events_year (sid,cid,ip_src,ip_dst,signature,timestamp) VALUES (%u,%" PRIu64",'%s','%s',%d,'%s')",
