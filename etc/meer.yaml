@@ -247,6 +247,7 @@ output-plugins:
     enabled: no
     debug: no
     server: 127.0.0.1
+    #password: "mypassword"
     port: 6379
     batch: 10                # Batch/pipelining mode. Max is 100. 1 == no batching.
     key: "suricata"	     # Default 'key' or 'channel' to use. 
