@@ -397,6 +397,14 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
                     SQL_Insert_Payload ( DecodeAlert );
 
+                    /* Not all events have "syslog data" (only Sagan). */
+
+                    if ( DecodeAlert->facility != NULL || DecodeAlert->priority != NULL ||
+                            DecodeAlert->level != NULL || DecodeAlert->program != NULL )
+                        {
+                            SQL_Insert_Syslog_Data( DecodeAlert );
+                        }
+
                     if ( MeerConfig->json == true )
                         {
                             SQL_Insert_JSON ( DecodeAlert );

@@ -102,6 +102,12 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     Alert_Return_Struct->flowid = NULL;
     Alert_Return_Struct->proto = NULL;
     Alert_Return_Struct->host = NULL;
+
+    Alert_Return_Struct->facility = NULL;
+    Alert_Return_Struct->priority = NULL;
+    Alert_Return_Struct->level = NULL;
+    Alert_Return_Struct->program = NULL;
+
     Alert_Return_Struct->app_proto[0] = '\0';
 
     /* Extra data */
@@ -259,6 +265,26 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     if (json_object_object_get_ex(json_obj, "xff", &tmp))
         {
             Alert_Return_Struct->xff = (char *)json_object_get_string(tmp);
+        }
+
+    if (json_object_object_get_ex(json_obj, "facility", &tmp))
+        {
+            Alert_Return_Struct->facility = (char *)json_object_get_string(tmp);
+        }
+
+    if (json_object_object_get_ex(json_obj, "priority", &tmp))
+        {
+            Alert_Return_Struct->priority = (char *)json_object_get_string(tmp);
+        }
+
+    if (json_object_object_get_ex(json_obj, "level", &tmp))
+        {
+            Alert_Return_Struct->level = (char *)json_object_get_string(tmp);
+        }
+
+    if (json_object_object_get_ex(json_obj, "program", &tmp))
+        {
+            Alert_Return_Struct->program = (char *)json_object_get_string(tmp);
         }
 
     if ( json_object_object_get_ex(json_obj, "normalize", &tmp))

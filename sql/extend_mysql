@@ -140,6 +140,17 @@ CREATE TABLE normalize (
                       json TEXT,
                       KEY `event` (`sid`,`cid`) );
 
+CREATE TABLE `syslog_data` (
+  `sid` int(10) unsigned NOT NULL,
+  `cid` bigint(20) unsigned NOT NULL,
+  `facility` VARCHAR(32),
+  `priority` VARCHAR(32),
+  `level` VARCHAR(32),
+  `program` VARCHAR(64),
+  KEY `event` (`sid`,`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE `bluedot` (
   `sid` int(10) unsigned NOT NULL,
   `cid` bigint(20) unsigned NOT NULL,

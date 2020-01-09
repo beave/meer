@@ -59,6 +59,11 @@ char src_dns[256];
     char *normalize;
     bool has_normalize;
 
+    char *facility;
+    char *priority;
+    char *level;
+    char *program;
+
 #ifdef QUADRANT
     char *bluedot;
 #endif

@@ -492,6 +492,44 @@ void SQL_Insert_DNS ( struct _DecodeAlert *DecodeAlert )
 
 }
 
+void SQL_Insert_Syslog_Data ( struct _DecodeAlert *DecodeAlert )
+{
+
+    char tmp[MAX_SQL_QUERY] = { 0 };
+    char e_facility[64] = { 0 };
+    char e_priority[64] = { 0 };
+    char e_level[64] = { 0 };
+    char e_program[128] = { 0 };
+
+    if ( DecodeAlert->facility != NULL )
+        {
+            SQL_Escape_String( DecodeAlert->facility, e_facility, sizeof(e_facility));
+        }
+
+    if ( DecodeAlert->priority != NULL )
+        {
+            SQL_Escape_String( DecodeAlert->priority, e_priority, sizeof(e_priority));
+        }
+
+    if ( DecodeAlert->level != NULL )
+        {
+            SQL_Escape_String( DecodeAlert->level, e_level, sizeof(e_level));
+        }
+
+    if ( DecodeAlert->program != NULL )
+        {
+            SQL_Escape_String( DecodeAlert->program, e_program, sizeof(e_program));
+        }
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO syslog_data (sid,cid,facility,priority,level,program) VALUES (%d,%" PRIu64 ",'%s','%s','%s','%s')",
+             MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, e_facility, e_priority, e_level, e_program);
+
+    (void)SQL_DB_Query(tmp);
+    MeerCounters->INSERTCount++;
+
+}
+
 void SQL_Insert_Extra_Data ( struct _DecodeAlert *DecodeAlert )
 {
 

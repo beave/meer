@@ -59,6 +59,8 @@ void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintDa
 
     FingerprintData->expire = FINGERPRINT_REDIS_EXPIRE;
 
+    printf("-> %s\n", DecodeAlert->alert_metadata );
+
     if ( DecodeAlert->alert_metadata[0] != '\0' )
         {
 
@@ -219,14 +221,18 @@ void Fingerprint_EVENT_JSON ( struct _DecodeAlert *DecodeAlert, struct _Fingerpr
 
         }
 
-    if ( DecodeAlert->proto == NULL )
+    if ( DecodeAlert->proto != NULL )
         {
             json_object_object_add(encode_json, "proto", json_object_new_string( DecodeAlert->proto ));
 
         }
 
-    json_object_object_add(encode_json_fp, "signature_id", json_object_new_int64( DecodeAlert->alert_signature_id ));
+    if ( DecodeAlert->proto != NULL )
+        {
+            json_object_object_add(encode_json, "program", json_object_new_string( DecodeAlert->program ));
+        }
 
+    json_object_object_add(encode_json_fp, "signature_id", json_object_new_int64( DecodeAlert->alert_signature_id ));
     json_object_object_add(encode_json_fp, "rev", json_object_new_int64( DecodeAlert->alert_rev ));
 
     if ( DecodeAlert->alert_signature != NULL )
