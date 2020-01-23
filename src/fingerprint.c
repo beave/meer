@@ -30,17 +30,17 @@
 void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintData *FingerprintData )
 {
 
-//    struct _FingerprintData *FingerprintData = NULL;
-
     struct json_object *json_obj = NULL;
     struct json_object *tmp = NULL;
 
     char *fingerprint_d_os = NULL;
     char *fingerprint_d_type = NULL;
     char *fingerprint_d_expire = NULL;
+    char *fingerprint_d_source = NULL; 
 
     char *fingerprint_os = "unknown";
     char *fingerprint_type = "unknown";
+    char *fingerprint_source = "unknown";
     char *fingerprint_expire = NULL;
 
     char *ptr1 = NULL;
@@ -90,6 +90,31 @@ void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintDa
                     strlcpy(FingerprintData->os, fingerprint_os, sizeof(FingerprintData->os));
                 }
 
+            if ( json_object_object_get_ex(json_obj, "fingerprint_source", &tmp))
+                {
+
+                    FingerprintData->ret = true;
+
+                    fingerprint_d_source =  (char *)json_object_get_string(tmp);
+
+                    strtok_r(fingerprint_d_source, "\"", &ptr1);
+
+                    if ( ptr1 == NULL )
+                        {
+                            Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_source from %s", __FILE__, __LINE__, fingerprint_d_source);
+                        }
+
+                    fingerprint_source = strtok_r(NULL, "\"", &ptr1);
+
+                    if ( fingerprint_source == NULL )
+                        {
+                            Meer_Log(WARN, "[%s, line %d] Failure to decode fingerprint_os from %s", __FILE__, __LINE__, fingerprint_d_source);
+                        }
+
+                    strlcpy(FingerprintData->source, fingerprint_source, sizeof(FingerprintData->source));
+                }
+
+
             if ( json_object_object_get_ex(json_obj, "fingerprint_expire", &tmp))
                 {
 
@@ -134,7 +159,6 @@ void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintDa
         }
 
     json_object_put(json_obj);
-//    return(FingerprintData);
 
 }
 
@@ -244,6 +268,11 @@ void Fingerprint_EVENT_JSON ( struct _DecodeAlert *DecodeAlert, struct _Fingerpr
     if ( FingerprintData->os[0] != '\0' )
         {
             json_object_object_add(encode_json_fp, "os", json_object_new_string( FingerprintData->os ));
+        }
+
+    if ( FingerprintData->source[0] != '\0' )
+        {
+            json_object_object_add(encode_json_fp, "source", json_object_new_string( FingerprintData->source ));
         }
 
     if ( FingerprintData->type[0] != '\0' )
