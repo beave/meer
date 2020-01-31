@@ -25,6 +25,8 @@
 #include "sid-map.h"
 #include "config-yaml.h"
 
+struct _MeerConfig *MeerConfig;
+
 #ifdef HAVE_LIBHIREDIS
 
 void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintData *FingerprintData )
@@ -45,17 +47,6 @@ void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintDa
 
     char *ptr1 = NULL;
     char *ptr2 = NULL;
-
-    /*
-        FingerprintData = (struct _FingerprintData *) malloc(sizeof(_FingerprintData));
-
-        if ( FingerprintData == NULL )
-            {
-                Meer_Log(ERROR, "[%s, line %d] Failed to allocate memory for _FingerprintData. Abort!", __FILE__, __LINE__);
-            }
-
-        memset(FingerprintData, 0, sizeof(_FingerprintData));
-    */
 
     FingerprintData->expire = FINGERPRINT_REDIS_EXPIRE;
 
@@ -200,12 +191,20 @@ void Fingerprint_EVENT_JSON ( struct _DecodeAlert *DecodeAlert, struct _Fingerpr
     char http[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
     char fp[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
 
+    char dns[255] = { 0 }; 
+
     json_object_object_add(encode_json, "event_type", json_object_new_string("fingerprint"));
 
     if ( DecodeAlert->timestamp != NULL )
         {
             json_object_object_add(encode_json, "timestamp", json_object_new_string( DecodeAlert->timestamp ));
         }
+
+            if ( MeerConfig->dns && DecodeAlert->src_ip != NULL )
+                {   
+                    DNS_Lookup( DecodeAlert->src_ip, dns, sizeof(dns));
+                    json_object_object_add(encode_json,"dns", json_object_new_string( dns ));
+                }
 
     if ( DecodeAlert->host != NULL )
         {

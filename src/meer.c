@@ -1,6 +1,6 @@
 /*
-** Copyright (C) 2018-2019 Quadrant Information Security <quadrantsec.com>
-** Copyright (C) 2018-2019 Champ Clark III <cclark@quadrantsec.com>
+** Copyright (C) 2018-2020 Quadrant Information Security <quadrantsec.com>
+** Copyright (C) 2018-2020 Champ Clark III <cclark@quadrantsec.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License Version 2 as
@@ -183,7 +183,7 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, " @@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    Meer version %s", VERSION);
     Meer_Log(NORMAL, " @@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security");
     Meer_Log(NORMAL, " @!! !!@ @!@ @!!!:!   @!!!:!   @!@!!@a    https://quadrantsec.com");
-    Meer_Log(NORMAL, " !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018-2019");
+    Meer_Log(NORMAL, " !!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018-2020");
     Meer_Log(NORMAL, "  :      :   : :: ::  : :: ::   :   : :");
     Meer_Log(NORMAL, "");
 
