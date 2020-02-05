@@ -164,10 +164,20 @@ bool Redis_Writer ( char *command, char *key, char *value, int expire )
     if ( expire == 0 )
         {
             reply = redisCommand(MeerOutput->c_redis, "%s %s %s", command, key, value);
+	
+	    if ( MeerOutput->redis_debug )
+		{
+		 Meer_Log(DEBUG, "Sent to Redis: %s %s %s", command, key, value);
+		}
         }
     else
         {
             reply = redisCommand(MeerOutput->c_redis, "%s %s %s EX %d", command, key, value, expire);
+
+            if ( MeerOutput->redis_debug )
+                {
+                 Meer_Log(DEBUG, "Sent to Redis: %s %s %s EX %d", command, key, value, expire);
+                }
         }
 
     if ( reply != NULL )

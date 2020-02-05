@@ -129,6 +129,9 @@ void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _
 
                     json_obj_dhcp = json_tokener_parse(dhcp);
 
+		    char *assigned_ip = (char *)json_object_get_string(tmp_dhcp); 
+
+
                     if (json_object_object_get_ex(json_obj_dhcp, "type", &tmp_dhcp))
                         {
                             strlcpy(DecodeDHCP->dhcp_type, (char *)json_object_get_string(tmp_dhcp), sizeof(DecodeDHCP->dhcp_type));
@@ -146,7 +149,19 @@ void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _
 
                     if (json_object_object_get_ex(json_obj_dhcp, "assigned_ip", &tmp_dhcp))
                         {
-                            strlcpy(DecodeDHCP->dhcp_assigned_ip, (char *)json_object_get_string(tmp_dhcp), sizeof(DecodeDHCP->dhcp_assigned_ip));
+
+			    char *assigned_ip = (char *)json_object_get_string(tmp_dhcp);
+			    printf("Assigned: |%s|\n", assigned_ip);
+
+			    /* 0.0.0.0 is no good */
+
+			    if ( !strcmp(assigned_ip, "0.0.0.0" ) && strcmp(DecodeDHCP->dest_ip, "255.255.255.255") ) 
+				{
+//				printf("ass: %s, dest: %s\n", assigned_ip, DecodeDHCP->dest_ip);				
+				assigned_ip =  DecodeDHCP->dest_ip; 
+				}
+
+                            strlcpy(DecodeDHCP->dhcp_assigned_ip, assigned_ip, sizeof(DecodeDHCP->dhcp_assigned_ip));
                         }
 
                 }
