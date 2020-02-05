@@ -475,3 +475,14 @@ bool Is_Inrange ( unsigned char *ip, unsigned char *tests, int count)
     return inrange;
 }
 
+void To_UpperC(char *const s)
+{
+    char* cur = s;
+    while (*cur)
+        {
+            *cur = toupper(*cur);
+            ++cur;
+        }
+}
+
+

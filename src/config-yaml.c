@@ -339,6 +339,22 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+                            else if ( !strcmp(last_pass, "oui_lookup" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerConfig->oui = true;
+                                        }
+
+                                }
+
+                            else if ( !strcmp(last_pass, "oui_filename" ))
+                                {
+                                    strlcpy(MeerConfig->oui_filename, value, sizeof(MeerConfig->oui_filename));
+                                }
+
+
                             else if ( !strcmp(last_pass, "metadata" ) )
                                 {
 

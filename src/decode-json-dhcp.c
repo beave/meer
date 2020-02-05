@@ -51,24 +51,11 @@ struct _MeerConfig *MeerConfig;
 void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _DecodeDHCP *DecodeDHCP )
 {
 
-//    struct _DecodeDHCP *DecodeDHCP = NULL;
-
     struct json_object *tmp = NULL;
     struct json_object *json_obj_dhcp = NULL;
     struct json_object *tmp_dhcp = NULL;
 
     char *dhcp = NULL;
-
-    /*
-        DecodeDHCP = (struct _DecodeDHCP *) malloc(sizeof(_DecodeDHCP));
-
-        if ( DecodeDHCP == NULL )
-            {
-                Meer_Log(ERROR, "[%s, line %d] JSON: \"%s\" Failed to allocate memory for _DecodeDHCP.  Abort!", __FILE__, __LINE__, json_string);
-            }
-
-        memset(DecodeDHCP, 0, sizeof(_DecodeDHCP));
-    */
 
     DecodeDHCP->timestamp = NULL;
     DecodeDHCP->flowid = NULL;
@@ -129,7 +116,7 @@ void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _
 
                     json_obj_dhcp = json_tokener_parse(dhcp);
 
-		    char *assigned_ip = (char *)json_object_get_string(tmp_dhcp); 
+                    char *assigned_ip = (char *)json_object_get_string(tmp_dhcp);
 
 
                     if (json_object_object_get_ex(json_obj_dhcp, "type", &tmp_dhcp))
@@ -150,16 +137,14 @@ void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _
                     if (json_object_object_get_ex(json_obj_dhcp, "assigned_ip", &tmp_dhcp))
                         {
 
-			    char *assigned_ip = (char *)json_object_get_string(tmp_dhcp);
-			    printf("Assigned: |%s|\n", assigned_ip);
+                            char *assigned_ip = (char *)json_object_get_string(tmp_dhcp);
 
-			    /* 0.0.0.0 is no good */
+                            /* 0.0.0.0 is no good, try to avoid it */
 
-			    if ( !strcmp(assigned_ip, "0.0.0.0" ) && strcmp(DecodeDHCP->dest_ip, "255.255.255.255") ) 
-				{
-//				printf("ass: %s, dest: %s\n", assigned_ip, DecodeDHCP->dest_ip);				
-				assigned_ip =  DecodeDHCP->dest_ip; 
-				}
+                            if ( !strcmp(assigned_ip, "0.0.0.0" ) && strcmp(DecodeDHCP->dest_ip, "255.255.255.255") )
+                                {
+                                    assigned_ip =  DecodeDHCP->dest_ip;
+                                }
 
                             strlcpy(DecodeDHCP->dhcp_assigned_ip, assigned_ip, sizeof(DecodeDHCP->dhcp_assigned_ip));
                         }
@@ -174,9 +159,6 @@ void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _
             Meer_Log(WARN, "[%s, line %d] Got event_type: dhcp log without dhcp json: %s", __FILE__, __LINE__, json_string);
         }
 
-//    json_object_put(tmp_dhcp);
     json_object_put(tmp);
-//    json_object_put(json_obj_dhcp);	/* This causes fault on json-c git */
 
-//    return(DecodeDHCP);
 }

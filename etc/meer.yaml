@@ -73,6 +73,7 @@ meer-core:
     # "sensor.health" table with the current epoch time.  Think of these
     # events like a "ping" for your sensor.  This can be useful for detecting
     # when Meer, Suricata or Sagan have "died" unexpectedly.
+
   
     health: enabled
     health_signatures: 20000001,20000002,20000003,20000004

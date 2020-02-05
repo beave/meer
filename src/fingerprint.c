@@ -38,7 +38,7 @@ void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintDa
     char *fingerprint_d_os = NULL;
     char *fingerprint_d_type = NULL;
     char *fingerprint_d_expire = NULL;
-    char *fingerprint_d_source = NULL; 
+    char *fingerprint_d_source = NULL;
 
     char *fingerprint_os = "unknown";
     char *fingerprint_type = "unknown";
@@ -191,7 +191,7 @@ void Fingerprint_EVENT_JSON ( struct _DecodeAlert *DecodeAlert, struct _Fingerpr
     char http[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
     char fp[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
 
-    char dns[255] = { 0 }; 
+    char dns[255] = { 0 };
 
     json_object_object_add(encode_json, "event_type", json_object_new_string("fingerprint"));
 
@@ -200,11 +200,11 @@ void Fingerprint_EVENT_JSON ( struct _DecodeAlert *DecodeAlert, struct _Fingerpr
             json_object_object_add(encode_json, "timestamp", json_object_new_string( DecodeAlert->timestamp ));
         }
 
-            if ( MeerConfig->dns && DecodeAlert->src_ip != NULL )
-                {   
-                    DNS_Lookup( DecodeAlert->src_ip, dns, sizeof(dns));
-                    json_object_object_add(encode_json,"dns", json_object_new_string( dns ));
-                }
+    if ( MeerConfig->dns && DecodeAlert->src_ip != NULL )
+        {
+            DNS_Lookup( DecodeAlert->src_ip, dns, sizeof(dns));
+            json_object_object_add(encode_json,"dns", json_object_new_string( dns ));
+        }
 
     if ( DecodeAlert->host != NULL )
         {
@@ -339,6 +339,8 @@ void Fingerprint_DHCP_JSON ( struct _DecodeDHCP *DecodeDHCP, char *str, size_t s
     struct json_object *encode_json = NULL;
     encode_json = json_object_new_object();
 
+    char oui_data[128] = { 0 };
+
     json_object_object_add(encode_json, "timestamp", json_object_new_string( DecodeDHCP->timestamp ));
 
     if ( DecodeDHCP->dhcp_assigned_ip[0] != '\0' )
@@ -349,6 +351,16 @@ void Fingerprint_DHCP_JSON ( struct _DecodeDHCP *DecodeDHCP, char *str, size_t s
     if ( DecodeDHCP->dhcp_client_mac[0] != '\0' )
         {
             json_object_object_add(encode_json, "client_mac", json_object_new_string( DecodeDHCP->dhcp_client_mac ));
+        }
+
+    if ( MeerConfig->oui == true )
+        {
+            if ( strcmp(DecodeDHCP->dhcp_assigned_ip, "0.0.0.0" ) )
+                {
+                    OUI_Lookup( DecodeDHCP->dhcp_client_mac, oui_data, sizeof(oui_data) );
+                    json_object_object_add(encode_json, "vendor", json_object_new_string( oui_data ));
+                }
+
         }
 
     snprintf(str, size, "%s", json_object_to_json_string_ext(encode_json, JSON_C_TO_STRING_PLAIN));

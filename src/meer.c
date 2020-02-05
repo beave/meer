@@ -59,6 +59,7 @@
 #include "output.h"
 #include "sid-map.h"
 #include "usage.h"
+#include "oui.h"
 
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
@@ -192,6 +193,11 @@ int main (int argc, char *argv[])
     CheckLockFile();
 
     MeerConfig->endian = Check_Endian();
+
+    if ( MeerConfig->oui == true )
+        {
+            Load_OUI();
+        }
 
     Load_Classifications();
 

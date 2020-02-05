@@ -21,6 +21,7 @@ AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
 							      references.c \
 							      sid-map.c \
 							      usage.c \
+							      oui.c \
 							      fingerprint.c \
 							      decode-json.c \
 							      decode-json-alert.c \

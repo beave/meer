@@ -81,6 +81,9 @@ struct _MeerConfig
     bool dns;
     uint32_t dns_cache;
 
+    bool oui;
+    char oui_filename[256];
+
     bool health;
     bool fingerprint;
     char fingerprint_log[256];
@@ -239,6 +242,7 @@ struct _MeerCounters
     int ClassCount;
     int ReferenceCount;			/* Legacy refererence system */
     int SIDMapCount;
+    int OUICount;
 
     int fingerprint_network_count;
 
