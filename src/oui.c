@@ -1,3 +1,25 @@
+/*
+** Copyright (C) 2018-2020 Quadrant Information Security <quadrantsec.com>
+** Copyright (C) 2018-2020 Champ Clark III <cclark@quadrantsec.com>
+**
+** This program is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License Version 2 as
+** published by the Free Software Foundation.  You may not use, modify or
+** distribute this program under any other version of the GNU General
+** Public License.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+
+/* Lookup routines for MAC address / vender */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"             /* From autoconf */
@@ -16,6 +38,13 @@
 struct _MeerCounters *MeerCounters;
 struct _MeerConfig *MeerConfig;
 struct _Manfact_Struct *MF_Struct;
+
+/*****************************************************************************/
+/* Load MAC/Vendor information into memory.  This list is from the Wireshark */
+/* team.  Get it:							     */
+/* https://gitlab.com/wireshark/wireshark/raw/master/manuf                   */
+/* The list need to be in the wireshark format!                              */
+/*****************************************************************************/
 
 void Load_OUI( void )
 {
@@ -41,6 +70,8 @@ void Load_OUI( void )
 
             linecount++;
 
+            /* Skip comments, etc */
+
             if (buf[0] == '#' || buf[0] == 10 || buf[0] == ';' || buf[0] == 32)
                 {
                     continue;
@@ -48,14 +79,21 @@ void Load_OUI( void )
 
             buf[ strlen(buf) - 1 ] = '\0';		/* Remove return */
 
+            /* Pull in all values */
+
             mac  = strtok_r(buf, "\t", &saveptr);
             short_manfact = strtok_r(NULL, "\t", &saveptr);
             long_manfact = strtok_r(NULL, "\t", &saveptr);
+
+            /* mac / short_manfact should _always be there.  long_manfact isn't
+                   always there */
 
             if ( mac == NULL || short_manfact == NULL )
                 {
                     Meer_Log(ERROR, "[%s, line %d] %s incorrectly formated at line %d", __FILE__,  __LINE__, MeerConfig->oui_filename, linecount );
                 }
+
+            /* if no long_manfact is present */
 
             if ( long_manfact == NULL )
                 {
@@ -73,9 +111,12 @@ void Load_OUI( void )
 
             memset(&MF_Struct[MeerCounters->OUICount], 0, sizeof(struct _Manfact_Struct));
 
-            strlcpy(MF_Struct[MeerCounters->OUICount].mac, mac, sizeof(MeerCounters->OUICount));
-            strlcpy(MF_Struct[MeerCounters->OUICount].short_manfact, short_manfact, sizeof(MeerCounters->OUICount));
-            strlcpy(MF_Struct[MeerCounters->OUICount].long_manfact, long_manfact, sizeof(MeerCounters->OUICount));
+
+            /* Store into memory the values */
+
+            strlcpy(MF_Struct[MeerCounters->OUICount].mac, mac, sizeof(MF_Struct[MeerCounters->OUICount].mac));
+            strlcpy(MF_Struct[MeerCounters->OUICount].short_manfact, short_manfact, sizeof(MF_Struct[MeerCounters->OUICount].short_manfact));
+            strlcpy(MF_Struct[MeerCounters->OUICount].long_manfact, long_manfact, sizeof(MF_Struct[MeerCounters->OUICount].long_manfact));
 
             MeerCounters->OUICount++;
 
@@ -85,6 +126,10 @@ void Load_OUI( void )
 
 }
 
+
+/**************************************************************/
+/* OUI_Lookup - looks up a MAC address and returns the vender */
+/**************************************************************/
 
 void OUI_Lookup ( char *mac, char *str, size_t size )
 {
@@ -104,7 +149,7 @@ void OUI_Lookup ( char *mac, char *str, size_t size )
     strlcpy(new_mac, mac, sizeof(new_mac));
     To_UpperC(new_mac);
 
-    /* Break up the MAC */
+    /* Break up the MAC ( 00:00:00 ) */
 
     s1 = strtok_r(new_mac, ":", &saveptr);
     s2 = strtok_r(NULL, ":", &saveptr);
@@ -128,6 +173,9 @@ void OUI_Lookup ( char *mac, char *str, size_t size )
 
             if ( !strncmp(search_string,  MF_Struct[i].mac, 8) )
                 {
+
+                    /* By default, return the long_manfact information.  If that
+                       isn't present,  then return the short_manfact data */
 
                     if ( MF_Struct[i].long_manfact[0] != '0' )
                         {

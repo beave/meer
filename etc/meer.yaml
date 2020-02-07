@@ -58,6 +58,15 @@ meer-core:
 
     client_stats: disabled
 
+    # The "oui_lookup" allows Meer to lookup vender information based off
+    # a MAC address.  Information is stored in fingerprinting JSON.  The
+    # MAC/OUI database
+    #
+    # https://gitlab.com/wireshark/wireshark/raw/master/manuf
+
+    oui_lookup: enabled
+    oui_filename: "/usr/local/etc/manuf"
+
     # If "dns" is enabled, Meer will do reverse DNS (PTR) lookups of an IP. 
     # The "dns_cache" is the amount of time Meer should "cache" a PTR record
     # for.  The DNS cache prevents Meer from doing repeated lookups of an 
