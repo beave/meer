@@ -160,3 +160,10 @@ CREATE TABLE `bluedot` (
   KEY `bluedot` (`sid`,`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `stats` (
+  `hostname` varchar(32) DEFAULT NULL,
+  `timestamp` datetime NOT NULL,
+  `stats` text NOT NULL,
+  KEY `stats` (`hostname`,`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

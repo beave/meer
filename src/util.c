@@ -37,6 +37,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <ctype.h>
 
 
 #include "meer.h"
@@ -485,4 +486,20 @@ void To_UpperC(char *const s)
         }
 }
 
+/***************************************************************************
+ * Djd2_Hash - creates a hash based off a string.  This code is from Dan
+ * Bernstein.  See http://www.cse.yorku.ca/~oz/hash.html.
+ ***************************************************************************/
+
+uint32_t Djb2_Hash(char *str)
+{
+
+    uint32_t hash = 5381;
+    int32_t c;
+
+    while ( (c = *str++ ) )
+        hash = ((hash << 5) + hash) + c;
+
+    return(hash);
+}
 

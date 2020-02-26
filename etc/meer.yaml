@@ -130,7 +130,7 @@ output-plugins:
 
     # Store extra decoded JSON metadata from Suricata or Sagan.  This requires
     # your database to have the metadata, flow, http, etc. tables.  If all are
-    # disabled,  Meer will stored data in strictly a Barnyard2/Snort method. 
+    # disabled,  Meer will store data in strictly a Barnyard2/Snort method. 
     # If you want to store this decoded information,  and you likely do,  make
     # sure you have the decoders enabled in the "core" section of this Meer 
     # configuration file! 
@@ -143,6 +143,7 @@ output-plugins:
     smtp: enabled
     email: enabled
     json: enabled
+    stats: enabled
 
     # If you would like Meer to mimic the legacy "reference" tables from
     # Snort/Barnyard2, enable it here.  If your using more than one database
@@ -185,6 +186,7 @@ output-plugins:
     smtp: enabled
     fileinfo: enabled
     dhcp: enabled
+    stats: enabled
 
   ###########################################################################
   # external 
@@ -262,7 +264,7 @@ output-plugins:
     batch: 10                # Batch/pipelining mode. Max is 100. 1 == no batching.
     key: "suricata"	     # Default 'key' or 'channel' to use. 
     mode: list               # How to publish data to Redis.  Valid types are list/lpush, 
-                             # rpush, channel|publish.
+                             # rpush, channel/publish or set. 
 
     # This controls event_types to send to Redis. 
 
@@ -276,6 +278,7 @@ output-plugins:
     smtp: enabled
     fileinfo: enabled
     dhcp: enabled
+    stats: enabled
 
     # Fingerprint data can be temporarily stored in a Redis database.  When an alert
     # fires, this information can be used to determine the targets operating system, 

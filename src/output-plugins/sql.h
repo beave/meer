@@ -58,6 +58,9 @@ void SQL_Insert_JSON ( struct _DecodeAlert *DecodeAlert );
 void SQL_Insert_Normalize ( struct _DecodeAlert *DecodeAlert );
 void SQL_Insert_Syslog_Data ( struct _DecodeAlert *DecodeAlert );
 
+void SQL_Insert_Stats ( char *json_stats, const char *timestamp, const char *hostname );
+
+
 void SQL_Record_Last_CID ( void );
 int SQL_Get_Class_ID ( struct _DecodeAlert *DecodeAlert );
 int SQL_Get_Signature_ID ( struct _DecodeAlert *DecodeAlert, int class_id );
@@ -69,6 +72,7 @@ void SQL_Insert_Header ( struct _DecodeAlert *DecodeAlert );
 int SQL_Legacy_Reference_Handler ( struct _DecodeAlert *DecodeAlert );
 int SQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert );
 char *SQL_Get_Last_ID( void );
+
 
 #ifdef QUADRANT
 void SQL_Insert_Bluedot ( struct _DecodeAlert *DecodeAlert );

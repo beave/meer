@@ -712,6 +712,16 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+                            if ( !strcmp(last_pass, "stats" ))
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->sql_stats = true;
+                                        }
+
+                                }
+
 #ifdef QUADRANT
                             else if ( !strcmp(last_pass, "bluedot" ) )
                                 {
@@ -968,9 +978,9 @@ void Load_YAML_Config( char *yaml_file )
                                 {
                                     if ( strcmp(value, "list") && strcmp(value, "lpush") &&
                                             strcmp(value, "rpush" ) && strcmp(value, "channel") &&
-                                            strcmp(value, "publish" ) )
+                                            strcmp(value, "publish" ) && strcmp(value, "set"  ) )
                                         {
-                                            Meer_Log(ERROR, "Invalid 'redis' -> 'mode'.  Must be list, lpush, rpush, channel or public. Abort");
+                                            Meer_Log(ERROR, "Invalid 'redis' -> 'mode'.  Must be list, lpush, rpush, channel, public or set . Abort");
                                         }
 
                                     if ( !strcmp(value, "list") || !strcmp(value, "lpush" ) )
@@ -988,8 +998,27 @@ void Load_YAML_Config( char *yaml_file )
                                             strlcpy( MeerOutput->redis_command, "publish", sizeof(MeerOutput->redis_command) );
                                         }
 
+                                    if ( !strcmp(value, "set") )
+                                        {
+                                            strlcpy( MeerOutput->redis_command, "set", sizeof(MeerOutput->redis_command) );
+                                        }
+
                                 }
 
+                            if ( !strcmp(last_pass, "prepend" ) && MeerOutput->redis_flag == true )
+                                {
+
+                                    if ( !strcmp(value, "none") )
+                                        {
+                                            MeerOutput->redis_prepend = REDIS_PREPEND_NONE;
+                                        }
+
+                                    if ( !strcmp(value, "djb2") )
+                                        {
+                                            MeerOutput->redis_prepend = REDIS_PREPEND_DJB2;
+                                        }
+
+				}
 
                             if ( !strcmp(last_pass, "port" ) && MeerOutput->redis_flag == true )
                                 {
@@ -1123,8 +1152,15 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
+                            if ( !strcmp(last_pass, "stats" ))
+                                {
 
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->redis_stats = true;
+                                        }
 
+                                }
 
                         }
 

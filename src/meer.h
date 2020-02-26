@@ -158,6 +158,9 @@ struct _MeerOutput
     bool redis_fileinfo;
     bool redis_dhcp;
     bool redis_client_stats;
+    bool redis_stats; 
+
+    unsigned char redis_prepend;
 
 #endif
 
@@ -185,6 +188,7 @@ struct _MeerOutput
     bool sql_email;
     bool sql_metadata;
     bool sql_json;
+    bool sql_stats;
 
 #ifdef QUADRANT
     bool sql_bluedot;

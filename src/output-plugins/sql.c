@@ -832,7 +832,6 @@ void SQL_Insert_Metadata ( struct _DecodeAlert *DecodeAlert )
 
 }
 
-
 void SQL_Insert_JSON ( struct _DecodeAlert *DecodeAlert )
 {
 
@@ -846,6 +845,25 @@ void SQL_Insert_JSON ( struct _DecodeAlert *DecodeAlert )
              "VALUES (%d,%" PRIu64 ",'%s')",
              MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid,
              e_json);
+
+    (void)SQL_DB_Query(tmp);
+
+    MeerCounters->JSONCount++;
+    MeerCounters->INSERTCount++;
+
+}
+
+void SQL_Insert_Stats ( char *json_stats, const char *timestamp, const char *hostname )
+{
+
+    char tmp[MAX_SQL_QUERY] = { 0 };
+    char e_stats[MAX_SQL_QUERY*2] = { 0 };
+
+    SQL_Escape_String( json_stats, e_stats, sizeof(e_stats));
+
+    snprintf(tmp, sizeof(tmp),
+             "INSERT INTO stats (hostname,timestamp,stats) "
+	     "VALUES ('%s', '%s', '%s')", hostname, timestamp, e_stats);
 
     (void)SQL_DB_Query(tmp);
 

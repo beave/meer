@@ -58,4 +58,8 @@ double CalcPct(uint64_t cnt, uint64_t total);
 bool Is_IP (char *ipaddr, int ver );
 int File_Check (char *filename);
 bool Is_Inrange ( unsigned char *ip, unsigned char *tests, int count);
+void To_UpperC(char *const s);
+uint32_t Djb2_Hash(char *str);
+
+
 

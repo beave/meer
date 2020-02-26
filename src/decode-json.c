@@ -189,7 +189,14 @@ bool Decode_JSON( char *json_string )
 
 #endif
 
-            /* Process stats data from Sagan */
+	    /* Process Suricata / Sagan stats */
+
+	    if ( !strcmp(json_object_get_string(tmp), "stats" ) ) 
+		    {
+		    Output_Stats( json_string );
+		    }
+
+            /* Process client stats data from Sagan */
 
             if ( !strcmp(json_object_get_string(tmp), "client_stats") && MeerConfig->client_stats == true )
                 {
@@ -210,6 +217,9 @@ bool Decode_JSON( char *json_string )
 
                     if ( !strcmp(json_object_get_string(tmp), "flow") && MeerOutput->redis_flow == true )
                         {
+			    // HERE
+			    //
+			    //
                             JSON_To_Redis( json_string );
                         }
 
@@ -254,6 +264,11 @@ bool Decode_JSON( char *json_string )
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "dhcp" ) && MeerOutput->redis_dhcp == true)
+                        {
+                            JSON_To_Redis( json_string );
+                        }
+
+                    else if ( !strcmp(json_object_get_string(tmp), "stats" ) && MeerOutput->redis_stats == true)
                         {
                             JSON_To_Redis( json_string );
                         }

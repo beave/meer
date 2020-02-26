@@ -54,14 +54,14 @@ CREATE TABLE sig_reference (sig_id  INT    UNSIGNED NOT NULL,
                             ref_id  INT    UNSIGNED NOT NULL,
                             PRIMARY KEY(sig_id, ref_seq, ref_id));
 
-CREATE TABLE reference (  ref_id        INT         UNSIGNED NOT NULL AUTO_INCREMENT,
-                          ref_system_id INT         UNSIGNED NOT NULL,
-                          ref_tag       TEXT NOT NULL,
-                          PRIMARY KEY (ref_id));
+CREATE TABLE reference (  `ref_id`        INT  UNSIGNED NOT NULL AUTO_INCREMENT,
+                          `ref_system_id` INT  UNSIGNED NOT NULL,
+                          `ref_tag`       TEXT NOT NULL,
+                          PRIMARY KEY (`ref_id`));
 
-CREATE TABLE reference_system ( ref_system_id   INT         UNSIGNED NOT NULL AUTO_INCREMENT,
-                                ref_system_name VARCHAR(20),
-                                PRIMARY KEY (ref_system_id));
+CREATE TABLE reference_system ( `ref_system_id` INT  UNSIGNED NOT NULL AUTO_INCREMENT,
+                                `ref_system_name` VARCHAR(20),
+                                PRIMARY KEY (`ref_system_id`));
 
 CREATE TABLE sig_class ( sig_class_id        INT    UNSIGNED NOT NULL AUTO_INCREMENT,
                          sig_class_name      VARCHAR(60) NOT NULL,
@@ -272,4 +272,11 @@ CREATE TABLE email (sid         INT         UNSIGNED NOT NULL,
 		    attachment  TEXT,
                     KEY `event` (sid,cid));
 
+CREATE TABLE stats (
+		      hostname  VARCHAR(32), 
+		      timestamp DATETIME NOT NULL,
+		      stats TEXT NOT NULL, 
+		      KEY `stats` (`hostname`, `timestamp`)); 
+
+		      
 

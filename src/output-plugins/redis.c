@@ -200,16 +200,19 @@ bool Redis_Writer ( char *command, char *key, char *value, int expire )
 }
 
 
-void JSON_To_Redis ( char *json_string )
+void JSON_To_Redis ( char *json_string, char *key )
 {
 
     int i = 0;
+    char tmp_key[128] = { 0 };
 
     if ( redis_batch_count == MeerOutput->redis_batch )
         {
 
             for ( i = 0; i < MeerOutput->redis_batch; i ++ )
                 {
+
+		    printf("%s|%s|%s\n",  MeerOutput->redis_command, MeerOutput->redis_key, redis_batch[i]);
                     Redis_Writer ( MeerOutput->redis_command, MeerOutput->redis_key, redis_batch[i], 0 );
                 }
 
