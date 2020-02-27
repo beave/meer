@@ -98,19 +98,25 @@ void SQL_DB_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id )
 
 }
 
+/*
 #ifdef HAVE_LIBHIREDIS
 
 void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id, int class_id )
 {
+*/
 
+/*
     struct json_object *jobj;
 
     char key[128] = { 0 };
+*/
 
     /* Insert "alert" to be picked up by runner */
-
+/*
     snprintf(key, sizeof(key), "alert:%d:%" PRIu64 "", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid);
     Redis_Writer( "SET", key, DecodeAlert->json, 0 );
+*/
+
 
     /* Insert stat data */
 
@@ -171,10 +177,12 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id, int cla
 
         json_object_put(jobj);
     */
-
+/*
 }
 
 #endif
+*/
+
 
 #endif
 
