@@ -189,12 +189,12 @@ bool Decode_JSON( char *json_string )
 
 #endif
 
-	    /* Process Suricata / Sagan stats */
+            /* Process Suricata / Sagan stats */
 
-	    if ( !strcmp(json_object_get_string(tmp), "stats" ) ) 
-		    {
-		    Output_Stats( json_string );
-		    }
+            if ( !strcmp(json_object_get_string(tmp), "stats" ) )
+                {
+                    Output_Stats( json_string );
+                }
 
             /* Process client stats data from Sagan */
 
@@ -217,60 +217,57 @@ bool Decode_JSON( char *json_string )
 
                     if ( !strcmp(json_object_get_string(tmp), "flow") && MeerOutput->redis_flow == true )
                         {
-			    // HERE
-			    //
-			    //
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "flow" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "dns") && MeerOutput->redis_dns == true )
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "dns" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "alert") && MeerOutput->redis_alert == true)
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "alert" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "http") && MeerOutput->redis_http == true)
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "http" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "files" ) && MeerOutput->redis_files == true )
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "files" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "tls" ) && MeerOutput->redis_tls == true)
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "tls" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "ssh" ) && MeerOutput->redis_ssh == true)
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "ssh" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "smtp" ) && MeerOutput->redis_smtp == true)
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "smtp" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "fileinfo" ) && MeerOutput->redis_fileinfo == true)
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "fileinfo" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "dhcp" ) && MeerOutput->redis_dhcp == true)
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "dhcp" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "stats" ) && MeerOutput->redis_stats == true)
                         {
-                            JSON_To_Redis( json_string );
+                            JSON_To_Redis( json_string, "stats" );
                         }
 
                 }

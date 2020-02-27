@@ -863,7 +863,7 @@ void SQL_Insert_Stats ( char *json_stats, const char *timestamp, const char *hos
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO stats (hostname,timestamp,stats) "
-	     "VALUES ('%s', '%s', '%s')", hostname, timestamp, e_stats);
+             "VALUES ('%s', '%s', '%s')", hostname, timestamp, e_stats);
 
     (void)SQL_DB_Query(tmp);
 

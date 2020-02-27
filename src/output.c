@@ -629,8 +629,8 @@ bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
 }
 
 /****************************************************************************
- * Output_Stats - writes stats JSON (from Suricata or Sagan) to a SQL 
- * database and/or Redis 
+ * Output_Stats - writes stats JSON (from Suricata or Sagan) to a SQL
+ * database and/or Redis
  ****************************************************************************/
 
 void Output_Stats ( char *json_string )
@@ -640,56 +640,42 @@ void Output_Stats ( char *json_string )
     struct json_object *tmp = NULL;
 
     char *timestamp = NULL;
-    char *hostname = NULL; 
+    char *hostname = NULL;
 
-        json_obj = json_tokener_parse(json_string);
+    json_obj = json_tokener_parse(json_string);
 
 
-        if ( json_string == NULL )
-             {
-              MeerCounters->InvalidJSONCount++;
-	      Meer_Log(WARN, "Got invalid 'stats' JSON string: %s", json_string);
-              return;
-             }
+    if ( json_string == NULL )
+        {
+            MeerCounters->InvalidJSONCount++;
+            Meer_Log(WARN, "Got invalid 'stats' JSON string: %s", json_string);
+            return;
+        }
 
-            if ( json_object_object_get_ex(json_obj, "timestamp", &tmp))
-                {
-                    timestamp =  (char *)json_object_get_string(tmp);
-		}
+    if ( json_object_object_get_ex(json_obj, "timestamp", &tmp))
+        {
+            timestamp =  (char *)json_object_get_string(tmp);
+        }
 
-            if ( json_object_object_get_ex(json_obj, "hostname", &tmp))
-                {
-                    hostname =  (char *)json_object_get_string(tmp);
-		}
+    if ( json_object_object_get_ex(json_obj, "hostname", &tmp))
+        {
+            hostname =  (char *)json_object_get_string(tmp);
+        }
 
-	if ( timestamp == NULL ) 
-		{
-		MeerCounters->InvalidJSONCount++;
-		Meer_Log(WARN, "Warning.  Stats line lacked any 'timestamp'. Skipping. JSON: %s", json_string);
-		return;
-		}
-
-	if ( hostname == NULL ) 
-		{
-		Meer_Log(WARN, "Warning. No 'hostname' found in the stats JSON.  Inserting data with 'none' as the host");
-		hostname="none";
-		}
+    if ( timestamp == NULL )
+        {
+            MeerCounters->InvalidJSONCount++;
+            Meer_Log(WARN, "Warning.  Stats line lacked any 'timestamp'. Skipping. JSON: %s", json_string);
+            return;
+        }
 
 #if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
-	if ( MeerOutput->sql_stats == true )
-		{
-		SQL_Insert_Stats ( json_string, timestamp, hostname );
-		}
+    if ( MeerOutput->sql_stats == true )
+        {
+            SQL_Insert_Stats ( json_string, timestamp, hostname );
+        }
 
-#endif
-
-#ifdef HAVE_LIBHIREDIS
-
-	if ( MeerOutput->redis_stats == true )
-		{
-//		SQL_Insert_Stats ( json_string, timestamp, hostname );
-		}
 
 
 #endif

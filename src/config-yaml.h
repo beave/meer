@@ -61,13 +61,5 @@ void Load_YAML_Config ( char *yaml_file );
 #define		DB_POSTGRESQL		2
 #define		DB_REDIS		3
 
-/***********************/
-/* Redis prepend types */
-/***********************/
-
-#define         REDIS_PREPEND_NONE	0
-#define		REDIS_PREPEND_DJB2	1
-
-
 
 #endif

@@ -158,9 +158,8 @@ struct _MeerOutput
     bool redis_fileinfo;
     bool redis_dhcp;
     bool redis_client_stats;
-    bool redis_stats; 
-
-    unsigned char redis_prepend;
+    bool redis_stats;
+    bool redis_append_id;
 
 #endif
 

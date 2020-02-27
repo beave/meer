@@ -40,10 +40,13 @@
 #include "decode-output-json-client-stats.h"
 
 struct _MeerOutput *MeerOutput;
+struct _MeerConfig *MeerConfig;
+struct _MeerWaldo *MeerWaldo;
 
 uint32_t redis_batch_count = 0;
 
 char redis_batch[MAX_REDIS_BATCH][10240 + PACKET_BUFFER_SIZE_DEFAULT];
+char redis_batch_key[MAX_REDIS_BATCH][128] = { 0 };
 
 void Redis_Connect( void )
 {
@@ -164,11 +167,11 @@ bool Redis_Writer ( char *command, char *key, char *value, int expire )
     if ( expire == 0 )
         {
             reply = redisCommand(MeerOutput->c_redis, "%s %s %s", command, key, value);
-	
-	    if ( MeerOutput->redis_debug )
-		{
-		 Meer_Log(DEBUG, "Sent to Redis: %s %s %s", command, key, value);
-		}
+
+            if ( MeerOutput->redis_debug )
+                {
+                    Meer_Log(DEBUG, "Sent to Redis: %s %s %s", command, key, value);
+                }
         }
     else
         {
@@ -176,7 +179,7 @@ bool Redis_Writer ( char *command, char *key, char *value, int expire )
 
             if ( MeerOutput->redis_debug )
                 {
-                 Meer_Log(DEBUG, "Sent to Redis: %s %s %s EX %d", command, key, value, expire);
+                    Meer_Log(DEBUG, "Sent to Redis: %s %s %s EX %d", command, key, value, expire);
                 }
         }
 
@@ -206,14 +209,40 @@ void JSON_To_Redis ( char *json_string, char *key )
     int i = 0;
     char tmp_key[128] = { 0 };
 
+    /* Write request to Redis queue */
+
+    strlcpy(redis_batch[redis_batch_count], json_string, sizeof(redis_batch[redis_batch_count]));
+    strlcpy(redis_batch_key[redis_batch_count], key, sizeof(redis_batch_key[redis_batch_count]));
+    redis_batch_count++;
+
+    /* See if Redis queue needs to be written */
+
     if ( redis_batch_count == MeerOutput->redis_batch )
         {
 
-            for ( i = 0; i < MeerOutput->redis_batch; i ++ )
+            for ( i = 0; i < MeerOutput->redis_batch; i++ )
                 {
 
-		    printf("%s|%s|%s\n",  MeerOutput->redis_command, MeerOutput->redis_key, redis_batch[i]);
-                    Redis_Writer ( MeerOutput->redis_command, MeerOutput->redis_key, redis_batch[i], 0 );
+                    char tk1[128] = { 0 };
+                    char tk2[128] = { 0 };
+
+                    if ( MeerOutput->redis_key[0] != '\0' )
+                        {
+                            strlcpy(tk1, MeerOutput->redis_key, sizeof(tk1));
+                        }
+                    else
+                        {
+                            strlcpy(tk1, redis_batch_key[i], sizeof(tk1));
+                        }
+
+                    strlcpy(tk2, tk1, sizeof(tk2));
+
+                    if ( MeerOutput->redis_append_id == true )
+                        {
+                            snprintf(tk2, sizeof(tk2), "%s:%s:% " PRIu64 "", tk1, MeerConfig->hostname, MeerWaldo->position);
+                        }
+
+                    Redis_Writer ( MeerOutput->redis_command, tk2, redis_batch[i], 0 );
                 }
 
             redis_batch_count = 0;
@@ -224,10 +253,6 @@ void JSON_To_Redis ( char *json_string, char *key )
                 }
 
         }
-
-    strlcpy(redis_batch[redis_batch_count], json_string, sizeof(redis_batch[redis_batch_count]));
-
-    redis_batch_count++;
 
 }
 

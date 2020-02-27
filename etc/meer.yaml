@@ -53,7 +53,7 @@ meer-core:
     fingerprint_log: "/tmp/fingerprint.eve"
 
     # "client_stats" are specific to Sagan and allow Sagan/Meer to record
-    # informatin about systems sending Sagan data.  This has no affect on 
+    # information about systems sending Sagan data.  This has no affect on 
     # Suricata. 
 
     client_stats: disabled
@@ -64,7 +64,7 @@ meer-core:
     #
     # https://gitlab.com/wireshark/wireshark/raw/master/manuf
 
-    oui_lookup: enabled
+    oui_lookup: disabled
     oui_filename: "/usr/local/etc/manuf"
 
     # If "dns" is enabled, Meer will do reverse DNS (PTR) lookups of an IP. 
@@ -83,7 +83,6 @@ meer-core:
     # events like a "ping" for your sensor.  This can be useful for detecting
     # when Meer, Suricata or Sagan have "died" unexpectedly.
 
-  
     health: enabled
     health_signatures: 20000001,20000002,20000003,20000004
 
@@ -261,10 +260,22 @@ output-plugins:
     server: 127.0.0.1
     #password: "mypassword"
     port: 6379
-    batch: 10                # Batch/pipelining mode. Max is 100. 1 == no batching.
-    key: "suricata"	     # Default 'key' or 'channel' to use. 
-    mode: list               # How to publish data to Redis.  Valid types are list/lpush, 
-                             # rpush, channel/publish or set. 
+    batch: 1                 # Batching (pipelining) data.  When set to 1 then
+                             # no batching is performed and data is immediately 
+                             # sent to Redis.  If increase,  data is batched 
+                             # and sent in bulk to increase performance.  The max
+                             # is 100.
+    key: "suricata"	     # Default 'channel' to use.  If none is specified, the 
+                             # channel name will become the "event_type"  type 
+                             # (ie - alert, # dhcp, dns, flow, etc). If set, Meer
+                             # will send data to Redis similar to Suricata. 
+    mode: list               # How to publish data to Redis.  Valid types are 
+			     # "list" ("lpush"), "rpush", "channel" ("publish"), 
+                             # "set".
+    append_id: disabled      # If enabled, this will append the "hostname" and
+                             # waldo position to the key.  For example,  the 
+                             # Redis object can become "alert:hostname:1". This
+                             # is good when you are using the "set" mode. 
 
     # This controls event_types to send to Redis. 
 

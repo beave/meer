@@ -142,10 +142,11 @@ void Load_YAML_Config( char *yaml_file )
     MeerOutput->redis_flag = 0;
     MeerOutput->redis_port = 6379;
     MeerOutput->redis_password[0] = '\0';
+    MeerOutput->redis_key[0] = '\0';
     MeerOutput->redis_batch = 1;
+
     strlcpy(MeerOutput->redis_server, "127.0.0.1", sizeof(MeerOutput->redis_server));
-    strlcpy(MeerOutput->redis_key, DEFAULT_REDIS_KEY, sizeof(MeerOutput->redis_key));
-    strlcpy(MeerOutput->redis_command, "lpush", sizeof(MeerOutput->redis_command));
+    strlcpy(MeerOutput->redis_command, "set", sizeof(MeerOutput->redis_command));
 
 #endif
 
@@ -1005,20 +1006,13 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-                            if ( !strcmp(last_pass, "prepend" ) && MeerOutput->redis_flag == true )
+                            if ( !strcmp(last_pass, "append_id" ) && MeerOutput->redis_flag == true )
                                 {
-
-                                    if ( !strcmp(value, "none") )
+                                    if (!strcasecmp(value, "yes") || !strcasecmp(value, "true") || !strcasecmp(value, "enabled"))
                                         {
-                                            MeerOutput->redis_prepend = REDIS_PREPEND_NONE;
+                                            MeerOutput->redis_append_id = true;
                                         }
-
-                                    if ( !strcmp(value, "djb2") )
-                                        {
-                                            MeerOutput->redis_prepend = REDIS_PREPEND_DJB2;
-                                        }
-
-				}
+                                }
 
                             if ( !strcmp(last_pass, "port" ) && MeerOutput->redis_flag == true )
                                 {
