@@ -57,6 +57,7 @@ struct _Classifications *MeerClass;
 struct _MeerOutput *MeerOutput;
 struct _MeerCounters *MeerCounters;
 struct _MeerConfig *MeerConfig;
+struct _MeerHealth *MeerHealth;
 
 bool Decode_JSON( char *json_string )
 {
@@ -75,6 +76,8 @@ bool Decode_JSON( char *json_string )
     char *fingerprint_os = NULL;
     char *fingerprint_type = NULL;
 
+    bool health_flag = false;
+    int i = 0;
 
     if ( json_string == NULL )
         {
@@ -112,6 +115,8 @@ bool Decode_JSON( char *json_string )
                     DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
 
 #ifdef HAVE_LIBHIREDIS
+
+		    Alert_To_Redis( DecodeAlert, json_string ); 
 
                     if ( MeerConfig->fingerprint == true )
                         {
@@ -215,6 +220,13 @@ bool Decode_JSON( char *json_string )
             if ( MeerOutput->redis_flag == true )
                 {
 
+/*
+                    if ( !strcmp(json_object_get_string(tmp), "alert") && MeerOutput->redis_alert == true)
+                        {
+                            JSON_To_Redis( json_string, "alert" );
+                        }
+*/
+
                     if ( !strcmp(json_object_get_string(tmp), "flow") && MeerOutput->redis_flow == true )
                         {
                             JSON_To_Redis( json_string, "flow" );
@@ -223,11 +235,6 @@ bool Decode_JSON( char *json_string )
                     else if ( !strcmp(json_object_get_string(tmp), "dns") && MeerOutput->redis_dns == true )
                         {
                             JSON_To_Redis( json_string, "dns" );
-                        }
-
-                    else if ( !strcmp(json_object_get_string(tmp), "alert") && MeerOutput->redis_alert == true)
-                        {
-                            JSON_To_Redis( json_string, "alert" );
                         }
 
                     else if ( !strcmp(json_object_get_string(tmp), "http") && MeerOutput->redis_http == true)
