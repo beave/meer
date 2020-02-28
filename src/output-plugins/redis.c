@@ -272,13 +272,10 @@ int i = 0;
                     for (i = 0 ; i < MeerCounters->HealthCount; i++ )
                         {   
 
-			    printf("%u - %u\n",  MeerHealth[i].health_signature, DecodeAlert->alert_signature_id);
-
                             if ( MeerHealth[i].health_signature == DecodeAlert->alert_signature_id )
                                 {
-				    printf("GOT HEALTH\n");
                                     health_flag = true;
-//                                    break;
+                                    break;
                                 }
                         }
 
