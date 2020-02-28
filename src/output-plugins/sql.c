@@ -350,7 +350,7 @@ void SQL_Insert_Event ( struct _DecodeAlert *DecodeAlert, int signature_id )
 
     char tmp[MAX_SQL_QUERY];
 
-    snprintf(tmp, sizeof(tmp), "INSERT INTO event(sid,cid,signature,timestamp,app_proto,flow_id) VALUES ('%d','%" PRIu64 "',%d,'%s','%s',%s)", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, signature_id, DecodeAlert->timestamp, DecodeAlert->app_proto, DecodeAlert->flowid );
+    snprintf(tmp, sizeof(tmp), "INSERT INTO event(sid,cid,signature,timestamp,app_proto,flow_id) VALUES ('%d','%" PRIu64 "',%d,'%s','%s',%s)", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, signature_id, DecodeAlert->converted_timestamp, DecodeAlert->app_proto, DecodeAlert->flowid );
 
 
     (void)SQL_DB_Query(tmp);
@@ -675,7 +675,7 @@ void SQL_Insert_Flow ( struct _DecodeAlert *DecodeAlert )
              DecodeAlert->flow_pkts_toclient,
              DecodeAlert->flow_bytes_toserver,
              DecodeAlert->flow_bytes_toclient,
-             DecodeAlert->flow_start_timestamp );
+             DecodeAlert->flow_start_timestamp_converted );
 
     (void)SQL_DB_Query(tmp);
     MeerCounters->INSERTCount++;

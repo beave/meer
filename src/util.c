@@ -487,19 +487,18 @@ void To_UpperC(char *const s)
 }
 
 /***************************************************************************
- * Djd2_Hash - creates a hash based off a string.  This code is from Dan
- * Bernstein.  See http://www.cse.yorku.ca/~oz/hash.html.
+ * MariaDB/MySQL really don't like ISO8601 timestamps :(  This converts 
+ * the timestamp to a usable SQL value 
  ***************************************************************************/
 
-uint32_t Djb2_Hash(char *str)
-{
+void Convert_ISO8601_For_SQL( char *time, char *str, size_t size )
+{  
 
-    uint32_t hash = 5381;
-    int32_t c;
+	struct tm tm_;
+	char newtime[64] = { 0 }; 
 
-    while ( (c = *str++ ) )
-        hash = ((hash << 5) + hash) + c;
+	strptime(time,"%FT%T",&tm_);
+	strftime(newtime,sizeof(newtime),"%F %T",&tm_);
 
-    return(hash);
+	snprintf(str, size, "%s", newtime);
 }
-

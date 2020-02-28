@@ -43,6 +43,8 @@ char *src_ip;
 char *src_port;
 char src_dns[256];
 
+char converted_timestamp[64];
+
     char *dest_ip;
     char *dest_port;
     char dest_dns[256];
@@ -112,6 +114,7 @@ char src_dns[256];
     uint64_t flow_bytes_toserver;
     uint64_t flow_bytes_toclient;
     char flow_start_timestamp[64];
+    char flow_start_timestamp_converted[64];
 
     /* HTTP data */
 
