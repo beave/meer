@@ -244,12 +244,14 @@ void JSON_To_Redis ( char *json_string, char *key )
                     if ( MeerOutput->redis_append_id == true )
                         {
 
-			    if ( MeerOutput->sql_enabled == false ) 
-				{
                                 snprintf(tk2, sizeof(tk2), "%s:%s:% " PRIu64 "", tk1, MeerConfig->hostname, MeerWaldo->position);
-				} else { 
-			        snprintf(tk2, sizeof(tk2), "%s:%d:% " PRIu64 "", tk1, MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid );
-				}
+
+#ifdef QUADRANT
+				if ( MeerOutput->sql_enabled == true )
+				   {
+				   snprintf(tk2, sizeof(tk2), "%s:%d:% " PRIu64 "", tk1, MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid );
+				   }
+#endif
                         }
 
                     Redis_Writer ( MeerOutput->redis_command, tk2, redis_batch[i], 0 );
