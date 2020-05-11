@@ -110,7 +110,6 @@ void Init_Output( void )
 
             Redis_Connect();
 
-
             strlcpy(redis_command, "PING", sizeof(redis_command));
 
             Redis_Reader(redis_command, redis_reply, sizeof(redis_reply));

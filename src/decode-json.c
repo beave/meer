@@ -150,11 +150,6 @@ bool Decode_JSON( char *json_string )
 
                         }
 
-		    if ( fingerprint_return == false )
-			{
-			Alert_To_Redis( DecodeAlert, json_string );
-			}
-
 #endif
 
                     if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
@@ -162,6 +157,15 @@ bool Decode_JSON( char *json_string )
                             Output_Alert_SQL( DecodeAlert );
 
                         }
+
+#ifdef HAVE_LIBHIREDIS
+
+		    if ( fingerprint_return == false )
+			{
+			Alert_To_Redis( DecodeAlert, json_string );
+			}
+
+#endif
 
                     if ( MeerOutput->external_enabled == true )
                         {
