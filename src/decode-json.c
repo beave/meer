@@ -152,6 +152,12 @@ bool Decode_JSON( char *json_string )
 
 #endif
 
+                    if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
+                        {
+                            Output_Alert_SQL( DecodeAlert );
+
+                        }
+
 #ifdef HAVE_LIBHIREDIS
 
 		    if ( fingerprint_return == false )
@@ -161,12 +167,6 @@ bool Decode_JSON( char *json_string )
 
 #endif
 
-
-                    if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
-                        {
-                            Output_Alert_SQL( DecodeAlert );
-
-                        }
 
                     if ( MeerOutput->external_enabled == true )
                         {

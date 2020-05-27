@@ -247,9 +247,15 @@ void JSON_To_Redis ( char *json_string, char *key )
                                 snprintf(tk2, sizeof(tk2), "%s:%s:% " PRIu64 "", tk1, MeerConfig->hostname, MeerWaldo->position);
 
 #ifdef QUADRANT
+
+			        /* The "MeerOutput->sql_last_cid - 1" is an UGLY temp kludge. 
+				   SQL takes place _before redis_.  This means the CID++ before
+				   the Redis insert can happen.   So we "roll" back the CID++
+				   for our Redis insert  - bleh */
+
 				if ( MeerOutput->sql_enabled == true )
 				   {
-				   snprintf(tk2, sizeof(tk2), "%s:%d:% " PRIu64 "", tk1, MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid );
+				   snprintf(tk2, sizeof(tk2), "%s:%d:% " PRIu64 "", tk1, MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid - 1 );
 				   }
 #endif
                         }
