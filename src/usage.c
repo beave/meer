@@ -30,7 +30,7 @@ void Usage( void )
     printf("@@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    Meer version %s\n", VERSION);
     printf("@@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security\n");
     printf("@!! !!@ @!@ @!!!:!   @!!!:!   @!@!!@a    https://quadrantsec.com\n");
-    printf("!!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018\n");
+    printf("!!:     !!: !!:      !!:      !!: :!a    Copyright (C) 2018-2020\n");
     printf(":      :   : :: ::  : :: ::   :   : :\n\n");
 
     printf("-D, --dameon\t\tPut Meer in the background.\n");
