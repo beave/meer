@@ -206,7 +206,7 @@ output-plugins:
 
   external:
 
-    enabled: no
+    enabled: yes
     debug: no
 
     # Execution of an external program based on metadata "policy".  When Meer
@@ -244,6 +244,10 @@ output-plugins:
     policy-connectivity-ips: enabled
     policy-balanced-ips: enabled
 
+    # Execute the program _any_ time an alert is detected
+
+    execute-on-all: disabled
+
     program: "/usr/local/bin/external_program"
 
 
@@ -270,7 +274,7 @@ output-plugins:
                              # (ie - alert, # dhcp, dns, flow, etc). If set, Meer
                              # will send data to Redis similar to Suricata. 
     mode: list               # How to publish data to Redis.  Valid types are 
-			     # "list" ("lpush"), "rpush", "channel" ("publish"), 
+                             # "list" ("lpush"), "rpush", "channel" ("publish"), 
                              # "set".
     append_id: disabled      # If enabled, this will append the "hostname" and
                              # waldo position to the key.  For example,  the 

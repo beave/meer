@@ -581,6 +581,14 @@ bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
     char *policy = NULL;
     char *meer = NULL;
 
+    /* If we are executing on "all", no reason to check policies, etc */
+
+    if ( MeerOutput->external_execute_on_all == true ) 
+	    {
+	    External( DecodeAlert, json_string );
+	    return(0);
+	    }
+
     if ( DecodeAlert->alert_metadata[0] != '\0' )
         {
             json_obj = json_tokener_parse(DecodeAlert->alert_metadata);

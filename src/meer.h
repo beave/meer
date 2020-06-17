@@ -205,6 +205,7 @@ struct _MeerOutput
     bool external_metadata_max_detect_ips;
     bool external_metadata_balanced_ips;
     bool external_metadata_connectivity_ips;
+    bool external_execute_on_all;
     char external_program[256];
 
     bool pipe_enabled;

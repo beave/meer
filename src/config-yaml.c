@@ -919,6 +919,18 @@ void Load_YAML_Config( char *yaml_file )
                                         }
                                 }
 
+                            if ( MeerOutput->external_enabled == true && !strcmp(last_pass, "execute-on-all" ) )
+                                {
+
+                                    if ( !strcasecmp(value, "yes") || !strcasecmp(value, "true" ) || !strcasecmp(value, "enabled"))
+                                        {
+                                            MeerOutput->external_execute_on_all = true;
+                                        }
+                                }
+
+
+
+
                         }
 
 
