@@ -111,72 +111,72 @@ void Redis_Quadrant( struct _DecodeAlert *DecodeAlert, int signature_id, int cla
     char key[128] = { 0 };
 */
 
-    /* Insert "alert" to be picked up by runner */
+/* Insert "alert" to be picked up by runner */
 /*
     snprintf(key, sizeof(key), "alert:%d:%" PRIu64 "", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid);
     Redis_Writer( "SET", key, DecodeAlert->json, 0 );
 */
 
 
-    /* Insert stat data */
+/* Insert stat data */
 
-    /*
-        jobj = json_object_new_object();
+/*
+    jobj = json_object_new_object();
 
-        json_object *jdate = json_object_new_string(DecodeAlert->timestamp);
-        json_object_object_add(jobj,"timestamp", jdate);
+    json_object *jdate = json_object_new_string(DecodeAlert->timestamp);
+    json_object_object_add(jobj,"timestamp", jdate);
 
-        json_object *jsid = json_object_new_int(MeerOutput->sql_sensor_id);
-        json_object_object_add(jobj,"sid", jsid);
+    json_object *jsid = json_object_new_int(MeerOutput->sql_sensor_id);
+    json_object_object_add(jobj,"sid", jsid);
 
-        json_object *jclass = json_object_new_int(class_id);
-        json_object_object_add(jobj,"signature_class_id", jclass);
+    json_object *jclass = json_object_new_int(class_id);
+    json_object_object_add(jobj,"signature_class_id", jclass);
 
-        json_object *jcid = json_object_new_int64(MeerOutput->sql_last_cid);
-        json_object_object_add(jobj,"cid", jcid);
+    json_object *jcid = json_object_new_int64(MeerOutput->sql_last_cid);
+    json_object_object_add(jobj,"cid", jcid);
 
-        json_object *jflow_id = json_object_new_int64( atol(DecodeAlert->flowid) );
-        json_object_object_add(jobj,"flow_id", jflow_id);
+    json_object *jflow_id = json_object_new_int64( atol(DecodeAlert->flowid) );
+    json_object_object_add(jobj,"flow_id", jflow_id);
 
-        json_object *jsrc_ip = json_object_new_string(DecodeAlert->src_ip);
-        json_object_object_add(jobj,"src_ip", jsrc_ip);
+    json_object *jsrc_ip = json_object_new_string(DecodeAlert->src_ip);
+    json_object_object_add(jobj,"src_ip", jsrc_ip);
 
-        json_object *jdest_ip = json_object_new_string(DecodeAlert->dest_ip);
-        json_object_object_add(jobj,"dest_ip", jdest_ip);
+    json_object *jdest_ip = json_object_new_string(DecodeAlert->dest_ip);
+    json_object_object_add(jobj,"dest_ip", jdest_ip);
 
-        json_object *jsignature_id = json_object_new_int(signature_id);
-        json_object_object_add(jobj,"signature_id", jsignature_id);
+    json_object *jsignature_id = json_object_new_int(signature_id);
+    json_object_object_add(jobj,"signature_id", jsignature_id);
 
-        json_object *jsignature_name = json_object_new_string(DecodeAlert->alert_signature);
-        json_object_object_add(jobj,"signature_name", jsignature_name);
+    json_object *jsignature_name = json_object_new_string(DecodeAlert->alert_signature);
+    json_object_object_add(jobj,"signature_name", jsignature_name);
 
-        json_object *jproto = json_object_new_string(DecodeAlert->proto);
-        json_object_object_add(jobj,"proto", jproto);
+    json_object *jproto = json_object_new_string(DecodeAlert->proto);
+    json_object_object_add(jobj,"proto", jproto);
 
-        json_object *jseverity = json_object_new_int( atoi( DecodeAlert->alert_severity ) );
-        json_object_object_add(jobj,"signature_priority", jseverity);
-    */
+    json_object *jseverity = json_object_new_int( atoi( DecodeAlert->alert_severity ) );
+    json_object_object_add(jobj,"signature_priority", jseverity);
+*/
 
-    /* Insert into Redis with times */
+/* Insert into Redis with times */
 
-    /*
-        snprintf(key, sizeof(key), "tmp_event_24:%s", DecodeAlert->flowid);
-        Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 ) );
+/*
+    snprintf(key, sizeof(key), "tmp_event_24:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 ) );
 
-        snprintf(key, sizeof(key), "tmp_event_week:%s", DecodeAlert->flowid);
-        Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 7) );
+    snprintf(key, sizeof(key), "tmp_event_week:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 7) );
 
-        snprintf(key, sizeof(key), "tmp_event_month:%s", DecodeAlert->flowid);
-        Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 30 ) );
+    snprintf(key, sizeof(key), "tmp_event_month:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 30 ) );
 
-        snprintf(key, sizeof(key), "tmp_event_quarter:%s", DecodeAlert->flowid);
-        Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 90 ) );
+    snprintf(key, sizeof(key), "tmp_event_quarter:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 90 ) );
 
-        snprintf(key, sizeof(key), "tmp_event_year:%s", DecodeAlert->flowid);
-        Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 365 ) );
+    snprintf(key, sizeof(key), "tmp_event_year:%s", DecodeAlert->flowid);
+    Redis_Writer( "SET", key, json_object_to_json_string(jobj), ( 24 * 60 * 60 * 365 ) );
 
-        json_object_put(jobj);
-    */
+    json_object_put(jobj);
+*/
 /*
 }
 

@@ -507,15 +507,15 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                     (void)SQL_DB_Query(tmp);
                     MeerCounters->UPDATECount++;
 
-/*
-#ifdef HAVE_LIBHIREDIS
+                    /*
+                    #ifdef HAVE_LIBHIREDIS
 
-                    if ( MeerOutput->redis_flag == true )
-                        {
-                            Redis_Quadrant ( DecodeAlert, signature_id, class_id );
-                        }
-#endif
-*/
+                                        if ( MeerOutput->redis_flag == true )
+                                            {
+                                                Redis_Quadrant ( DecodeAlert, signature_id, class_id );
+                                            }
+                    #endif
+                    */
 
 
                     SQL_DB_Quadrant( DecodeAlert, signature_id );
@@ -583,11 +583,11 @@ bool Output_External ( struct _DecodeAlert *DecodeAlert, char *json_string )
 
     /* If we are executing on "all", no reason to check policies, etc */
 
-    if ( MeerOutput->external_execute_on_all == true ) 
-	    {
-	    External( DecodeAlert, json_string );
-	    return(0);
-	    }
+    if ( MeerOutput->external_execute_on_all == true )
+        {
+            External( DecodeAlert, json_string );
+            return(0);
+        }
 
     if ( DecodeAlert->alert_metadata[0] != '\0' )
         {

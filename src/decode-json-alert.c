@@ -201,7 +201,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
     if (json_object_object_get_ex(json_obj, "timestamp", &tmp))
         {
             Alert_Return_Struct->timestamp = (char *)json_object_get_string(tmp);
-	    Convert_ISO8601_For_SQL( Alert_Return_Struct->timestamp, Alert_Return_Struct->converted_timestamp, sizeof( Alert_Return_Struct->converted_timestamp) );
+            Convert_ISO8601_For_SQL( Alert_Return_Struct->timestamp, Alert_Return_Struct->converted_timestamp, sizeof( Alert_Return_Struct->converted_timestamp) );
 
         }
 
@@ -423,7 +423,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
                                 {
                                     strlcpy(Alert_Return_Struct->flow_start_timestamp, (char *)json_object_get_string(tmp_flow), sizeof(Alert_Return_Struct->flow_start_timestamp));
 
-            			    Convert_ISO8601_For_SQL( Alert_Return_Struct->flow_start_timestamp, Alert_Return_Struct->flow_start_timestamp_converted, sizeof( Alert_Return_Struct->flow_start_timestamp_converted) );
+                                    Convert_ISO8601_For_SQL( Alert_Return_Struct->flow_start_timestamp, Alert_Return_Struct->flow_start_timestamp_converted, sizeof( Alert_Return_Struct->flow_start_timestamp_converted) );
                                 }
 
                             json_object_put(json_obj_flow);

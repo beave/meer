@@ -43,7 +43,7 @@ char *src_ip;
 char *src_port;
 char src_dns[256];
 
-char converted_timestamp[64];
+    char converted_timestamp[64];
 
     char *dest_ip;
     char *dest_port;

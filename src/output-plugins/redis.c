@@ -244,19 +244,19 @@ void JSON_To_Redis ( char *json_string, char *key )
                     if ( MeerOutput->redis_append_id == true )
                         {
 
-                                snprintf(tk2, sizeof(tk2), "%s:%s:% " PRIu64 "", tk1, MeerConfig->hostname, MeerWaldo->position);
+                            snprintf(tk2, sizeof(tk2), "%s|%s|%s|% " PRIu64 "", tk1, MeerConfig->hostname, MeerConfig->interface, MeerWaldo->position);
 
 #ifdef QUADRANT
 
-			        /* The "MeerOutput->sql_last_cid - 1" is an UGLY temp kludge. 
-				   SQL takes place _before redis_.  This means the CID++ before
-				   the Redis insert can happen.   So we "roll" back the CID++
-				   for our Redis insert  - bleh */
+                            /* The "MeerOutput->sql_last_cid - 1" is an UGLY temp kludge.
+                            SQL takes place _before redis_.  This means the CID++ before
+                               the Redis insert can happen.   So we "roll" back the CID++
+                               for our Redis insert  - bleh */
 
-				if ( MeerOutput->sql_enabled == true )
-				   {
-				   snprintf(tk2, sizeof(tk2), "%s:%d:% " PRIu64 "", tk1, MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid - 1 );
-				   }
+                            if ( MeerOutput->sql_enabled == true )
+                                {
+                                    snprintf(tk2, sizeof(tk2), "%s:%d:% " PRIu64 "", tk1, MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid - 1 );
+                                }
 #endif
                         }
 
@@ -277,28 +277,28 @@ void JSON_To_Redis ( char *json_string, char *key )
 void Alert_To_Redis( struct _DecodeAlert *DecodeAlert, char *json_string )
 {
 
-bool health_flag = false;
-int i = 0;
+    bool health_flag = false;
+    int i = 0;
 
-            if ( MeerConfig->health == true )
+    if ( MeerConfig->health == true )
+        {
+
+            for (i = 0 ; i < MeerCounters->HealthCount; i++ )
                 {
 
-                    for (i = 0 ; i < MeerCounters->HealthCount; i++ )
-                        {   
-
-                            if ( MeerHealth[i].health_signature == DecodeAlert->alert_signature_id )
-                                {
-                                    health_flag = true;
-                                    break;
-                                }
+                    if ( MeerHealth[i].health_signature == DecodeAlert->alert_signature_id )
+                        {
+                            health_flag = true;
+                            break;
                         }
-
                 }
 
-	if ( health_flag == false ) 
-	{	
-	JSON_To_Redis( json_string, "alert" );
-	}
+        }
+
+    if ( health_flag == false )
+        {
+            JSON_To_Redis( json_string, "alert" );
+        }
 
 }
 

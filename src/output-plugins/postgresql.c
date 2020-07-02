@@ -48,7 +48,7 @@ void PG_Connect( void )
 
     char pgconnect[2048] = { 0 };
 
-    snprintf(pgconnect, sizeof(pgconnect), "hostaddr = '%s' port = '%d' dbname = '%s' user = '%s' password = '%s' connect_timeout = '%d'", MeerOutput->sql_server,  MeerOutput->sql_port , MeerOutput->sql_database, MeerOutput->sql_username, MeerOutput->sql_password, MeerOutput->sql_reconnect );
+    snprintf(pgconnect, sizeof(pgconnect), "hostaddr = '%s' port = '%d' dbname = '%s' user = '%s' password = '%s' connect_timeout = '%d'", MeerOutput->sql_server,  MeerOutput->sql_port, MeerOutput->sql_database, MeerOutput->sql_username, MeerOutput->sql_password, MeerOutput->sql_reconnect );
 
     MeerOutput->psql = PQconnectdb(pgconnect);
 

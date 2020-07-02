@@ -752,14 +752,14 @@ void SQL_Insert_TLS ( struct _DecodeAlert *DecodeAlert )
     SQL_Escape_String( DecodeAlert->tls_notafter, e_tls_notafter, sizeof(e_tls_notafter) );
 
     if ( DecodeAlert->tls_notbefore[0] == '\0' )
-	{
-	strlcpy(e_tls_notbefore, "0000-00-00 00:00:00", sizeof(e_tls_notbefore));
-	}
+        {
+            strlcpy(e_tls_notbefore, "0000-00-00 00:00:00", sizeof(e_tls_notbefore));
+        }
 
-    if ( DecodeAlert->tls_notafter[0] == '\0' ) 
-	{
-	strlcpy(e_tls_notafter, "0000-00-00 00:00:00", sizeof(e_tls_notafter));
-	}
+    if ( DecodeAlert->tls_notafter[0] == '\0' )
+        {
+            strlcpy(e_tls_notafter, "0000-00-00 00:00:00", sizeof(e_tls_notafter));
+        }
 
     snprintf(tmp, sizeof(tmp),
              "INSERT INTO tls (sid,cid,subject,issuerdn,serial,fingerprint,session_resumed,sni,version,notbefore,notafter) "

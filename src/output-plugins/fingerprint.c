@@ -54,7 +54,7 @@ void Output_Fingerprint_IP ( struct _DecodeAlert *DecodeAlert, char *fingerprint
 {
 
     char key[512] = { 0 };
-    snprintf(key, sizeof(key), "%s:ip:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
+    snprintf(key, sizeof(key), "%s|ip|%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
     Redis_Writer( "SET", key, fingerprint_IP_JSON, FINGERPRINT_IP_REDIS_EXPIRE);
 
 }
@@ -64,7 +64,7 @@ void Output_Fingerprint_EVENT( struct _DecodeAlert *DecodeAlert, struct _Fingerp
 
     char key[512] = { 0 };
 
-    snprintf(key, sizeof(key), "%s:event:%s:%" PRIu64 "", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip, DecodeAlert->alert_signature_id);
+    snprintf(key, sizeof(key), "%s|event|%s:%" PRIu64 "", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip, DecodeAlert->alert_signature_id);
     Redis_Writer( "SET", key, fingerprint_EVENT_JSON, FingerprintData->expire );
 
     if ( MeerConfig->fingerprint_log[0] != '\0' )
@@ -79,7 +79,7 @@ void Output_Fingerprint_DHCP ( struct _DecodeDHCP *DecodeDHCP, char *fingerprint
 {
 
     char key[512] = { 0 };
-    snprintf(key, sizeof(key), "%s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeDHCP->dhcp_assigned_ip);
+    snprintf(key, sizeof(key), "%s|dhcp|%s", FINGERPRINT_REDIS_KEY, DecodeDHCP->dhcp_assigned_ip);
     Redis_Writer( "SET", key, fingerprint_DHCP_JSON, FINGERPRINT_DHCP_REDIS_EXPIRE );
 
 }

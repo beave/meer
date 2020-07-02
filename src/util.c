@@ -487,18 +487,18 @@ void To_UpperC(char *const s)
 }
 
 /***************************************************************************
- * MariaDB/MySQL really don't like ISO8601 timestamps :(  This converts 
- * the timestamp to a usable SQL value 
+ * MariaDB/MySQL really don't like ISO8601 timestamps :(  This converts
+ * the timestamp to a usable SQL value
  ***************************************************************************/
 
 void Convert_ISO8601_For_SQL( char *time, char *str, size_t size )
-{  
+{
 
-	struct tm tm_;
-	char newtime[64] = { 0 }; 
+    struct tm tm_;
+    char newtime[64] = { 0 };
 
-	strptime(time,"%FT%T",&tm_);
-	strftime(newtime,sizeof(newtime),"%F %T",&tm_);
+    strptime(time,"%FT%T",&tm_);
+    strftime(newtime,sizeof(newtime),"%F %T",&tm_);
 
-	snprintf(str, size, "%s", newtime);
+    snprintf(str, size, "%s", newtime);
 }

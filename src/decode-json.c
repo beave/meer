@@ -107,7 +107,7 @@ bool Decode_JSON( char *json_string )
     if ( bad_json == false )
         {
 
-	    fingerprint_return = false;
+            fingerprint_return = false;
 
             if ( !strcmp(json_object_get_string(tmp), "alert") )
                 {
@@ -160,10 +160,10 @@ bool Decode_JSON( char *json_string )
 
 #ifdef HAVE_LIBHIREDIS
 
-		    if ( fingerprint_return == false )
-			{
-			Alert_To_Redis( DecodeAlert, json_string );
-			}
+                    if ( fingerprint_return == false )
+                        {
+                            Alert_To_Redis( DecodeAlert, json_string );
+                        }
 
 #endif
 
@@ -228,12 +228,12 @@ bool Decode_JSON( char *json_string )
             if ( MeerOutput->redis_flag == true )
                 {
 
-/*
-                    if ( !strcmp(json_object_get_string(tmp), "alert") && MeerOutput->redis_alert == true)
-                        {
-                            JSON_To_Redis( json_string, "alert" );
-                        }
-*/
+                    /*
+                                        if ( !strcmp(json_object_get_string(tmp), "alert") && MeerOutput->redis_alert == true)
+                                            {
+                                                JSON_To_Redis( json_string, "alert" );
+                                            }
+                    */
 
                     if ( !strcmp(json_object_get_string(tmp), "flow") && MeerOutput->redis_flow == true )
                         {
