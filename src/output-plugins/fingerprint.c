@@ -64,7 +64,7 @@ void Output_Fingerprint_EVENT( struct _DecodeAlert *DecodeAlert, struct _Fingerp
 
     char key[512] = { 0 };
 
-    snprintf(key, sizeof(key), "%s|event|%s:%" PRIu64 "", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip, DecodeAlert->alert_signature_id);
+    snprintf(key, sizeof(key), "%s|event|%s|%" PRIu64 "", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip, DecodeAlert->alert_signature_id);
     Redis_Writer( "SET", key, fingerprint_EVENT_JSON, FingerprintData->expire );
 
     if ( MeerConfig->fingerprint_log[0] != '\0' )
@@ -110,7 +110,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
 //            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[i].range, 1) )
 //                {
 
-    snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
+    snprintf(tmp_command, sizeof(tmp_command), "GET %s|dhcp|%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
     Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
 
     if ( fingerprint_dhcp_tmp[0] != '\0' )
@@ -136,7 +136,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
                 {
 
                     /*
-                                        snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
+                                        snprintf(tmp_command, sizeof(tmp_command), "GET %s|dhcp|%s", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
                                         Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
 
                                         if ( fingerprint_dhcp_tmp[0] != '\0' )
@@ -151,7 +151,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
                                             }
                     */
 
-                    reply = redisCommand(MeerOutput->c_redis, "SCAN 0 MATCH %s:event:%s:* count 1000", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
+                    reply = redisCommand(MeerOutput->c_redis, "SCAN 0 MATCH %s|event|%s|* count 1000", FINGERPRINT_REDIS_KEY, DecodeAlert->src_ip);
 
                     key_count = reply->element[1]->elements;
 
@@ -178,7 +178,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
 //            if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[i].range, 1) )
 //                {
 
-    snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->dest_ip);
+    snprintf(tmp_command, sizeof(tmp_command), "GET %s|dhcp|%s", FINGERPRINT_REDIS_KEY, DecodeAlert->dest_ip);
     Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
 
     if ( fingerprint_dhcp_tmp[0] != '\0' )
@@ -200,7 +200,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
             if ( Is_Inrange( ip, (unsigned char *)&Fingerprint_Networks[j].range, 1) )
                 {
                     /*
-                                        snprintf(tmp_command, sizeof(tmp_command), "GET %s:dhcp:%s", FINGERPRINT_REDIS_KEY, DecodeAlert->dest_ip);
+                                        snprintf(tmp_command, sizeof(tmp_command), "GET %s|dhcp|%s", FINGERPRINT_REDIS_KEY, DecodeAlert->dest_ip);
                                         Redis_Reader(tmp_command, fingerprint_dhcp_tmp, sizeof(fingerprint_dhcp_tmp));
 
                                         if ( fingerprint_dhcp_tmp[0] != '\0' )
@@ -215,7 +215,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
                                             }
                     */
 
-                    reply = redisCommand(MeerOutput->c_redis, "SCAN 0 MATCH %s:event:%s:* COUNT 1000", FINGERPRINT_REDIS_KEY,  DecodeAlert->dest_ip);
+                    reply = redisCommand(MeerOutput->c_redis, "SCAN 0 MATCH %s|event|%s|* COUNT 1000", FINGERPRINT_REDIS_KEY,  DecodeAlert->dest_ip);
 
                     key_count = reply->element[1]->elements;
 
