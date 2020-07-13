@@ -274,33 +274,33 @@ void JSON_To_Redis ( char *json_string, char *key )
 
 }
 
-void Alert_To_Redis( struct _DecodeAlert *DecodeAlert, char *json_string )
+void Alert_To_Redis( struct _DecodeAlert *DecodeAlert )
 {
 
-/*
-    bool health_flag = false;
-    int i = 0;
+    /*
+        bool health_flag = false;
+        int i = 0;
 
-    if ( MeerConfig->health == true )
-        {
+        if ( MeerConfig->health == true )
+            {
 
-            for (i = 0 ; i < MeerCounters->HealthCount; i++ )
-                {
+                for (i = 0 ; i < MeerCounters->HealthCount; i++ )
+                    {
 
-                    if ( MeerHealth[i].health_signature == DecodeAlert->alert_signature_id )
-                        {
-                            health_flag = true;
-                            break;
-                        }
-                }
+                        if ( MeerHealth[i].health_signature == DecodeAlert->alert_signature_id )
+                            {
+                                health_flag = true;
+                                break;
+                            }
+                    }
 
-        }
+            }
 
-    if ( health_flag == false )
-        {
+        if ( health_flag == false )
+            {
 
-	*/
-            JSON_To_Redis( json_string, "alert" );
+    	*/
+    JSON_To_Redis( DecodeAlert->new_json_string, "alert" );
 //        }
 
 }

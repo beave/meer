@@ -30,6 +30,8 @@
 libjson-c is required for Meer to function!
 #endif
 
+#include "meer-def.h"
+
 typedef struct _DecodeAlert _DecodeAlert;
 struct _DecodeAlert
 {
@@ -44,6 +46,8 @@ char *src_port;
 char src_dns[256];
 
     char converted_timestamp[64];
+
+    char new_json_string[PACKET_BUFFER_SIZE_DEFAULT];
 
     char *dest_ip;
     char *dest_port;

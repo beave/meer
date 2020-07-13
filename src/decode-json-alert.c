@@ -811,7 +811,21 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
         {
 
             DNS_Lookup(Alert_Return_Struct->src_ip, Alert_Return_Struct->src_dns, sizeof(Alert_Return_Struct->src_dns));
+
+            if ( Alert_Return_Struct->src_dns[0] != '\0' )
+                {
+                    json_object *jsrc_dns = json_object_new_string(Alert_Return_Struct->src_dns);
+                    json_object_object_add(json_obj,"src_dns", jsrc_dns);
+                }
+
+
             DNS_Lookup(Alert_Return_Struct->dest_ip, Alert_Return_Struct->dest_dns, sizeof(Alert_Return_Struct->dest_dns));
+
+            if ( Alert_Return_Struct->dest_dns[0] != '\0' )
+                {
+                    json_object *jdest_dns = json_object_new_string(Alert_Return_Struct->dest_dns);
+                    json_object_object_add(json_obj,"dest_dns", jdest_dns);
+                }
 
         }
 
@@ -819,6 +833,10 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
         {
             Alert_Return_Struct->ip_version = 6;
         }
+
+    /* Decode the JSON (we might have added some fields like DNS, etc */
+
+    strlcpy(Alert_Return_Struct->new_json_string, json_object_to_json_string(json_obj), sizeof(Alert_Return_Struct->new_json_string));
 
     return(Alert_Return_Struct);
 }

@@ -162,7 +162,8 @@ bool Decode_JSON( char *json_string )
 
                     if ( fingerprint_return == false )
                         {
-                            Alert_To_Redis( DecodeAlert, json_string );
+                            //Alert_To_Redis( DecodeAlert, json_string );
+                            Alert_To_Redis( DecodeAlert );
                         }
 
 #endif

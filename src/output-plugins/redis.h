@@ -21,7 +21,7 @@ void Redis_Connect( void );
 void Redis_Reader ( char *redis_command, char *str, size_t size );
 bool Redis_Writer ( char *command, char *key, char *value, int expire );
 void JSON_To_Redis ( char *json_string, char *key );
-void Alert_To_Redis ( struct _DecodeAlert *DecodeAlert, char *json_string );
+void Alert_To_Redis ( struct _DecodeAlert *DecodeAlert );
 
 
 
