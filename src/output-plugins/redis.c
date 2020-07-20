@@ -217,6 +217,7 @@ void JSON_To_Redis ( char *json_string, char *key )
 
     strlcpy(redis_batch[redis_batch_count], json_string, sizeof(redis_batch[redis_batch_count]));
     strlcpy(redis_batch_key[redis_batch_count], key, sizeof(redis_batch_key[redis_batch_count]));
+
     redis_batch_count++;
 
     /* See if Redis queue needs to be written */
@@ -261,6 +262,7 @@ void JSON_To_Redis ( char *json_string, char *key )
                         }
 
                     Redis_Writer ( MeerOutput->redis_command, tk2, redis_batch[i], 0 );
+		
                 }
 
             redis_batch_count = 0;
@@ -277,31 +279,7 @@ void JSON_To_Redis ( char *json_string, char *key )
 void Alert_To_Redis( struct _DecodeAlert *DecodeAlert )
 {
 
-    /*
-        bool health_flag = false;
-        int i = 0;
-
-        if ( MeerConfig->health == true )
-            {
-
-                for (i = 0 ; i < MeerCounters->HealthCount; i++ )
-                    {
-
-                        if ( MeerHealth[i].health_signature == DecodeAlert->alert_signature_id )
-                            {
-                                health_flag = true;
-                                break;
-                            }
-                    }
-
-            }
-
-        if ( health_flag == false )
-            {
-
-    	*/
     JSON_To_Redis( DecodeAlert->new_json_string, "alert" );
-//        }
 
 }
 

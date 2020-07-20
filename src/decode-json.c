@@ -162,7 +162,6 @@ bool Decode_JSON( char *json_string )
 
                     if ( fingerprint_return == false )
                         {
-                            //Alert_To_Redis( DecodeAlert, json_string );
                             Alert_To_Redis( DecodeAlert );
                         }
 
@@ -171,7 +170,7 @@ bool Decode_JSON( char *json_string )
 
                     if ( MeerOutput->external_enabled == true )
                         {
-                            Output_External( DecodeAlert, json_string );
+                            Output_External( DecodeAlert );
                         }
 
                     free(DecodeAlert);

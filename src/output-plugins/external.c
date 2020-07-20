@@ -42,14 +42,14 @@
 struct _MeerOutput *MeerOutput;
 struct _MeerCounters *MeerCounters;
 
-bool External( struct _DecodeAlert *DecodeAlert, char *json_string )
+bool External( struct _DecodeAlert *DecodeAlert )
 {
 
     int in[2];
     int out[2];
     int pid;
     int n;
-    char buf[BUFFER_SIZE] = { 0 };
+    char buf[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
 
     if( File_Check( MeerOutput->external_program ) != 1 )
         {
@@ -109,7 +109,7 @@ bool External( struct _DecodeAlert *DecodeAlert, char *json_string )
 
     /* Write to child input */
 
-    n = write(in[1], json_string, strlen(json_string));
+    n = write(in[1], DecodeAlert->new_json_string, strlen(DecodeAlert->new_json_string));
     close(in[1]);
 
     n = read(out[0], buf, sizeof(buf));

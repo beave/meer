@@ -18,4 +18,4 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-bool External( struct _DecodeAlert *DecodeAlert, char *json_string );
+bool External( struct _DecodeAlert *DecodeAlert );
