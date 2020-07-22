@@ -195,12 +195,25 @@ bool Redis_Writer ( char *command, char *key, char *value, int expire )
                     Meer_Log(DEBUG, "Write reply-str: '%s'", reply->str);
                 }
 
+	    /* If we get something other than "OK" from the server, abort! */
+
+	    if ( strcmp(reply->str, "OK") )
+		{
+		Meer_Log(ERROR, "Got something other than 'OK' from server (%s).  Abort!", reply->str);
+		}
+
             freeReplyObject(reply);
         }
     else
         {
 
+	    /* Returning null likely means we got disconnected.  We throw and error
+	       and attempt to reconnect.  Once reconnected,  we redo out last Redis
+  	       write so we don't drop the event! */
+
             MeerOutput->redis_error = true;
+	    Redis_Connect();
+	    Redis_Writer ( command, key, value, expire );
 
         }
 
