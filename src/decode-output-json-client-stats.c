@@ -195,6 +195,4 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
 
         }
 
-    json_object_put(json_obj);
-
 }
