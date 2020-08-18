@@ -298,7 +298,7 @@ bool Decode_JSON( char *json_string )
 
     /* Delete json-c _root_ objects */
 
-    json_object_put(json_obj);
+    //json_object_put(json_obj);
     //json_object_put(tmp);
 
 
