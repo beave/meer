@@ -33,6 +33,8 @@
 libjson-c is required for Meer to function!
 #endif
 
+#ifdef HAVE_LIBHIREDIS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -196,3 +198,5 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
         }
 
 }
+
+#endif

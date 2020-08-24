@@ -693,7 +693,6 @@ void SQL_Insert_HTTP ( struct _DecodeAlert *DecodeAlert )
     char e_http_method[128] = { 0 };
     char e_http_content_type[128] = { 0 };
     char e_http_protocol[64] = { 0 };
-    char e_http_status[16] = { 0 };
     char e_http_xff[64] = { 0 };
 
     SQL_Escape_String( DecodeAlert->http_hostname, e_http_hostname, sizeof(e_http_hostname));

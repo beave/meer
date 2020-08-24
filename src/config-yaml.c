@@ -78,18 +78,6 @@ void Load_YAML_Config( char *yaml_file )
 
     /* For fingerprint */
 
-    char *fp_ptr = NULL;
-    char *fp_range = NULL;
-    char *fp2_tok = NULL;
-    char *tok = NULL;
-    char *fp_ipblock = NULL;
-
-    unsigned char fp_ipbits[MAXIPBIT] = { 0 };
-    unsigned char fp_maskbits[MAXIPBIT]= { 0 };
-
-    int fp_mask;
-
-
     MeerHealth = (struct _MeerHealth *) malloc(sizeof(_MeerHealth));
 
     if ( MeerHealth == NULL )

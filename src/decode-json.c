@@ -69,15 +69,15 @@ bool Decode_JSON( char *json_string )
     bool bad_json = false;
     bool fingerprint_return = false;
 
+#ifdef HAVE_LIBHIREDIS
+
     char fingerprint_IP_JSON[1024] = { 0 };
     char fingerprint_EVENT_JSON[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
     char fingerprint_DHCP_JSON[2048] = { 0 };
 
-    char *fingerprint_os = NULL;
-    char *fingerprint_type = NULL;
+#endif
 
-    bool health_flag = false;
-    int i = 0;
+    char *fingerprint_type = NULL;
 
     if ( json_string == NULL )
         {
@@ -211,10 +211,14 @@ bool Decode_JSON( char *json_string )
 
             /* Process client stats data from Sagan */
 
+#ifdef HAVE_LIBHIREDIS
+
             if ( !strcmp(json_object_get_string(tmp), "client_stats") && MeerConfig->client_stats == true )
                 {
                     Decode_Output_JSON_Client_Stats( json_obj, json_string );
                 }
+
+#endif
 
 
             if ( MeerOutput->pipe_enabled == true )
@@ -298,9 +302,7 @@ bool Decode_JSON( char *json_string )
 
     /* Delete json-c _root_ objects */
 
-    //json_object_put(json_obj);
-    //json_object_put(tmp);
-
+    json_object_put(json_obj);
 
     return 0;
 }

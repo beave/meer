@@ -116,9 +116,6 @@ void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _
 
                     json_obj_dhcp = json_tokener_parse(dhcp);
 
-                    char *assigned_ip = (char *)json_object_get_string(tmp_dhcp);
-
-
                     if (json_object_object_get_ex(json_obj_dhcp, "type", &tmp_dhcp))
                         {
                             strlcpy(DecodeDHCP->dhcp_type, (char *)json_object_get_string(tmp_dhcp), sizeof(DecodeDHCP->dhcp_type));

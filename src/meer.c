@@ -102,9 +102,6 @@ int main (int argc, char *argv[])
     int fd_int;
     FILE *fd_file;
 
-    char *ptr1 = NULL;
-    char *ptr2 = NULL;
-
     struct stat st;
 
     bool skip_flag = 0;
