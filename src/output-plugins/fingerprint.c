@@ -22,12 +22,13 @@
 #include "config.h"             /* From autoconf */
 #endif
 
+#ifdef HAVE_LIBHIREDIS
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
 #include <stdbool.h>
-
 
 #include "meer.h"
 #include "meer-def.h"
@@ -38,11 +39,8 @@
 
 #include "fingerprints.h"
 #include "output-plugins/fingerprint.h"
-
 #include "output-plugins/sql.h"
-
-#ifdef HAVE_LIBHIREDIS
-
+#include "output-plugins/redis.h"
 
 struct _MeerOutput *MeerOutput;
 struct _MeerCounters *MeerCounters;
@@ -119,7 +117,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
             mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_dhcp, fingerprint_dhcp_tmp, strlen(fingerprint_dhcp_tmp));
 
             snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_dhcp_src (sid, cid, json) VALUES \
-(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_dhcp);
+(%d, %" PRIu64 ", '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_dhcp);
             (void)SQL_DB_Query(tmp_command);
 
         }
@@ -165,7 +163,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
                             mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_sql, fingerprint_tmp, strlen(fingerprint_tmp));
 
                             snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_src (sid, cid, json) VALUES \
-(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_sql);
+(%d, %" PRIu64 ", '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_sql);
                             (void)SQL_DB_Query(tmp_command);
 
 
@@ -187,7 +185,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
             mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_dhcp, fingerprint_dhcp_tmp, strlen(fingerprint_dhcp_tmp));
 
             snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_dhcp_dest (sid, cid, json) VALUES \
-(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_dhcp);
+(%d, %" PRIu64 ", '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_dhcp);
             (void)SQL_DB_Query(tmp_command);
 
         }
@@ -229,7 +227,7 @@ void Output_Fingerprint_Alert( struct _DecodeAlert *DecodeAlert )
                             mysql_real_escape_string(MeerOutput->mysql_dbh, fingerprint_sql, fingerprint_tmp, strlen(fingerprint_tmp));
 
                             snprintf(tmp_command, sizeof(tmp_command), "INSERT INTO fingerprint_dest (sid, cid, json) VALUES \
-(%d, %llu, '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_sql);
+(%d, %" PRIu64 ", '%s' )", MeerOutput->sql_sensor_id, MeerOutput->sql_last_cid, fingerprint_sql);
                             (void)SQL_DB_Query(tmp_command);
 
 

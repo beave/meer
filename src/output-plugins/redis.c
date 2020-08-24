@@ -242,7 +242,7 @@ void JSON_To_Redis ( char *json_string, char *key )
                 {
 
                     char tk1[128] = { 0 };
-                    char tk2[128] = { 0 };
+                    char tk2[131] = { 0 };
 
                     if ( MeerOutput->redis_key[0] != '\0' )
                         {
@@ -258,7 +258,7 @@ void JSON_To_Redis ( char *json_string, char *key )
                     if ( MeerOutput->redis_append_id == true )
                         {
 
-                            snprintf(tk2, sizeof(tk2), "%s|%s|%s|% " PRIu64 "", tk1, MeerConfig->hostname, MeerConfig->interface, MeerWaldo->position);
+                            snprintf(tk2, sizeof(tk2), "%s|%s|%s|%" PRIu64 "", tk1, MeerConfig->hostname, MeerConfig->interface, MeerWaldo->position);
 
 #ifdef QUADRANT
 

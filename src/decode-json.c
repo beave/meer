@@ -44,13 +44,16 @@ libjson-c is required for Meer to function!
 #include "decode-json-dhcp.h"
 
 #include "fingerprints.h"
-
 #include "decode-output-json-client-stats.h"
 
 #include "meer.h"
 #include "meer-def.h"
-
 #include "output.h"
+
+#ifdef HAVE_LIBHIREDIS
+#include "output-plugins/redis.h"
+#include "output-plugins/fingerprint.h"
+#endif
 
 
 struct _Classifications *MeerClass;

@@ -23,6 +23,7 @@
 #include "output.h"
 #include "references.h"
 #include "sid-map.h"
+#include "oui.h"
 #include "config-yaml.h"
 
 struct _MeerConfig *MeerConfig;
@@ -355,12 +356,8 @@ void Fingerprint_DHCP_JSON ( struct _DecodeDHCP *DecodeDHCP, char *str, size_t s
 
     if ( MeerConfig->oui == true )
         {
-//            if ( strcmp(DecodeDHCP->dhcp_assigned_ip, "0.0.0.0" ) )
-//                {
             OUI_Lookup( DecodeDHCP->dhcp_client_mac, oui_data, sizeof(oui_data) );
             json_object_object_add(encode_json, "vendor", json_object_new_string( oui_data ));
-//                }
-
         }
 
     snprintf(str, size, "%s", json_object_to_json_string_ext(encode_json, JSON_C_TO_STRING_PLAIN));
