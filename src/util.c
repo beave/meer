@@ -321,11 +321,13 @@ void DNS_Lookup( char *host, char *str, size_t size )
     struct tm *run;
     char utime_string[20] = { 0 };
     int i = 0;
+    int err = 0;
 
     t = time(NULL);
     run=localtime(&t);
     strftime(utime_string, sizeof(utime_string), "%s",  run);
     uint64_t utime = atol(utime_string);
+
 
     char host_r[NI_MAXHOST] = { 0 };
 
@@ -358,7 +360,7 @@ void DNS_Lookup( char *host, char *str, size_t size )
 
                             inet_pton(AF_INET, host, &ipaddr.sin_addr);
 
-                            getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
+                            err = getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
 
                             strlcpy(DnsCache[i].reverse, host_r, sizeof(DnsCache[i].reverse));
                             DnsCache[i].lookup_time = utime;
@@ -380,7 +382,7 @@ void DNS_Lookup( char *host, char *str, size_t size )
 
     inet_pton(AF_INET, host, &ipaddr.sin_addr);
 
-    getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
+    err = getnameinfo((struct sockaddr *)&ipaddr, sizeof(struct sockaddr_in), host_r, sizeof(host_r), NULL, 0, NI_NAMEREQD);
 
     /* Insert DNS into cache */
 

@@ -316,17 +316,17 @@ void Fingerprint_EVENT_JSON ( struct _DecodeAlert *DecodeAlert, struct _Fingerpr
 
     snprintf(tmp_string, sizeof(tmp_string), "%s", json_object_to_json_string_ext(encode_json, JSON_C_TO_STRING_PLAIN));
     tmp_string[ strlen(tmp_string) - 1 ] = ',';
-    snprintf(tmp_string2, sizeof(tmp_string2), "%s \"fingerprint\": %s}\0", tmp_string, fp);
+    snprintf(tmp_string2, sizeof(tmp_string2), "%s \"fingerprint\": %s}", tmp_string, fp);
     strlcpy(tmp_string, tmp_string2, sizeof(tmp_string));
 
     if ( http[0] != '\0' )
         {
             tmp_string[ strlen(tmp_string) - 1 ] = ',';
-            snprintf(tmp_string2, sizeof(tmp_string2), "%s \"http\": %s}\0", tmp_string, http);
+            snprintf(tmp_string2, sizeof(tmp_string2), "%s \"http\": %s}", tmp_string, http);
+            printf("||%s||\n", tmp_string2);
         }
 
     snprintf(str, size, "%s", tmp_string2);
-
 
     json_object_put(encode_json);
     json_object_put(encode_json_fp);

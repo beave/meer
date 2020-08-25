@@ -156,6 +156,12 @@ void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _
             Meer_Log(WARN, "[%s, line %d] Got event_type: dhcp log without dhcp json: %s", __FILE__, __LINE__, json_string);
         }
 
-    json_object_put(tmp);
+//    json_object_put(tmp);
+    json_object_put(json_obj_dhcp); 	// Good
+    json_object_put(tmp_dhcp);
+    //json_object_put(tmp);
+
+    //struct json_object *tmp_dhcp = NULL;
+    //json_object_put(tmp_dhcp);
 
 }

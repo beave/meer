@@ -654,7 +654,6 @@ void Output_Stats ( char *json_string )
 
     json_obj = json_tokener_parse(json_string);
 
-
     if ( json_string == NULL )
         {
             MeerCounters->InvalidJSONCount++;
@@ -687,8 +686,8 @@ void Output_Stats ( char *json_string )
         }
 
 
+    json_object_put(json_obj);
 
 #endif
-
 
 }

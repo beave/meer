@@ -44,7 +44,6 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-
 #include "meer.h"
 #include "meer-def.h"
 #include "decode-json-alert.h"
