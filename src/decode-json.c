@@ -80,8 +80,6 @@ bool Decode_JSON( char *json_string )
 
 #endif
 
-    char *fingerprint_type = NULL;
-
     if ( json_string == NULL )
         {
             MeerCounters->InvalidJSONCount++;

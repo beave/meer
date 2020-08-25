@@ -461,7 +461,6 @@ void Load_YAML_Config( char *yaml_file )
 
                                     char *fp_ptr = NULL;
                                     char *fp_range = NULL;
-                                    char *fp2_tok = NULL;
                                     char *tok = NULL;
                                     char *fp_ipblock = NULL;
 
