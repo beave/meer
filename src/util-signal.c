@@ -137,14 +137,18 @@ void Signal_Handler(int sig_num)
                     Meer_Log(NORMAL, "Last CID is : %" PRIu64 ".", MeerOutput->sql_last_cid);
                 }
 
-            fflush(MeerConfig->meer_log_fd);
+//            fflush(MeerConfig->meer_log_fd);
 
             /* This causes a segfault when external is enabled */
 
+	/* WHAT?!!? See below */
+
+/*
             if ( MeerOutput->external_enabled == false )
                 {
                     fclose(MeerConfig->meer_log_fd);
                 }
+*/
 
             if ( MeerConfig->fingerprint == true && MeerConfig->fingerprint_log[0] != '\0' )
                 {
@@ -156,6 +160,8 @@ void Signal_Handler(int sig_num)
             close(MeerConfig->waldo_fd);
 
             Meer_Log(NORMAL, "Shutdown complete.");
+            fclose(MeerConfig->meer_log_fd);
+            fflush(stdout);
 
             exit(0);
 
