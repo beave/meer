@@ -55,6 +55,7 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
 
     struct json_object *json_obj_fingerprint = NULL;
     struct json_object *tmp = NULL;
+    bool  event_changed = false;
 
     char *tmp_ip = NULL;
     char *tmp_type = NULL;
@@ -62,6 +63,7 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
     char tmp_dhcp[1024] = { 0 };
 
     redisReply *reply;
+
 
     /* Do DHCP */
 
@@ -84,6 +86,8 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
 
             if ( tmp_dhcp[0] != '\0' )
                 {
+
+                    event_changed = true;
 
                     strlcpy(tmp_new_alert, DecodeAlert->new_json_string, sizeof(tmp_new_alert));
                     tmp_new_alert[ strlen(tmp_new_alert) - 2 ] = '\0';
@@ -115,6 +119,7 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
 
             if ( key_count > 0 )
                 {
+                    event_changed = true;
                     strlcpy(tmp_new_alert, DecodeAlert->new_json_string, sizeof(tmp_new_alert));
                     tmp_new_alert[ strlen(tmp_new_alert) - 2 ] = '\0';
                 }
@@ -146,14 +151,16 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
         }
 
 
-    /* Copy new JSON over */
+    /* Copy new JSON over,  if JSON has been updated */
 
-    snprintf(DecodeAlert->new_json_string, sizeof(DecodeAlert->new_json_string), "%s }", tmp_new_alert);
+    if ( event_changed == true )
+        {
+            /* Append final } */
 
-    printf("%s\n", DecodeAlert->new_json_string);
+            snprintf(DecodeAlert->new_json_string, sizeof(DecodeAlert->new_json_string), "%s }", tmp_new_alert);
+        }
 
     json_object_put(json_obj_fingerprint);
-
 
 }
 
