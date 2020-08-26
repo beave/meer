@@ -53,8 +53,8 @@ libjson-c is required for Meer to function!
 #ifdef HAVE_LIBHIREDIS
 #include "output-plugins/redis.h"
 #include "output-plugins/fingerprint.h"
+#include "fingerprint-to-json.h"
 #endif
-
 
 struct _Classifications *MeerClass;
 struct _MeerOutput *MeerOutput;
@@ -117,6 +117,15 @@ bool Decode_JSON( char *json_string )
                     DecodeAlert = Decode_JSON_Alert( json_obj, json_string );
 
 #ifdef HAVE_LIBHIREDIS
+
+                    /* Added fingerprint */
+
+                    if (MeerConfig->fingerprint == true )
+                        {
+                            Add_Fingerprint_To_JSON( json_obj, DecodeAlert );
+                        }
+
+
 
                     if ( MeerConfig->fingerprint == true )
                         {

@@ -834,6 +834,8 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
             Alert_Return_Struct->ip_version = 6;
         }
 
+    // Fingerprint enabled?
+
     /* Decode the JSON (we might have added some fields like DNS, etc */
 
     strlcpy(Alert_Return_Struct->new_json_string, json_object_to_json_string(json_obj), sizeof(Alert_Return_Struct->new_json_string));

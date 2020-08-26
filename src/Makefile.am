@@ -23,6 +23,7 @@ AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
 							      usage.c \
 							      oui.c \
 							      fingerprint.c \
+							      fingerprint-to-json.c \
 							      decode-json.c \
 							      decode-json-alert.c \
 							      decode-json-dhcp.c \

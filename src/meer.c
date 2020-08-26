@@ -129,7 +129,7 @@ int main (int argc, char *argv[])
             switch(c)
                 {
 
-                    if (c == -1) break;
+//                    if (c == -1) break;
 
                 case 'c':
                     strlcpy(MeerConfig->yaml_file,optarg,sizeof(MeerConfig->yaml_file) - 1);

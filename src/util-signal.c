@@ -67,11 +67,6 @@ void Signal_Handler(int sig_num)
 //        case SIGSEGV:
 //        case SIGABRT:
 
-	    /* We pause for 2 seconds to balance the sleep in meer.c.  This prevents
-               segfault with the meer.c sleep */
-
-	    sleep(2);
-
             if ( MeerOutput->pipe_enabled == true )
                 {
                     close(MeerOutput->pipe_fd);

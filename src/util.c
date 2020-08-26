@@ -173,7 +173,7 @@ bool IP2Bit(char *ipaddr, unsigned char *out)
     /*
     if (!ret)
         {
-            Sagan_Log(S_WARN, "Warning: Got a getaddrinfo() error for \"%s\" but continuing...", ipaddr);
+            Meer_Log(S_WARN, "Warning: Got a getaddrinfo() error for \"%s\" but continuing...", ipaddr);
         }
     else
         {
