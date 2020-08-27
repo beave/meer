@@ -52,10 +52,6 @@
 #include "output-plugins/external.h"
 #include "output-plugins/fingerprint.h"
 
-#ifdef BLUEDOT
-#include "output-plugins/quadrant.h"
-#endif
-
 #ifdef HAVE_LIBMYSQLCLIENT
 #include <mysql/mysql.h>
 MYSQL    *mysql;
