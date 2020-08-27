@@ -88,9 +88,9 @@ fi
 
 
 AC_ARG_ENABLE(mysql,
-  [  --disable-mysql         Disable MySQL support.],
+  [  --enable-mysql         Disable MySQL support.],
   [ MYSQL="$enableval"],
-  [ MYSQL="yes" ]
+  [ MYSQL="no" ]
 )
 
 AC_ARG_WITH(libmysql_includes,
