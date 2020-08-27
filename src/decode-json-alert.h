@@ -70,18 +70,14 @@ char src_dns[256];
     char *level;
     char *program;
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
     char *bluedot;
 #endif
 
-//    bool has_extra_data;
     char *xff;
 
     char *icmp_type;
     char *icmp_code;
-
-//    char *fingerprint_os;
-//    char *fingerprint_type;
 
     unsigned char ip_version;
 
@@ -101,7 +97,7 @@ char src_dns[256];
     char alert_metadata[1024];
     bool alert_has_metadata;
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
 
     /* Bluedot data */
 

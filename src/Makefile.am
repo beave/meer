@@ -34,8 +34,7 @@ AUTOMAKE_OPIONS=foreign no-dependencies subdir-objects
 							      output-plugins/pipe.c \
 							      output-plugins/external.c \
 							      output-plugins/redis.c \
-							      output-plugins/fingerprint.c \
-							      output-plugins/quadrant.c
+							      output-plugins/fingerprint.c
 
 
                                                        install-data-local:

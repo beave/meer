@@ -902,7 +902,7 @@ void SQL_Insert_Normalize ( struct _DecodeAlert *DecodeAlert )
 }
 
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
 
 void SQL_Insert_Bluedot ( struct _DecodeAlert *DecodeAlert )
 {

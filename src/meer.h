@@ -104,7 +104,7 @@ struct _MeerConfig
     bool metadata;
     bool json;
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
     bool bluedot;
 #endif
 
@@ -189,7 +189,7 @@ struct _MeerOutput
     bool sql_json;
     bool sql_stats;
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
     bool sql_bluedot;
 #endif
 
@@ -223,7 +223,7 @@ struct _MeerOutput
     bool pipe_fileinfo;
     bool pipe_dhcp;
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
     bool pipe_bluedot;
 #endif
 
@@ -286,7 +286,7 @@ struct _MeerCounters
     uint64_t DNSCount;
     uint64_t DNSCacheCount;
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
     uint64_t BluedotCount;
 #endif
 

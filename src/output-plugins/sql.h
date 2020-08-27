@@ -74,7 +74,7 @@ int SQL_Get_Sig_ID( struct _DecodeAlert *DecodeAlert );
 char *SQL_Get_Last_ID( void );
 
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
 void SQL_Insert_Bluedot ( struct _DecodeAlert *DecodeAlert );
 #endif
 

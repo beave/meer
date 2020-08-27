@@ -218,7 +218,7 @@ AC_ARG_ENABLE(quadrant,
        enable_quadrant="$enableval", enable_quadrant="no")
 
 if test "x$enable_quadrant" = "xyes"; then
-    CPPFLAGS="$CPPFLAGS -DQUADRANT"
+    CPPFLAGS="$CPPFLAGS -DBLUEDOT"
 fi
 
 # json-c

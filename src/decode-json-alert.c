@@ -301,7 +301,7 @@ struct _DecodeAlert *Decode_JSON_Alert( struct json_object *json_obj, char *json
 
         }
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
 
     if ( MeerConfig->bluedot == true )
         {

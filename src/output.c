@@ -52,7 +52,7 @@
 #include "output-plugins/external.h"
 #include "output-plugins/fingerprint.h"
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
 #include "output-plugins/quadrant.h"
 #endif
 
@@ -145,7 +145,7 @@ void Init_Output( void )
             Meer_Log(NORMAL, "Write 'dhcp'    : %s", MeerOutput->pipe_dhcp ? "enabled" : "disabled" );
 
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
 
             Meer_Log(NORMAL, "Write 'bluedot' : %s", MeerOutput->pipe_bluedot ? "enabled" : "disabled" );
 
@@ -222,7 +222,7 @@ void Init_Output( void )
             Meer_Log(NORMAL, "Record 'smtp'    : %s", MeerOutput->sql_smtp ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Record 'email'   : %s", MeerOutput->sql_email ? "enabled" : "disabled" );
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
 
             Meer_Log(NORMAL, "Record 'bluedot' : %s", MeerOutput->sql_bluedot ? "enabled" : "disabled" );
 
@@ -476,7 +476,7 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 #endif
 
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
 
                     if ( DecodeAlert->has_bluedot == true && MeerConfig->bluedot == true )
                         {
@@ -492,7 +492,7 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                     /* These are very Quadrant specific queries.  You likely don't want them. */
 
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
 
                     snprintf(tmp, sizeof(tmp),
                              "UPDATE sensor SET events_count = events_count+1 WHERE sid = %d",

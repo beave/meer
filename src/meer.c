@@ -211,7 +211,7 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, "Health updates         : %s", MeerConfig->health ? "enabled" : "disabled" );
 
 
-#ifdef QUADRANT
+#ifdef BLUEDOT
     Meer_Log(NORMAL, "Decode 'bluedot'       : %s", MeerConfig->bluedot ? "enabled" : "disabled" );
 #endif
 
