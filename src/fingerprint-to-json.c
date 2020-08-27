@@ -48,10 +48,10 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
 
     int i = 0;
     int a = 0;
-    char fingerprint_tmp[10240] = { 0 };
-    char tmp_command[ 10240 + (10240*2) ] = { 0 };
-    char tmp_new_alert[ 10240 ] = { 0 };
-    char tmp_new_new_alert[ 10240 ] = { 0 };
+    char fingerprint_tmp[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
+    char tmp_command[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
+    char tmp_new_alert[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
+    char tmp_new_new_alert[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
 
     struct json_object *json_obj_fingerprint = NULL;
     struct json_object *tmp = NULL;
@@ -136,7 +136,7 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
                         }
                     else
                         {
-                            Meer_Log(WARN, "Incomplete or invalid fingerprint JSON for flow id % " PRIu64 "", DecodeAlert->flowid);
+                            Meer_Log(WARN, "Incomplete or invalid fingerprint JSON for flow id %s", DecodeAlert->flowid);
                             continue;
                         }
 
@@ -156,7 +156,7 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
     if ( event_changed == true )
         {
             /* Append final } */
-
+	
             snprintf(DecodeAlert->new_json_string, sizeof(DecodeAlert->new_json_string), "%s }", tmp_new_alert);
         }
 
