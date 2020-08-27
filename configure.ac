@@ -213,11 +213,11 @@ AM_PROG_AS
 
 AC_CHECK_FUNCS([select strstr strchr strcmp strlen sizeof write snprintf strncat strlcat strlcpy getopt_long gethostbyname socket htons connect send recv strspn memset access ftruncate strerror mmap shm_open gettimeofday])
 
-AC_ARG_ENABLE(quadrant,                                                                               
-[  --enable-quadrant       Enable Quadrant Information Security specific support],
-       enable_quadrant="$enableval", enable_quadrant="no")
+AC_ARG_ENABLE(bluedot,                                                                               
+[  --enable-bluedot       Enable Quadrant Bluedot Thread Intel],
+       enable_bluedot="$enableval", enable_bluedot="no")
 
-if test "x$enable_quadrant" = "xyes"; then
+if test "x$enable_bluedot" = "xyes"; then
     CPPFLAGS="$CPPFLAGS -DBLUEDOT"
 fi
 
