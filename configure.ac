@@ -88,7 +88,7 @@ fi
 
 
 AC_ARG_ENABLE(mysql,
-  [  --enable-mysql         Disable MySQL support.],
+  [  --enable-mysql         Enable MySQL/MariaDB support.],
   [ MYSQL="$enableval"],
   [ MYSQL="no" ]
 )
@@ -110,9 +110,9 @@ if test "x$with_mysql_libraries" != "xno"; then
 fi
 
 AC_ARG_ENABLE(redis,
-  [  --enable-redis          Enable Redis support.],
+  [  --disable-redis          Enable Redis support.],
   [ REDIS="$enableval"],
-  [ REDIS="no" ]
+  [ REDIS="yes" ]
 )
 
 #AC_ARG_ENABLE(libfastjson,
@@ -212,14 +212,6 @@ AC_STRUCT_TM
 AM_PROG_AS
 
 AC_CHECK_FUNCS([select strstr strchr strcmp strlen sizeof write snprintf strncat strlcat strlcpy getopt_long gethostbyname socket htons connect send recv strspn memset access ftruncate strerror mmap shm_open gettimeofday])
-
-AC_ARG_ENABLE(bluedot,                                                                               
-[  --enable-bluedot       Enable Quadrant Bluedot Thread Intel],
-       enable_bluedot="$enableval", enable_bluedot="no")
-
-if test "x$enable_bluedot" = "xyes"; then
-    CPPFLAGS="$CPPFLAGS -DBLUEDOT"
-fi
 
 # json-c
 

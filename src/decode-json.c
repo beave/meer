@@ -162,11 +162,13 @@ bool Decode_JSON( char *json_string )
 
 #endif
 
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
+
                     if ( MeerOutput->sql_enabled == true && fingerprint_return == false )
                         {
                             Output_Alert_SQL( DecodeAlert );
-
                         }
+#endif
 
 #ifdef HAVE_LIBHIREDIS
 

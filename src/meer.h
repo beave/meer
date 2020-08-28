@@ -103,10 +103,7 @@ struct _MeerConfig
     bool dns_meta;	/* NOT DONE */
     bool metadata;
     bool json;
-
-#ifdef BLUEDOT
     bool bluedot;
-#endif
 
 };
 
@@ -188,10 +185,7 @@ struct _MeerOutput
     bool sql_metadata;
     bool sql_json;
     bool sql_stats;
-
-#ifdef BLUEDOT
     bool sql_bluedot;
-#endif
 
     char sql_driver;
 
@@ -222,11 +216,7 @@ struct _MeerOutput
     bool pipe_dns;
     bool pipe_fileinfo;
     bool pipe_dhcp;
-
-#ifdef BLUEDOT
     bool pipe_bluedot;
-#endif
-
 
 
 };
@@ -285,10 +275,7 @@ struct _MeerCounters
 
     uint64_t DNSCount;
     uint64_t DNSCacheCount;
-
-#ifdef BLUEDOT
     uint64_t BluedotCount;
-#endif
 
 };
 

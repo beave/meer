@@ -38,6 +38,8 @@
 
 #include "output-plugins/redis.h"
 
+struct _Fingerprint_Networks *Fingerprint_Networks;
+
 struct _MeerConfig *MeerConfig;
 struct _MeerOutput *MeerOutput;
 
@@ -48,10 +50,13 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
 
     int i = 0;
     int a = 0;
+
     char fingerprint_tmp[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
     char tmp_command[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
     char tmp_new_alert[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
     char tmp_new_new_alert[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
+
+    unsigned char ip[MAXIPBIT] = { 0 };                                                                      
 
     struct json_object *json_obj_fingerprint = NULL;
     struct json_object *tmp = NULL;

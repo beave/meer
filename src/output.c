@@ -139,13 +139,7 @@ void Init_Output( void )
             Meer_Log(NORMAL, "Write 'files'   : %s", MeerOutput->pipe_files ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Write 'fileinfo': %s", MeerOutput->pipe_fileinfo ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Write 'dhcp'    : %s", MeerOutput->pipe_dhcp ? "enabled" : "disabled" );
-
-
-#ifdef BLUEDOT
-
             Meer_Log(NORMAL, "Write 'bluedot' : %s", MeerOutput->pipe_bluedot ? "enabled" : "disabled" );
-
-#endif
 
             Meer_Log(NORMAL, "");
 
@@ -217,17 +211,12 @@ void Init_Output( void )
             Meer_Log(NORMAL, "Record 'ssh'     : %s", MeerOutput->sql_ssh ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Record 'smtp'    : %s", MeerOutput->sql_smtp ? "enabled" : "disabled" );
             Meer_Log(NORMAL, "Record 'email'   : %s", MeerOutput->sql_email ? "enabled" : "disabled" );
-
-#ifdef BLUEDOT
-
             Meer_Log(NORMAL, "Record 'bluedot' : %s", MeerOutput->sql_bluedot ? "enabled" : "disabled" );
-
-#endif
-
             Meer_Log(NORMAL, "");
-//            Meer_Log(NORMAL, "---------------------------------------------------------------------------");
 
         }
+
+#endif
 
     if ( MeerConfig->fingerprint == true )
         {
@@ -242,8 +231,6 @@ void Init_Output( void )
 
         }
 
-
-#endif
 
     Meer_Log(NORMAL, "--[ Meer engine information ]--------------------------------------------");
     Meer_Log(NORMAL, "");
@@ -323,10 +310,10 @@ bool Output_Pipe ( char *type, char *json_string )
  * a similar format to Barnyard2 (with some extra data added in!)
  ****************************************************************************/
 
+#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
+
 bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 {
-
-#if defined(HAVE_LIBMYSQLCLIENT) || defined(HAVE_LIBPQ)
 
     char tmp[MAX_SQL_QUERY] = { 0 };
     char convert_time[16] = { 0 };
@@ -462,33 +449,12 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
                             SQL_Insert_Email ( DecodeAlert );
                         }
 
-#ifdef HAVE_LIBHIREDIS
-
-                    if ( MeerOutput->redis_flag == true && MeerConfig->fingerprint == true )
-                        {
-                            Output_Fingerprint_Alert( DecodeAlert );
-                        }
-
-#endif
-
-
-#ifdef BLUEDOT
-
                     if ( DecodeAlert->has_bluedot == true && MeerConfig->bluedot == true )
                         {
                             SQL_Insert_Bluedot ( DecodeAlert );
                         }
 
-#endif
-
-
-
                     /* Record CID in case of crash/disconnections */
-
-                    /* These are very Quadrant specific queries.  You likely don't want them. */
-
-
-#ifdef BLUEDOT
 
                     snprintf(tmp, sizeof(tmp),
                              "UPDATE sensor SET events_count = events_count+1 WHERE sid = %d",
@@ -515,8 +481,6 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
 
                     SQL_DB_Quadrant( DecodeAlert, signature_id );
-
-#endif
 
                     /* Convert timestamp from event to epoch */
 
@@ -557,10 +521,10 @@ bool Output_Alert_SQL ( struct _DecodeAlert *DecodeAlert )
 
         }
 
-#endif
-
     return 0;
 }
+
+#endif
 
 
 /****************************************************************************

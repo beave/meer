@@ -425,7 +425,6 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-#ifdef BLUEDOT
                             else if ( !strcmp(last_pass, "bluedot" ) )
                                 {
 
@@ -435,8 +434,6 @@ void Load_YAML_Config( char *yaml_file )
                                         }
 
                                 }
-
-#endif
 
                             else if ( !strcmp(last_pass, "fingerprint" ) )
                                 {
@@ -452,7 +449,6 @@ void Load_YAML_Config( char *yaml_file )
                                 {
 
                                     strlcpy(MeerConfig->fingerprint_log, value, sizeof(MeerConfig->fingerprint_log));
-
                                 }
 
 
@@ -466,7 +462,6 @@ void Load_YAML_Config( char *yaml_file )
 
                                     unsigned char fp_ipbits[MAXIPBIT] = { 0 };
                                     unsigned char fp_maskbits[MAXIPBIT]= { 0 };
-
 
                                     int fp_mask;
 
@@ -710,7 +705,6 @@ void Load_YAML_Config( char *yaml_file )
 
                                 }
 
-#ifdef BLUEDOT
                             else if ( !strcmp(last_pass, "bluedot" ) )
                                 {
 
@@ -720,8 +714,6 @@ void Load_YAML_Config( char *yaml_file )
                                         }
 
                                 }
-
-#endif
 
                             else if ( !strcmp(last_pass, "debug" ) && MeerOutput->sql_enabled == true )
                                 {

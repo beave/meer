@@ -143,10 +143,12 @@ void Signal_Handler(int sig_num)
                     fclose(MeerConfig->fingerprint_log_fd);
                 }
 
+
             fsync(MeerConfig->waldo_fd);
             close(MeerConfig->waldo_fd);
 
             Meer_Log(NORMAL, "Shutdown complete.");
+
             fclose(MeerConfig->meer_log_fd);
             fflush(stdout);
 

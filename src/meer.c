@@ -206,15 +206,11 @@ int main (int argc, char *argv[])
     Meer_Log(NORMAL, "Decode 'ssh'           : %s", MeerConfig->ssh ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Decode 'smtp'          : %s", MeerConfig->smtp ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Decode 'email'         : %s", MeerConfig->email ? "enabled" : "disabled" );
+    Meer_Log(NORMAL, "Decode 'bluedot'       : %s", MeerConfig->bluedot ? "enabled" : "disabled" );
+
     Meer_Log(NORMAL, "");
     Meer_Log(NORMAL, "Fingerprint support    : %s", MeerConfig->fingerprint ? "enabled" : "disabled" );
     Meer_Log(NORMAL, "Health updates         : %s", MeerConfig->health ? "enabled" : "disabled" );
-
-
-#ifdef BLUEDOT
-    Meer_Log(NORMAL, "Decode 'bluedot'       : %s", MeerConfig->bluedot ? "enabled" : "disabled" );
-#endif
-
     Meer_Log(NORMAL, "");
 
     Init_Waldo();

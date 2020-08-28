@@ -70,9 +70,7 @@ char src_dns[256];
     char *level;
     char *program;
 
-#ifdef BLUEDOT
     char *bluedot;
-#endif
 
     char *xff;
 
@@ -97,13 +95,9 @@ char src_dns[256];
     char alert_metadata[1024];
     bool alert_has_metadata;
 
-#ifdef BLUEDOT
-
     /* Bluedot data */
 
     bool     has_bluedot;
-
-#endif
 
     /* Flow data */
 
