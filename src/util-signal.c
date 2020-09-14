@@ -166,8 +166,13 @@ void Signal_Handler(int sig_num)
             Statistics();
             break;
 
-//        default:
-//            Meer_Log(NORMAL, "[Received signal %d. Meer doesn't know how to deal with]", sig_num);
+  	case SIGPIPE:
+	    Meer_Log(NORMAL, "[Received signal %d [SIGPIPE]. Possible incomplete JSON?]", sig_num);
+	    break;
+
+
+        default:
+            Meer_Log(NORMAL, "[Received signal %d. Meer doesn't know how to deal with]", sig_num);
         }
 
 }

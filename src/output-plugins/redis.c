@@ -289,12 +289,4 @@ void JSON_To_Redis ( char *json_string, char *key )
 
 }
 
-void Alert_To_Redis( struct _DecodeAlert *DecodeAlert )
-{
-
-    JSON_To_Redis( DecodeAlert->new_json_string, "alert" );
-
-}
-
-
 #endif

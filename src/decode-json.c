@@ -171,14 +171,11 @@ bool Decode_JSON( char *json_string )
 #endif
 
 #ifdef HAVE_LIBHIREDIS
-
                     if ( fingerprint_return == false )
                         {
-                            Alert_To_Redis( DecodeAlert );
+			    JSON_To_Redis( DecodeAlert->new_json_string, "alert" );
                         }
-
 #endif
-
 
                     if ( MeerOutput->external_enabled == true )
                         {
@@ -243,13 +240,6 @@ bool Decode_JSON( char *json_string )
 
             if ( MeerOutput->redis_flag == true )
                 {
-
-                    /*
-                                        if ( !strcmp(json_object_get_string(tmp), "alert") && MeerOutput->redis_alert == true)
-                                            {
-                                                JSON_To_Redis( json_string, "alert" );
-                                            }
-                    */
 
                     if ( !strcmp(json_object_get_string(tmp), "flow") && MeerOutput->redis_flow == true )
                         {

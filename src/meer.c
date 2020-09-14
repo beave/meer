@@ -73,6 +73,7 @@ int main (int argc, char *argv[])
     signal(SIGINT,  &Signal_Handler);
     signal(SIGQUIT,  &Signal_Handler);
     signal(SIGTERM,  &Signal_Handler);
+    signal(SIGPIPE, &Signal_Handler); 
 //    signal(SIGSEGV,  &Signal_Handler);
     signal(SIGABRT,  &Signal_Handler);
 //    signal(SIGHUP,  &Signal_Handler);		/* DEBUG: Need SIGHUP handler */
