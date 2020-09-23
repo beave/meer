@@ -22,6 +22,8 @@
 #include "config.h"             /* From autoconf */
 #endif
 
+#ifdef HAVE_LIBHIREDIS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -37,6 +39,8 @@
 #include "fingerprint-to-json.h"
 
 #include "output-plugins/redis.h"
+
+
 
 struct _Fingerprint_Networks *Fingerprint_Networks;
 
@@ -228,3 +232,4 @@ void Add_Fingerprint_To_JSON( struct json_object *json_obj, _DecodeAlert *Decode
 
 }
 
+#endif
