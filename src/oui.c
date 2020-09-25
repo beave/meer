@@ -155,13 +155,6 @@ void OUI_Lookup ( char *mac, char *str, size_t size )
     s2 = strtok_r(NULL, ":", &saveptr);
     s3 = strtok_r(NULL, ":", &saveptr);
 
-    /* Shouldn't ever see this, but just in case */
-
-    if ( s1 == NULL || s2 == NULL )
-        {
-            Meer_Log(ERROR, "[%s, line %d] Invalid entry found in _Manfact_Struct. Abort!", __FILE__, __LINE__);
-        }
-
     /* Our new search string */
 
     snprintf(search_string, sizeof(search_string), "%s:%s:%s", s1, s2, s3);
