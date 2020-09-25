@@ -157,7 +157,7 @@ void OUI_Lookup ( char *mac, char *str, size_t size )
 
     /* Shouldn't ever see this, but just in case */
 
-    if ( s1 == NULL || s2 == NULL || s3 == NULL )
+    if ( s1 == NULL || s2 == NULL )
         {
             Meer_Log(ERROR, "[%s, line %d] Invalid entry found in _Manfact_Struct. Abort!", __FILE__, __LINE__);
         }
