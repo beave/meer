@@ -156,6 +156,5 @@ void Decode_JSON_DHCP( struct json_object *json_obj, char *json_string, struct _
         }
 
     json_object_put(json_obj_dhcp); 	// Good
-    json_object_put(tmp_dhcp);
 
 }
