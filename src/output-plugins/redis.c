@@ -50,7 +50,7 @@ struct _MeerHealth *MeerHealth;
 uint32_t redis_batch_count = 0;
 
 char redis_batch[MAX_REDIS_BATCH][10240 + PACKET_BUFFER_SIZE_DEFAULT];
-char redis_batch_key[MAX_REDIS_BATCH][128] = { 0 };
+char redis_batch_key[MAX_REDIS_BATCH][128] = {{ 0 }};
 
 void Redis_Connect( void )
 {
@@ -217,6 +217,7 @@ bool Redis_Writer ( char *command, char *key, char *value, int expire )
 
         }
 
+return(true);
 }
 
 
@@ -224,7 +225,6 @@ void JSON_To_Redis ( char *json_string, char *key )
 {
 
     int i = 0;
-    char tmp_key[128] = { 0 };
 
     /* Write request to Redis queue */
 

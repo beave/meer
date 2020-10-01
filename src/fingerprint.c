@@ -42,12 +42,10 @@ void Parse_Fingerprint ( struct _DecodeAlert *DecodeAlert, struct _FingerprintDa
     char *fingerprint_d_source = NULL;
 
     char *fingerprint_os = "unknown";
-    char *fingerprint_type = "unknown";
     char *fingerprint_source = "unknown";
     char *fingerprint_expire = NULL;
 
     char *ptr1 = NULL;
-    char *ptr2 = NULL;
 
     FingerprintData->expire = FINGERPRINT_REDIS_EXPIRE;
 
@@ -257,7 +255,7 @@ void Fingerprint_EVENT_JSON ( struct _DecodeAlert *DecodeAlert, struct _Fingerpr
     json_object_object_add(encode_json_fp, "signature_id", json_object_new_int64( DecodeAlert->alert_signature_id ));
     json_object_object_add(encode_json_fp, "rev", json_object_new_int64( DecodeAlert->alert_rev ));
 
-    if ( DecodeAlert->alert_signature != NULL )
+    if ( DecodeAlert->alert_signature[0] != '\0' )
         {
             json_object_object_add(encode_json_fp, "signature", json_object_new_string( DecodeAlert->alert_signature ));
 
@@ -284,7 +282,7 @@ void Fingerprint_EVENT_JSON ( struct _DecodeAlert *DecodeAlert, struct _Fingerpr
 
         }
 
-    if ( DecodeAlert->payload != NULL )
+    if ( DecodeAlert->payload[0] != '\0' )
         {
             json_object_object_add(encode_json_fp, "payload", json_object_new_string( DecodeAlert->payload ));
         }
