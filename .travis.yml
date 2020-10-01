@@ -46,5 +46,5 @@ before_install:
 
         sudo apt-get update -qq
         sudo apt-get install -y libjson-c-dev libyaml-dev libmysqlclient-dev \
-            build-essential autoconf automake libyaml-0-2 pkg-config 
+            build-essential autoconf automake libyaml-0-2 pkg-config libhiredis-dev
     fi
