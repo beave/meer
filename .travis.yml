@@ -36,7 +36,7 @@ matrix:
 script:
   - ./autogen.sh
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        ./configure --enable-quadrant || { echo "!!!! ERROR !!!!"; cat config.log && false; }
+        ./configure || { echo "!!!! ERROR !!!!"; cat config.log && false; }
     fi
   - make
 
