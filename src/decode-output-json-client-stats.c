@@ -146,13 +146,14 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
                     Meer_Log(ERROR, "[%s, line %d] 'program' is incomplete or invalid. Abort", __FILE__, __LINE__);
                 }
 
+/*
             tmp_message = json_object_array_get_idx ( tmp_m, i );
 
             if ( tmp_message == NULL )
                 {
                     Meer_Log(ERROR, "[%s, line %d] 'messages' is incomplete or invalid. Abort", __FILE__, __LINE__);
                 }
-
+*/
 
             tmp_timestamp_int = atol( json_object_to_json_string(tmp_timestamp) );
 
