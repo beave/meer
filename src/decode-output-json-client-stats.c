@@ -53,7 +53,7 @@ struct _MeerCounters *MeerCounters;
 struct _MeerOutput *MeerOutput;
 struct _MeerConfig *MeerConfig;
 
-void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_string )
+void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, const char *json_string )
 {
 
     int i = 0;
@@ -90,35 +90,40 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
 
     if ( tmp_t == NULL )
         {
-            Meer_Log(ERROR, "[%s, line %d] 'timestamp' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+            Meer_Log(WARN, "[%s, line %d] 'timestamp' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+	    return;
         }
 
     json_object_object_get_ex(json_obj, "ip_addresses", &tmp_i);
 
     if ( tmp_i == NULL )
         {
-            Meer_Log(ERROR, "[%s, line %d] 'ip_addresses' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+            Meer_Log(WARN, "[%s, line %d] 'ip_addresses' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+	    return;
         }
 
     json_object_object_get_ex(json_obj, "program", &tmp_p);
 
     if ( tmp_p == NULL )
         {
-            Meer_Log(ERROR, "[%s, line %d] 'program' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+            Meer_Log(WARN, "[%s, line %d] 'program' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+	    return;
         }
 
     json_object_object_get_ex(json_obj, "message", &tmp_m);
 
     if ( tmp_m == NULL )
         {
-            Meer_Log(ERROR, "[%s, line %d] 'message' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+            Meer_Log(WARN, "[%s, line %d] 'message' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+	    return;
         }
 
     json_object_object_get_ex(json_obj, "sensor_name", &tmp_s);
 
     if ( tmp_s == NULL )
         {
-            Meer_Log(ERROR, "[%s, line %d] 'sensor_name' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+            Meer_Log(WARN, "[%s, line %d] 'sensor_name' appears incomplete or invalid. Abort", __FILE__, __LINE__);
+	    return;
         }
 
     strlcpy(sensor_name, json_object_get_string ( tmp_s ), sizeof(sensor_name));
@@ -129,31 +134,31 @@ void Decode_Output_JSON_Client_Stats( struct json_object *json_obj, char *json_s
 
             if ( tmp_timestamp == NULL )
                 {
-                    Meer_Log(ERROR, "[%s, line %d] 'timestamp' is incomplete or invalid. Abort", __FILE__, __LINE__);
+                    Meer_Log(ERROR, "[%s, line %d] Invalid JSON: %s - 'timestamp' is incomplete or invalid. Abort", __FILE__, __LINE__, json_string);
                 }
 
             tmp_ip = json_object_array_get_idx ( tmp_i, i );
 
             if ( tmp_ip == NULL )
                 {
-                    Meer_Log(ERROR, "[%s, line %d] 'ip_addresses' is incomplete or invalid. Abort", __FILE__, __LINE__);
+                    Meer_Log(ERROR, "[%s, line %d] Invalid JSON: %s - 'ip_addresses' is incomplete or invalid. Abort", __FILE__, __LINE__, json_string);
                 }
 
             tmp_program = json_object_array_get_idx ( tmp_p, i );
 
             if ( tmp_program == NULL )
                 {
-                    Meer_Log(ERROR, "[%s, line %d] 'program' is incomplete or invalid. Abort", __FILE__, __LINE__);
+                    Meer_Log(ERROR, "[%s, line %d] Invalid JSON: %s - 'program' is incomplete or invalid. Abort", __FILE__, __LINE__, json_string);
                 }
 
-/*
+
             tmp_message = json_object_array_get_idx ( tmp_m, i );
 
             if ( tmp_message == NULL )
                 {
-                    Meer_Log(ERROR, "[%s, line %d] 'messages' is incomplete or invalid. Abort", __FILE__, __LINE__);
+                    Meer_Log(WARN, "[%s, line %d] Invalid JSON: %s - 'messages' is incomplete or invalid. Abort. %d", __FILE__, __LINE__, json_string); 
+ 		    return; 
                 }
-*/
 
             tmp_timestamp_int = atol( json_object_to_json_string(tmp_timestamp) );
 

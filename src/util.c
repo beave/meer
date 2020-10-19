@@ -85,7 +85,7 @@ void Drop_Priv(void)
 void Meer_Log (int type, const char *format,... )
 {
 
-    char buf[5128] = { 0 };
+    char buf[PACKET_BUFFER_SIZE_DEFAULT] = { 0 };
     va_list ap;
 
     va_start(ap, format);
