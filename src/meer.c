@@ -105,6 +105,7 @@ int main (int argc, char *argv[])
     struct stat st;
 
     bool skip_flag = 0;
+    bool wait_flag = false;
 
     char buf[BUFFER_SIZE + PACKET_BUFFER_SIZE_DEFAULT];
 
@@ -220,12 +221,22 @@ int main (int argc, char *argv[])
 
     Init_Output();
 
-    if (( fd_file = fopen(MeerConfig->follow_file, "r" )) == NULL )
+    /* Open the follow_file or wait for the file to be created! */
+
+    while (( fd_file = fopen(MeerConfig->follow_file, "r" )) == NULL )
         {
-            Meer_Log(ERROR, "Cannot open file %s! Abort.", MeerConfig->follow_file);
+
+            if ( wait_flag == false )
+                {
+                    Meer_Log(NORMAL, "Waiting on %s spool file [%s].....", MeerConfig->follow_file, strerror(errno));
+                    wait_flag = true;
+                }
+            sleep(1);
         }
 
     fd_int = fileno(fd_file);
+
+    Meer_Log(NORMAL, "Successfully opened %s.", MeerConfig->follow_file);
 
     /* Become a daemon if requested */
 
