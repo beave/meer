@@ -73,7 +73,7 @@ int main (int argc, char *argv[])
     signal(SIGINT,  &Signal_Handler);
     signal(SIGQUIT,  &Signal_Handler);
     signal(SIGTERM,  &Signal_Handler);
-    signal(SIGPIPE, &Signal_Handler); 
+    signal(SIGPIPE, &Signal_Handler);
 //    signal(SIGSEGV,  &Signal_Handler);
     signal(SIGABRT,  &Signal_Handler);
 //    signal(SIGHUP,  &Signal_Handler);		/* DEBUG: Need SIGHUP handler */
@@ -110,6 +110,8 @@ int main (int argc, char *argv[])
 
     uint64_t linecount = 0;
     uint64_t old_size = 0;
+
+    FILE *meer_log_fd_test;
 
     MeerConfig = (struct _MeerConfig *) malloc(sizeof(_MeerConfig));
 
@@ -362,9 +364,11 @@ int main (int argc, char *argv[])
         {
 
             /* If the spool file disappears, then we wait to see if a new one
-                   shows up.  Suricata might be rotating the alert.json file */
+               shows up.  Suricata might be rotating the alert.json file.  We use to
+               try and "stat" the file but that didn't work.  We use fopen as a "test"
+               instead. 2020/10/27 - Champ */
 
-            if (fstat(fd_int, &st))
+            if (( meer_log_fd_test = fopen(MeerConfig->follow_file, "r" )) == NULL )
                 {
 
                     fclose(fd_file);
@@ -374,26 +378,36 @@ int main (int argc, char *argv[])
 
                     MeerWaldo->position = 0;
 
-                    Meer_Log(ERROR, "Follow JSON File '%s' disappeared [%s].", MeerConfig->follow_file, strerror(errno) );
-                    Meer_Log(ERROR, "Waiting for new spool file....");
+                    Meer_Log(NORMAL, "Follow JSON File '%s' disappeared [%s].", MeerConfig->follow_file, strerror(errno) );
+                    Meer_Log(NORMAL, "Waiting for new spool file....");
 
-                    while ( fstat(fd_int, &st) != 0 )
+                    while (( fd_file = fopen(MeerConfig->follow_file, "r" )) == NULL )
                         {
-
                             sleep(1);
-
                         }
 
-                    if (( fd_file = fopen(MeerConfig->follow_file, "r" )) == NULL )
-                        {
-                            Meer_Log(ERROR, "Cannot re-open %s. [%s]", MeerConfig->follow_file, strerror(errno) );
-                        }
+                    fd_int = fileno(fd_file);
+
+                    Meer_Log(NORMAL, "Sucessfully re-opened %s. Waiting for new data.", MeerConfig->follow_file);
+
+                }
+            else
+                {
+
+                    /* Test succeeded.  Close test file */
+
+                    fclose(meer_log_fd_test);
 
                 }
 
             /* Check spool file.  If it's grown,  read in the new data.  For some reason,  around Debian 10
                the call for fgets() stop functioning.  We've replaced that with a read() and parsing of the
                read_buf. */
+
+            if (fstat(fd_int, &st))
+                {
+                    Meer_Log(ERROR, "Cannot 'stat' spool file '%s' [%s]  Abort!", MeerConfig->follow_file, strerror(errno));
+                }
 
             if ( (uint64_t) st.st_size > old_size )
                 {
@@ -425,7 +439,7 @@ int main (int argc, char *argv[])
 
             else if ( (uint64_t) st.st_size < old_size )
                 {
-                    Meer_Log(WARN, "Spool file Truncated! Re-opening '%s'!", MeerConfig->follow_file );
+                    Meer_Log(NORMAL, "Spool file Truncated! Re-opening '%s'!", MeerConfig->follow_file );
 
                     fclose(fd_file);
 
@@ -435,6 +449,7 @@ int main (int argc, char *argv[])
                         }
 
                     fd_int = fileno(fd_file);
+
                     old_size = 0;
                     linecount = 0;
 

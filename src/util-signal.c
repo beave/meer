@@ -166,9 +166,9 @@ void Signal_Handler(int sig_num)
             Statistics();
             break;
 
-  	case SIGPIPE:
-	    Meer_Log(NORMAL, "[Received signal %d [SIGPIPE]. Possible incomplete JSON?]", sig_num);
-	    break;
+        case SIGPIPE:
+            Meer_Log(NORMAL, "[Received signal %d [SIGPIPE]. Possible incomplete JSON?]", sig_num);
+            break;
 
 
         default:

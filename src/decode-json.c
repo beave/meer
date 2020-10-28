@@ -173,7 +173,7 @@ bool Decode_JSON( char *json_string )
 #ifdef HAVE_LIBHIREDIS
                     if ( fingerprint_return == false )
                         {
-			    JSON_To_Redis( DecodeAlert->new_json_string, "alert" );
+                            JSON_To_Redis( DecodeAlert->new_json_string, "alert" );
                         }
 #endif
 
