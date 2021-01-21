@@ -1,4 +1,6 @@
 
+** README ** This repo has moved to https://github.com/quadrantsec/meer !
+
 <pre>
 @@@@@@@@@@  @@@@@@@@ @@@@@@@@ @@@@@@@    
 @@! @@! @@! @@!      @@!      @@!  @@@   Quadrant Information Security
